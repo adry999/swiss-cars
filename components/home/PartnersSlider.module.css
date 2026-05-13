@@ -1,0 +1,80 @@
+.section {
+    background: var(--color-white);
+}
+
+.track {
+    overflow: hidden;
+    width: 100%;
+    position: relative;
+}
+
+.track::before,
+.track::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100px;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.track::before {
+    left: 0;
+    background: linear-gradient(to right, white, transparent);
+}
+
+.track::after {
+    right: 0;
+    background: linear-gradient(to left, white, transparent);
+}
+
+.logos {
+    display: flex;
+    align-items: center;
+    width: max-content;
+    animation: marquee 30s linear infinite;
+}
+
+@keyframes marquee {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+.logos:hover {
+    animation-play-state: paused;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 40px;
+    filter: grayscale(1);
+    opacity: 0.5;
+    transition: all 0.3s;
+}
+
+.logo:hover {
+    filter: grayscale(0);
+    opacity: 1;
+}
+
+.logoImg {
+    object-fit: contain;
+    height: 50px;
+    width: auto;
+}
+
+.logoText {
+    font-family: var(--font-primary);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-dark);
+    white-space: nowrap;
+}

@@ -1,0 +1,355 @@
+.main {
+    padding-top: var(--header-height);
+    background: var(--color-gray);
+    min-height: 100vh;
+}
+
+.premiumHeader {
+    background: var(--color-dark);
+    padding: 30px 0 30px;
+    margin-bottom: 40px;
+    border-bottom: 3px solid var(--color-primary);
+}
+
+.breadcrumb {
+    color: var(--color-text-muted);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.breadcrumb a {
+    color: var(--color-white);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.breadcrumb a:hover {
+    color: var(--color-primary);
+}
+
+
+.layout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 40px;
+    align-items: flex-start;
+}
+
+@media (max-width: 991px) {
+    .layout {
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+    }
+
+    .sidebarDesktop {
+        display: none !important;
+    }
+
+    .sidebarMobile {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        width: 100%;
+    }
+}
+
+.sidebarMobile {
+    display: none;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.sectionTitle {
+    font-family: var(--font-primary);
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--color-dark);
+    margin-bottom: 24px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+    padding-left: 15px;
+}
+
+.sectionTitle::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--color-primary);
+}
+
+.description {
+    background: var(--color-white);
+    padding: 30px;
+    border-radius: var(--radius-lg);
+    line-height: 1.8;
+    color: var(--color-text-light);
+    font-size: 15px;
+    border: 1px solid var(--color-gray-2);
+}
+
+.sticky {
+    position: sticky;
+    top: 80px;
+}
+
+.card {
+    background: var(--color-white);
+    padding: 30px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--color-gray-2);
+}
+
+.title {
+    font-family: var(--font-primary);
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--color-dark);
+    margin-bottom: 8px;
+    line-height: 1.2;
+}
+
+.year {
+    font-family: var(--font-primary);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: 24px;
+}
+
+.priceWrapper {
+    background: var(--color-gray);
+    padding: 24px;
+    border-radius: var(--radius-md);
+    margin-bottom: 30px;
+}
+
+.priceLabel {
+    font-size: 12px;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.price {
+    font-family: var(--font-primary);
+    font-size: 32px;
+    font-weight: 900;
+    color: var(--color-dark);
+}
+
+.soldText {
+    color: var(--color-primary);
+    text-transform: uppercase;
+    font-size: 28px;
+}
+
+.taxes {
+    font-size: 12px;
+    color: var(--color-text-muted);
+}
+
+.actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.contactTitle {
+    font-family: var(--font-primary);
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--color-dark);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.contactSubtitle {
+    font-size: 13px;
+    color: var(--color-text-muted);
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+/* Why Us Section */
+.whyUsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+@media (max-width: 767px) {
+    .whyUsGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.whyUsItem {
+    display: flex;
+    gap: 16px;
+    background: var(--color-white);
+    padding: 24px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-gray-2);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.whyUsItem:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.whyUsIcon {
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    background: var(--color-primary);
+    color: var(--color-white);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.whyUsItem h4 {
+    font-family: var(--font-primary);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--color-dark);
+    margin-bottom: 6px;
+}
+
+.whyUsItem p {
+    font-size: 13px;
+    color: var(--color-text-light);
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Leasing Teaser */
+.leasingTeaser {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    background: linear-gradient(135deg, var(--color-dark) 0%, #1a1a2e 100%);
+    padding: 30px;
+    border-radius: var(--radius-lg);
+    color: var(--color-white);
+}
+
+@media (max-width: 767px) {
+    .leasingTeaser {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+.leasingIcon {
+    flex-shrink: 0;
+    width: 70px;
+    height: 70px;
+    background: var(--color-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.leasingContent {
+    flex: 1;
+}
+
+.leasingContent h3 {
+    font-family: var(--font-primary);
+    font-size: 18px;
+    font-weight: 800;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.leasingContent p {
+    font-size: 14px;
+    opacity: 0.9;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.leasingBtn {
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+/* Bottom Contact Banner */
+.bottomContactBanner {
+    background: var(--color-dark);
+    padding: 60px 0;
+    margin-top: 60px;
+}
+
+.bottomContactInner {
+    display: grid;
+    grid-template-columns: 1fr 450px;
+    gap: 60px;
+    align-items: center;
+}
+
+@media (max-width: 991px) {
+    .bottomContactInner {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+}
+
+.bottomContactText {
+    color: var(--color-white);
+}
+
+.bottomContactText h2 {
+    font-family: var(--font-primary);
+    font-size: 32px;
+    font-weight: 900;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+}
+
+.bottomContactText p {
+    font-size: 16px;
+    opacity: 0.85;
+    line-height: 1.7;
+    max-width: 500px;
+}
+
+.bottomContactForm {
+    background: var(--color-white);
+    padding: 30px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+}
+
+.bottomContactForm h3 {
+    font-family: var(--font-primary);
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--color-dark);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+}
+
+.bottomContactSubtitle {
+    font-size: 13px;
+    color: var(--color-text-muted);
+    margin-bottom: 20px;
+    line-height: 1.5;
+}

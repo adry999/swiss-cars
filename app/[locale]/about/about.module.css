@@ -1,0 +1,283 @@
+/* ───────────────────────────────────────
+   ABOUT US PAGE STYLES
+   ─────────────────────────────────────── */
+
+.main {
+    padding-top: var(--header-height);
+    background: var(--color-white);
+}
+
+/* ───────────────────────────────────────
+   HERO SECTION
+   ─────────────────────────────────────── */
+.hero {
+    position: relative;
+    height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+    overflow: hidden;
+}
+
+.heroImage {
+    object-fit: cover;
+    z-index: 0;
+}
+
+.heroOverlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.8));
+    z-index: 1;
+}
+
+.heroContent {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    padding: 0 24px;
+}
+
+.heroTitle {
+    font-size: clamp(32px, 8vw, 64px);
+    font-weight: 900;
+    margin-bottom: 24px;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    font-family: var(--font-primary);
+}
+
+.heroSubtitle {
+    font-size: clamp(16px, 3vw, 20px);
+    opacity: 0.9;
+    font-weight: 500;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* ───────────────────────────────────────
+   MISSION SECTION
+   ─────────────────────────────────────── */
+.section {
+    padding: 100px 0;
+}
+
+.sectionGray {
+    background: var(--color-gray);
+}
+
+.missionGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+}
+
+@media (max-width: 991px) {
+    .missionGrid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+}
+
+.missionTitle {
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 24px;
+    color: var(--color-dark);
+}
+
+.missionText {
+    font-size: 18px;
+    line-height: 1.8;
+    color: var(--color-text-light);
+    margin-bottom: 30px;
+}
+
+/* ───────────────────────────────────────
+   STATS GRID
+   ─────────────────────────────────────── */
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+}
+
+@media (max-width: 768px) {
+    .statsGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .heroContent {
+        padding-top: 40px;
+        /* Extra room on small mobile heights */
+    }
+}
+
+@media (max-width: 480px) {
+    .statsGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.statCard {
+    background: white;
+    padding: 40px 30px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--color-gray-2);
+    transition: transform 0.3s ease;
+}
+
+.statCard:hover {
+    transform: translateY(-10px);
+}
+
+.statNumber {
+    font-size: 36px;
+    font-weight: 900;
+    color: var(--color-primary);
+    margin-bottom: 10px;
+    display: block;
+}
+
+.statLabel {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ───────────────────────────────────────
+   VALUES SECTION
+   ─────────────────────────────────────── */
+.valuesGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+
+@media (max-width: 850px) {
+    .valuesGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.valueCard {
+    padding: 40px;
+    background: white;
+    border-radius: 24px;
+    border: 1px solid var(--color-gray-2);
+    transition: all 0.3s ease;
+}
+
+.valueCard:hover {
+    border-color: var(--color-primary);
+    box-shadow: 0 15px 40px rgba(192, 57, 43, 0.08);
+}
+
+.valueIcon {
+    width: 64px;
+    height: 64px;
+    background: var(--color-light);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary);
+    margin-bottom: 24px;
+}
+
+.valueTitle {
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 16px;
+    color: var(--color-dark);
+}
+
+.valueText {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--color-text-light);
+}
+
+/* ───────────────────────────────────────
+   TIMELINE SECTION
+   ─────────────────────────────────────── */
+.timeline {
+    position: relative;
+    max-width: 800px;
+    margin: 60px auto 0;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--color-gray-2);
+}
+
+.timelineItem {
+    position: relative;
+    padding-left: 60px;
+    margin-bottom: 40px;
+}
+
+.timelineItem:last-child {
+    margin-bottom: 0;
+}
+
+.timelineDot {
+    position: absolute;
+    left: 12px;
+    top: 0;
+    width: 18px;
+    height: 18px;
+    background: white;
+    border: 3px solid var(--color-primary);
+    border-radius: 50%;
+    z-index: 1;
+}
+
+.timelineContent h4 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--color-dark);
+    margin-bottom: 8px;
+}
+
+.timelineContent p {
+    font-size: 15px;
+    color: var(--color-text-light);
+    line-height: 1.5;
+}
+
+/* ───────────────────────────────────────
+   CTA SECTION
+   ─────────────────────────────────────── */
+.ctaSection {
+    background: var(--color-dark);
+    padding: 80px 0;
+    color: white;
+    text-align: center;
+}
+
+.ctaTitle {
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 24px;
+}
+
+.ctaButtons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 40px;
+}

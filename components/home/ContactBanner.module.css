@@ -1,0 +1,73 @@
+.section {
+    background: var(--color-primary);
+    padding: 60px 0;
+}
+
+.inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.textBlock {
+    flex: 1;
+    min-width: 280px;
+}
+
+.title {
+    font-family: var(--font-primary);
+    font-size: clamp(22px, 3vw, 32px);
+    font-weight: 800;
+    color: var(--color-white);
+    margin-bottom: 10px;
+}
+
+.text {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 15px;
+    line-height: 1.7;
+}
+
+.contactBlock {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.phone {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.question {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 3px;
+}
+
+.phoneNumber {
+    font-family: var(--font-primary);
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--color-white);
+    transition: opacity 0.2s;
+}
+
+.phoneNumber:hover {
+    opacity: 0.85;
+}
+
+.cta {
+    background: var(--color-dark) !important;
+    border-color: var(--color-dark) !important;
+    white-space: nowrap;
+}
+
+.cta:hover {
+    background: var(--color-dark-3) !important;
+    transform: translateY(-2px);
+}

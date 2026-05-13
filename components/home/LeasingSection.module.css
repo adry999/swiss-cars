@@ -1,0 +1,19 @@
+.section {
+    background: var(--color-white);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    font-size: 14px;
+    color: var(--color-text-light);
+    line-height: 1.9;
+    text-align: justify;
+}
+
+@media (max-width: 768px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}

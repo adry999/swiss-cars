@@ -1,0 +1,141 @@
+.section {
+    background: var(--color-dark-2);
+}
+
+.container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 600px;
+}
+
+@media (max-width: 900px) {
+    .container {
+        grid-template-columns: 1fr;
+    }
+
+    .imagePanel {
+        height: 300px;
+    }
+}
+
+.imagePanel {
+    position: relative;
+    overflow: hidden;
+}
+
+.image {
+    object-fit: cover;
+}
+
+.imageOverlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, rgba(30, 30, 30, 0.5), transparent);
+}
+
+.contentPanel {
+    padding: 60px 50px;
+    display: flex;
+    flex-direction: column;
+}
+
+@media (max-width: 768px) {
+    .contentPanel {
+        padding: 40px 24px;
+    }
+}
+
+.header {
+    margin-bottom: 24px;
+}
+
+.header :global(.ui-title) {
+    color: var(--color-white);
+    margin-bottom: 12px;
+}
+
+.content {
+    margin-bottom: 32px;
+    min-height: 80px;
+}
+
+.activeText {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+@media (max-width: 900px) {
+    .header {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .header :global(.ui-decor) {
+        margin: 0 auto !important;
+    }
+
+    .activeText {
+        text-align: center;
+    }
+}
+
+.tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+@media (max-width: 500px) {
+    .tabs {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.tab {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 14px;
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.03);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-align: left;
+}
+
+.tab:hover {
+    border-color: rgba(229, 57, 53, 0.4);
+    background: rgba(229, 57, 53, 0.06);
+}
+
+.tabActive {
+    border-color: var(--color-primary) !important;
+    background: rgba(229, 57, 53, 0.12) !important;
+}
+
+.tabIcon {
+    font-size: 22px;
+    line-height: 1;
+}
+
+.tabText strong {
+    display: block;
+    font-family: var(--font-primary);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--color-white);
+    margin-bottom: 3px;
+}
+
+.tabText span {
+    display: block;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.45);
+    line-height: 1.3;
+}

@@ -1,0 +1,352 @@
+.wrapper {
+    padding: 32px;
+}
+
+/* ── Header ─────────────────────────────── */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--color-dark, #1a1a1a);
+    margin-bottom: 4px;
+}
+
+.subtitle {
+    font-size: 14px;
+    color: #666;
+}
+
+.headerActions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.markAllBtn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 18px;
+    background: #f0fdf4;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.markAllBtn:hover {
+    background: #dcfce7;
+}
+
+/* ── Filter Tabs ─────────────────────────── */
+.filters {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.filterBtn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    font-size: 13px;
+    font-weight: 500;
+    color: #555;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.filterBtn:hover {
+    border-color: #bbb;
+    background: #f9f9f9;
+}
+
+.filterActive {
+    background: var(--color-primary, #c0392b);
+    border-color: var(--color-primary, #c0392b);
+    color: white;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+    display: inline-block;
+}
+
+/* ── Empty State ─────────────────────────── */
+.empty {
+    text-align: center;
+    padding: 60px;
+    color: #999;
+    background: #f9f9f9;
+    border-radius: 12px;
+    border: 1px dashed #ddd;
+}
+
+/* ── Lead Cards ──────────────────────────── */
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.card {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: white;
+    border: 1px solid #e8e8e8;
+    border-radius: 12px;
+    padding: 16px 18px;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.card:hover {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+    border-color: #d0d0d0;
+}
+
+.cardUnread {
+    background: #fff8f8;
+    border-color: #fecaca;
+    border-left: 3px solid var(--color-primary, #c0392b);
+}
+
+.cardImportant {
+    background: #fffbeb;
+    border-color: #fde68a;
+}
+
+.cardUnread.cardImportant {
+    background: #fff8f0;
+    border-color: #fcd34d;
+    border-left: 3px solid #f59e0b;
+}
+
+/* ── Indicators ──────────────────────────── */
+.indicators {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding-top: 4px;
+    min-width: 16px;
+}
+
+.unreadDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-primary, #c0392b);
+    flex-shrink: 0;
+}
+
+.importantStar {
+    color: #f59e0b;
+}
+
+/* ── Content ─────────────────────────────── */
+.content {
+    flex: 1;
+    min-width: 0;
+}
+
+.row1 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+
+.nameBlock {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+.date {
+    font-size: 12px;
+    color: #aaa;
+    white-space: nowrap;
+}
+
+.row2 {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+}
+
+.meta {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+    color: #555;
+    text-decoration: none;
+    transition: color 0.15s;
+}
+
+a.meta:hover {
+    color: var(--color-primary, #c0392b);
+}
+
+.message {
+    font-size: 13px;
+    color: #777;
+    line-height: 1.5;
+    font-style: italic;
+    margin-top: 4px;
+    white-space: pre-line;
+}
+
+/* ── Badges ──────────────────────────────── */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.badgeNew {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.badgeRead {
+    background: #f0fdf4;
+    color: #16a34a;
+}
+
+.badgeImportant {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.badgeTestDrive {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    background: #e0f2fe;
+    color: #0369a1;
+    gap: 4px;
+}
+
+.preferredDateRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    font-size: 13px;
+    color: #475569;
+    margin-bottom: 8px;
+}
+
+.preferredDateRow strong {
+    color: var(--color-primary, #c0392b);
+}
+
+/* ── Action Buttons ──────────────────────── */
+.actions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.actionBtn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 7px;
+    background: white;
+    color: #666;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.actionBtn:hover {
+    background: #f5f5f5;
+    color: #333;
+    border-color: #bbb;
+}
+
+.actionImportant {
+    color: #f59e0b;
+    border-color: #fde68a;
+    background: #fffbeb;
+}
+
+.actionImportant:hover {
+    background: #fef3c7;
+}
+
+.actionDelete {
+    color: #dc2626;
+    border-color: #fecaca;
+}
+
+.actionDelete:hover {
+    background: #fee2e2;
+}
+
+.actionDeleteConfirm {
+    background: #dc2626;
+    color: white;
+    border-color: #dc2626;
+}
+
+.actionDeleteConfirm:hover {
+    background: #b91c1c;
+}
+
+.confirmText {
+    font-size: 11px;
+    font-weight: 600;
+}

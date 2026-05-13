@@ -1,0 +1,154 @@
+.layout {
+    display: flex;
+    min-height: 100vh;
+    background: var(--color-gray);
+    overflow-x: hidden;
+    width: 100vw;
+    box-sizing: border-box;
+}
+
+.main {
+    flex: 1;
+    margin-left: 260px;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.header {
+    height: 70px;
+    background: white;
+    border-bottom: 1px solid var(--color-gray-2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    position: sticky;
+    top: 0;
+    z-index: 90;
+}
+
+.headerTitle {
+    font-family: var(--font-primary);
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--color-dark);
+}
+
+.headerLeft {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.menuButton {
+    display: none;
+}
+
+.userInfo {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.viewWebsiteBtn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-primary);
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    background: rgba(229, 57, 53, 0.08);
+    transition: all 0.2s;
+}
+
+.viewWebsiteBtn:hover {
+    background: var(--color-primary);
+    color: white;
+}
+
+.viewWebsiteMobile {
+    display: none;
+}
+
+@media (max-width: 550px) {
+    .headerTitle {
+        font-size: 14px;
+    }
+
+    .viewWebsiteText {
+        display: none;
+    }
+
+    .viewWebsiteMobile {
+        display: inline;
+    }
+
+    .viewWebsiteBtn {
+        padding: 6px 10px;
+    }
+}
+
+.userRole {
+    background: var(--color-gray);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-text-muted);
+}
+
+.content {
+    padding: 40px;
+    flex: 1;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.mobileOverlay {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .layout {
+        width: 100vw;
+    }
+
+    .main {
+        margin-left: 0 !important;
+        width: 100vw;
+    }
+
+    .header {
+        padding: 0 20px;
+    }
+
+    .menuButton {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: none;
+        color: var(--color-dark);
+        cursor: pointer;
+        padding: 4px;
+    }
+
+    .content {
+        padding: 20px;
+    }
+
+    .mobileOverlay {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 95;
+    }
+}

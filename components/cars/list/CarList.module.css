@@ -1,0 +1,20 @@
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 30px;
+}
+
+.empty {
+    text-align: center;
+    padding: 80px 20px;
+    background: var(--color-gray);
+    border-radius: var(--radius-lg);
+    color: var(--color-text-muted);
+}
+
+.empty h3 {
+    font-family: var(--font-primary);
+    font-size: 24px;
+    color: var(--color-dark);
+    margin-bottom: 12px;
+}
