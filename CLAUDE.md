@@ -86,12 +86,7 @@ Key patterns:
 
 ### Maintenance Mode
 
-The public-facing site is currently in **maintenance mode** (client has not paid). All public routes render a blank page. To restore:
-
-1. Open `app/[locale]/layout.tsx`
-2. Restore the full `LocaleLayout` render (replace `<html lang={locale}><body /></html>` with the full component body including Header, Footer, etc.)
-
-Admin at `/admin` and login at `/login` are **not** affected by maintenance mode.
+The site is **live** — maintenance mode has been removed. The full layout (Header, Footer, providers) is active in `app/[locale]/layout.tsx`.
 
 ### Pagination
 
