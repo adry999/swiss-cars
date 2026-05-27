@@ -1,12 +1,11 @@
 'use client';
 
-import type { UseFormRegister, UseFormWatch, FieldErrors } from 'react-hook-form';
+import type { UseFormRegister, FieldErrors } from 'react-hook-form';
 import type { Car } from '@/lib/types';
 import styles from '../CarEditForm.module.css';
 
 interface GeneralInfoTabProps {
     register: UseFormRegister<Car>;
-    watch: UseFormWatch<Car>;
     errors: FieldErrors<Car>;
     descLang: 'ro' | 'ru' | 'en';
     onDescLangChange: (lang: 'ro' | 'ru' | 'en') => void;

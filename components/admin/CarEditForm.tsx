@@ -114,7 +114,6 @@ export default function CarEditForm({ initialData, maxImages = 25 }: Props) {
                 {activeTab === 'general' && (
                     <GeneralInfoTab
                         register={register}
-                        watch={watch}
                         errors={errors}
                         descLang={descLang}
                         onDescLangChange={setDescLang}
