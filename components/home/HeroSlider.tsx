@@ -3,21 +3,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
+import type { HeroSlide } from '@/lib/types';
 import styles from './HeroSlider.module.css';
 
-interface Slide {
-    imageSrc: string;
-    slogan: Record<string, string>;
-    title: Record<string, string>;
-    cta: Record<string, string>;
-    ctaHref: string;
-}
-
 interface Props {
-    slides?: Slide[];
+    slides?: HeroSlide[];
 }
 
-const defaultSlides: Slide[] = [
+const defaultSlides: HeroSlide[] = [
     {
         imageSrc: '/media/content/b-main-slider/slider.png',
         slogan: { ro: 'EȘTI GATA SĂ', ru: 'Готов к', en: 'Are you ready to' },
@@ -52,7 +45,7 @@ export default function HeroSlider({ slides: propSlides }: Props) {
     const slide = slides[current];
     if (!slide) return null;
 
-    const getText = (field: Record<string, string>) => field[locale] || field['ro'] || '';
+    const getText = (field: Record<string, string | undefined>) => field[locale] || field['ro'] || '';
 
     return (
         <section className={styles.hero} id="main-slider">
