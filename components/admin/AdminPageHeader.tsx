@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import Link from 'next/link';
 
 interface AdminPageHeaderProps {
@@ -6,7 +7,7 @@ interface AdminPageHeaderProps {
     action?: {
         label: string;
         href: string;
-        icon?: React.ReactNode;
+        icon?: ReactNode;
     };
 }
 
