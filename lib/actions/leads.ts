@@ -3,34 +3,11 @@
 import { createClient } from '@/lib/supabase/server';
 import { requireAuth } from '@/lib/utils/requireAuth';
 import { checkRateLimit } from '@/lib/utils/rateLimit';
+import { LeadInquirySchema, type LeadInquiry } from '@/lib/types';
 import { revalidatePath } from 'next/cache';
 import { sendTelegramNotification, sendEmailNotification } from '@/lib/utils/notifications';
 import { getSettings } from './settings';
 import { headers } from 'next/headers';
-import { z } from 'zod';
-
-const LeadInquirySchema = z.object({
-    car_id: z.string().min(1, 'Eroare internă (ID mașină lipsă)'),
-    car_name: z.string().min(1, 'Numele mașinii este obligatoriu').max(200),
-    name: z.string().min(2, 'Numele trebuie să aibă minim 2 caractere').max(100),
-    phone: z.string().min(7, 'Numărul de telefon trebuie să aibă minim 7 caractere').max(35, 'Numărul de telefon este prea lung'),
-    email: z.string().email('Format email invalid').optional().or(z.literal('')),
-    message: z.string().max(2000, 'Mesajul este prea lung').optional(),
-    preferred_date: z.string().max(100).optional(),
-    form_type: z.string().max(50).optional(),
-    source_url: z.string().url().optional(),
-});
-export type LeadInquiry = {
-    car_id: string;
-    car_name: string;
-    name: string;
-    phone: string;
-    email?: string;
-    message?: string;
-    preferred_date?: string;
-    form_type?: string;
-    source_url?: string;
-};
 
 export async function submitLeadInquiry(data: LeadInquiry) {
     const h = await headers();
