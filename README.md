@@ -27,8 +27,11 @@ Admin panel: [http://localhost:3000/admin](http://localhost:3000/admin) (require
 |---|---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase project URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase anonymous (public) key |
-| `NEXT_PUBLIC_GA_MEASUREMENT_ID` | No | Google Analytics 4 measurement ID |
+| `TELEGRAM_BOT_TOKEN` | No | Telegram bot token for lead notifications — server-side only, no `NEXT_PUBLIC_` prefix |
+| `TELEGRAM_CHAT_ID` | No | Telegram chat/channel ID to notify |
+| `NOTIFICATION_EMAIL` | No | Address that receives new-lead emails (requires `RESEND_API_KEY`) |
 | `RESEND_API_KEY` | No | Resend API key for email notifications |
+| `NEXT_PUBLIC_GA_MEASUREMENT_ID` | No | Google Analytics 4 measurement ID |
 
 ---
 
@@ -50,7 +53,7 @@ npm run test:coverage # Coverage report
 
 ```
 app/
-├── [locale]/         # Public routes (ro/ru/en, no URL prefix)
+├── [locale]/         # Public routes (ro unprefixed, /ru and /en prefixed)
 ├── admin/            # Admin dashboard (auth-protected)
 ├── login/            # Login page
 └── api/              # API routes (contact form, seed)
@@ -92,7 +95,7 @@ i18n/                 # next-intl routing and request config
 
 ### Notification credentials
 
-Telegram and email credentials are **environment variables only** (`TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `NOTIFICATION_EMAIL`) — see `.env.example`. They previously lived in the `site_settings` table, which is readable by anyone holding the public anon key. See `database/2026-08-26_security_hardening.sql`.
+Telegram and email credentials are **environment variables** (`TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `NOTIFICATION_EMAIL`) — see `.env.example`. They previously lived in the `site_settings` table, which is readable by anyone holding the public anon key. See `database/2026-08-26_security_hardening.sql`.
 
 ### Admin access
 
@@ -102,9 +105,16 @@ Being signed in is not enough. A user needs `{"role": "admin"}` in their Supabas
 
 ## Database Setup
 
-See [DATABASE_SETUP.md](./DATABASE_SETUP.md) for full schema setup instructions.
+See [DATABASE_SETUP.md](./DATABASE_SETUP.md) for the schema, and
+[database/README.md](./database/README.md) for the exact run order.
 
-Run `database/SETUP_NEW_DB.sql` once in the Supabase SQL Editor to create all tables, RLS policies, and the storage bucket.
+Three files, run in order, in the Supabase SQL Editor:
+`SETUP_NEW_DB.sql` → `2026-08-26_security_hardening.sql` →
+`2026-08-26_lead_subscriber_rpc.sql`. The last two aren't optional — without
+them the database still allows any authenticated account admin write access
+and anonymous direct inserts into leads/subscribers. `database/archive/`
+holds superseded and (in two cases) actively insecure historical scripts;
+don't run those against a hardened database.
 
 ---
 

@@ -88,7 +88,7 @@ Key patterns:
 
 ### Notification credentials
 
-Telegram and email credentials are **environment variables only** (`TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `NOTIFICATION_EMAIL`), read by `getNotificationConfig()` in `lib/settings/`. They previously lived in the anon-readable `site_settings` row and were also serialized into every public page's RSC payload. See `database/2026-08-26_security_hardening.sql`.
+Telegram and email credentials are **environment variables** (`TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `NOTIFICATION_EMAIL`), read by `getNotificationConfig()` in `lib/settings/`. They previously lived in the anon-readable `site_settings` row and were also serialized into every public page's RSC payload. See `database/2026-08-26_security_hardening.sql`.
 
 ### Maintenance Mode
 
