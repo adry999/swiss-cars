@@ -22,36 +22,23 @@ export async function subscribe(email: string): Promise<{ success: boolean; erro
     }
 
     const supabase = await createClient();
-    const normalizedEmail = email.toLowerCase();
 
-    const { data: existing } = await supabase
-        .from('subscribers')
-        .select('id, is_active')
-        .eq('email', normalizedEmail)
-        .single();
-
-    if (existing) {
-        if (existing.is_active) {
-            return { success: false, error: 'Already subscribed' };
-        }
-        const { error } = await supabase
-            .from('subscribers')
-            .update({ is_active: true, unsubscribed_at: null })
-            .eq('id', existing.id);
-
-        if (error) {
-            return { success: false, error: 'Failed to resubscribe' };
-        }
-        return { success: true };
-    }
-
-    const { error } = await supabase
-        .from('subscribers')
-        .insert({ email: normalizedEmail });
+    // subscribe_email() (database/2026-08-26_lead_subscriber_rpc.sql) does the
+    // existing-row lookup and insert-or-reactivate as one SECURITY DEFINER
+    // call. The previous version did a SELECT as anon to check for an
+    // existing subscriber, but anon never had a SELECT policy on this table,
+    // so that lookup always came back empty — a duplicate signup fell
+    // through to INSERT, hit the unique constraint, and surfaced as a
+    // generic "Failed to subscribe" instead of "Already subscribed".
+    const { data, error } = await supabase.rpc('subscribe_email', { p_email: email });
 
     if (error) {
         console.error('Subscribe error:', error);
         return { success: false, error: 'Failed to subscribe' };
+    }
+
+    if (data === 'already_subscribed') {
+        return { success: false, error: 'Already subscribed' };
     }
 
     return { success: true };

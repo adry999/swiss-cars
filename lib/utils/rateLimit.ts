@@ -15,6 +15,15 @@ setInterval(() => {
     }
 }, 60000); // Clean up every minute
 
+/**
+ * Shared limit for the two lead-submission entry points (submitLeadInquiry
+ * and /api/contact). They used to carry different numbers — 5/min and
+ * 10/min — for no reason tied to the actual abuse risk; both write to the
+ * same table through the same submit_lead() RPC now, so they share one
+ * policy.
+ */
+export const LEAD_RATE_LIMIT = { limit: 5, windowMs: 60000 } as const;
+
 interface RateLimitOptions {
     /** Maximum number of requests allowed within the window */
     limit: number;

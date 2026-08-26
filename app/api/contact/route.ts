@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
-import { checkRateLimit, getClientIp } from '@/lib/utils/rateLimit';
+import { checkRateLimit, getClientIp, LEAD_RATE_LIMIT } from '@/lib/utils/rateLimit';
 
 const ContactSchema = z.object({
     name: z.string().min(2, 'Name must be at least 2 characters').max(100, 'Name too long').trim(),
@@ -15,12 +15,8 @@ const ContactSchema = z.object({
 
 export async function POST(req: NextRequest) {
     try {
-        // Rate limiting: 10 requests per minute per IP
         const clientIp = getClientIp(req);
-        const rateLimit = checkRateLimit(`contact:${clientIp}`, {
-            limit: 10,
-            windowMs: 60000,
-        });
+        const rateLimit = checkRateLimit(`contact:${clientIp}`, LEAD_RATE_LIMIT);
 
         if (!rateLimit.success) {
             return NextResponse.json(
@@ -44,21 +40,21 @@ export async function POST(req: NextRequest) {
 
         const supabase = await createClient();
 
-        // We insert into leads_inquiries to ensure visibility in the Admin panel
-        const insertData = {
-            car_id: null,
-            car_name: formType === 'testdrive' ? 'Programare Vizionare' : 'Contact General',
-            name,
-            phone,
-            email: email || null,
-            message: message || null,
-            preferred_date: preferredDate || null,
-            form_type: formType || 'contact',
-            source_url: sourceUrl || null,
-            created_at: new Date().toISOString(),
-        };
-
-        const { error } = await supabase.from('leads_inquiries').insert(insertData);
+        // Routed through the submit_lead() RPC — see
+        // database/2026-08-26_lead_subscriber_rpc.sql — rather than a direct
+        // .insert(), which anon could otherwise call directly with no
+        // validation via the Supabase REST API.
+        const { error } = await supabase.rpc('submit_lead', {
+            p_car_id: null,
+            p_car_name: formType === 'testdrive' ? 'Programare Vizionare' : 'Contact General',
+            p_name: name,
+            p_phone: phone,
+            p_email: email || null,
+            p_message: message || null,
+            p_preferred_date: preferredDate || null,
+            p_form_type: formType || 'contact',
+            p_source_url: sourceUrl || null,
+        });
 
         if (error) {
             console.error('Contact form DB error details:', error);

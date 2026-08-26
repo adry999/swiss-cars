@@ -2,7 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { requireAuth } from '@/lib/utils/requireAuth';
-import { checkRateLimit } from '@/lib/utils/rateLimit';
+import { checkRateLimit, LEAD_RATE_LIMIT } from '@/lib/utils/rateLimit';
 import { LeadInquirySchema, type LeadInquiry } from '@/lib/types';
 import { revalidatePath } from 'next/cache';
 import { sendTelegramNotification, sendEmailNotification } from '@/lib/utils/notifications';
@@ -12,7 +12,7 @@ import { headers } from 'next/headers';
 export async function submitLeadInquiry(data: LeadInquiry) {
     const h = await headers();
     const ip = h.get('x-forwarded-for')?.split(',')[0].trim() ?? h.get('x-real-ip') ?? 'unknown';
-    const rateCheck = checkRateLimit(`lead:${ip}`, { limit: 5, windowMs: 60000 });
+    const rateCheck = checkRateLimit(`lead:${ip}`, LEAD_RATE_LIMIT);
 
     if (!rateCheck.success) {
         return {
@@ -35,17 +35,21 @@ export async function submitLeadInquiry(data: LeadInquiry) {
 
     const supabase = await createClient();
 
-    const { error } = await supabase.from('leads_inquiries').insert({
-        car_id: validData.car_id,
-        car_name: validData.car_name,
-        name: validData.name,
-        phone: validData.phone,
-        email: validData.email || null,
-        message: validData.message || null,
-        preferred_date: validData.preferred_date || null,
-        form_type: validData.form_type || 'inquiry',
-        source_url: validData.source_url || null,
-        created_at: new Date().toISOString(),
+    // Routed through the submit_lead() RPC rather than a direct .insert() —
+    // see database/2026-08-26_lead_subscriber_rpc.sql. A direct insert
+    // policy for anon would let anyone bypass this Zod validation and the
+    // rate limiter above by calling the Supabase REST API with the public
+    // anon key.
+    const { error } = await supabase.rpc('submit_lead', {
+        p_car_id: validData.car_id,
+        p_car_name: validData.car_name,
+        p_name: validData.name,
+        p_phone: validData.phone,
+        p_email: validData.email || null,
+        p_message: validData.message || null,
+        p_preferred_date: validData.preferred_date || null,
+        p_form_type: validData.form_type || 'inquiry',
+        p_source_url: validData.source_url || null,
     });
 
     if (error) {
