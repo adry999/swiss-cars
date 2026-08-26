@@ -1,12 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Heart, X } from 'lucide-react';
+import { Heart, X, CarFront } from 'lucide-react';
 import Image from 'next/image';
 import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { getFavorites } from '@/components/cars/FavoriteButton';
-import { getCars } from '@/lib/supabase/queries';
 import { formatPrice } from '@/lib/utils/format';
 import type { Car } from '@/lib/types';
 
@@ -62,8 +61,8 @@ export default function FavoritesPageClient({ allCars }: { allCars: Car[] }) {
                 ) : (
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '24px' }}>
                         {favCars.map(car => {
-                            const primaryImage = car.car_images?.find((img: any) => img.is_primary) || car.car_images?.[0];
-                            const imageUrl = primaryImage?.url || '/media/content/b-goods/placeholder.jpg';
+                            const primaryImage = car.car_images?.find((img) => img.is_primary) || car.car_images?.[0];
+                            const imageUrl = primaryImage?.url;
 
                             return (
                                 <article key={car.id} style={{ background: 'var(--color-white)', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--color-gray-2)', position: 'relative' }}>
@@ -77,14 +76,24 @@ export default function FavoritesPageClient({ allCars }: { allCars: Car[] }) {
 
                                     <Link href={`/inventory/${car.slug}`}>
                                         <div style={{ position: 'relative', height: '200px' }}>
-                                            <Image
-                                                src={imageUrl}
-                                                alt={`${car.brand} ${car.model}`}
-                                                fill
-                                                style={{ objectFit: 'cover' }}
-                                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                                quality={75}
-                                            />
+                                            {imageUrl ? (
+                                                <Image
+                                                    src={imageUrl}
+                                                    alt={`${car.brand} ${car.model}`}
+                                                    fill
+                                                    style={{ objectFit: 'cover' }}
+                                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                                    quality={75}
+                                                />
+                                            ) : (
+                                                <div
+                                                    role="img"
+                                                    aria-label={`${car.brand} ${car.model}`}
+                                                    style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--color-gray)', color: 'rgba(0,0,0,0.28)' }}
+                                                >
+                                                    <CarFront size={48} aria-hidden />
+                                                </div>
+                                            )}
                                             <div style={{ position: 'absolute', bottom: '12px', left: '12px', background: 'var(--color-primary)', color: 'white', padding: '5px 12px', borderRadius: '4px', fontSize: '14px', fontWeight: '800', fontFamily: 'var(--font-primary)' }}>
                                                 {formatPrice(car.price)} €
                                             </div>

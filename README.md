@@ -39,7 +39,7 @@ npm run dev           # Development server (http://localhost:3000)
 npm run build         # Production build
 npm run start         # Start production server
 npm run lint          # ESLint
-npm test              # Vitest (watch mode)
+npm test              # Vitest (single run)
 npm run test:ui       # Vitest with browser UI
 npm run test:coverage # Coverage report
 ```
@@ -79,20 +79,24 @@ i18n/                 # next-intl routing and request config
 ### Authentication & Security
 
 - All mutation Server Actions call `requireAuth()` (`lib/utils/requireAuth.ts`) before any DB access
-- `middleware.ts` (root) refreshes Supabase sessions and protects `/admin*` routes at the edge
+- `proxy.ts` (root; Next.js 16 renamed `middleware.ts`) protects `/admin*` at the edge and refreshes the Supabase session on those routes
 - Admin layout (`app/admin/layout.tsx`) has a second auth check as defense-in-depth
 - Security headers (CSP, HSTS, X-Frame-Options) configured in `next.config.ts`
 - IP-based rate limiting on contact/lead submissions (`lib/utils/rateLimit.ts`)
 
 ### Internationalization
 
-- `localePrefix: 'never'` — no URL prefix for any locale; locale is detected from browser/cookie
+- `localePrefix: 'as-needed'` — Romanian is unprefixed (`/inventory`), Russian and English are prefixed (`/ru/inventory`, `/en/inventory`). Each language has its own indexable URL, with canonical and hreflang emitted from `i18n/routing.ts`
 - Content stored per-locale: `{ ro: "...", ru: "...", en: "..." }` in DB columns
 - Admin translations editor at `/admin/translations`
 
-### Maintenance Mode
+### Notification credentials
 
-Public pages are currently blank (client unpaid). To restore the site, revert the render in `app/[locale]/layout.tsx`. The admin panel is unaffected.
+Telegram and email credentials are **environment variables only** (`TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `NOTIFICATION_EMAIL`) — see `.env.example`. They previously lived in the `site_settings` table, which is readable by anyone holding the public anon key. See `database/2026-08-26_security_hardening.sql`.
+
+### Admin access
+
+Being signed in is not enough. A user needs `{"role": "admin"}` in their Supabase `app_metadata` (Dashboard → Authentication → Users). `app_metadata` is signed into the JWT and cannot be edited by the user; `user_metadata` can, so it must not be used for this.
 
 ---
 

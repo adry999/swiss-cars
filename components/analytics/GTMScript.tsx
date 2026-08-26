@@ -1,11 +1,16 @@
 import Script from 'next/script';
 
+// GTM ID is admin-supplied and interpolated into an inline <script>.
+// startsWith('GTM-') let `GTM-x'); evil(); //` through.
+const isValidGtmId = (id?: string): id is string =>
+    !!id && /^GTM-[A-Z0-9]+$/.test(id);
+
 type Props = {
     gtmId: string;
 };
 
 export default function GTMScript({ gtmId }: Props) {
-    if (!gtmId || !gtmId.startsWith('GTM-')) return null;
+    if (!isValidGtmId(gtmId)) return null;
 
     return (
         <>
@@ -15,7 +20,7 @@ export default function GTMScript({ gtmId }: Props) {
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','${gtmId}');`}
+})(window,document,'script','dataLayer',${JSON.stringify(gtmId)});`}
             </Script>
             {/* GTM noscript fallback - injected via dangerouslySetInnerHTML below */}
         </>
@@ -23,7 +28,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 }
 
 export function GTMNoscript({ gtmId }: Props) {
-    if (!gtmId || !gtmId.startsWith('GTM-')) return null;
+    if (!isValidGtmId(gtmId)) return null;
     return (
         <noscript>
             <iframe

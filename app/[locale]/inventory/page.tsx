@@ -1,4 +1,5 @@
 import { getCarsPaginated } from '@/lib/supabase/queries';
+import { localeAlternates } from '@/i18n/routing';
 import CarsGridPaginated from '@/components/cars/CarsGridPaginated';
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
@@ -18,16 +19,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         en: 'Cars in Stock | SwissCars',
     };
 
+    const descriptions: Record<string, string> = {
+        ro: 'Vezi toate mașinile disponibile la SwissCars.',
+        ru: 'Все автомобили, доступные в наличии у SwissCars.',
+        en: 'Browse every car currently available at SwissCars.',
+    };
+
     return {
         title: titles[locale] || titles.ro,
-        description: 'Vezi toate mașinile disponibile la SwissCars.',
+        description: descriptions[locale] || descriptions.ro,
+        alternates: localeAlternates(locale, '/inventory'),
     };
 }
 
 export default async function InventoryPage({ searchParams }: Props) {
     const t = await getTranslations('offers');
     const resolvedParams = await searchParams;
-    const page = parseInt(resolvedParams.page || '1', 10);
+    // Guard against ?page=abc / negative values reaching .range(NaN, NaN).
+    const page = Math.max(1, Number.parseInt(resolvedParams.page ?? '1', 10) || 1);
 
     const { data: cars, totalPages, totalCount } = await getCarsPaginated({
         page,

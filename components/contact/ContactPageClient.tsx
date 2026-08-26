@@ -7,6 +7,11 @@ import styles from './ContactPageClient.module.css';
 
 type FormType = 'contact' | 'testdrive';
 
+const GOOGLE_MAPS_EMBED_PREFIX = 'https://www.google.com/maps/embed';
+
+const isGoogleMapsEmbed = (url?: string): url is string =>
+    !!url && url.startsWith(GOOGLE_MAPS_EMBED_PREFIX);
+
 type Props = {
     phoneNumber?: string;
     whatsapp?: string;
@@ -211,10 +216,12 @@ export default function ContactPageClient({
                 </div>
             </div>
 
-            {/* Map */}
-            {googleMapsEmbed && (
+            {/* Map — src is admin-supplied, so restrict it to Google's embed
+                endpoint rather than framing whatever URL is in settings. */}
+            {isGoogleMapsEmbed(googleMapsEmbed) && (
                 <div className={styles.mapWrap}>
                     <iframe
+                        title="Google Maps"
                         src={googleMapsEmbed}
                         width="100%"
                         height="100%"

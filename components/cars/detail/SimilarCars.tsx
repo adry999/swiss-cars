@@ -1,6 +1,6 @@
-import { getCars } from '@/lib/supabase/queries';
+import { getTranslations } from 'next-intl/server';
+import { getSimilarCars } from '@/lib/supabase/queries';
 import CarCard from '@/components/cars/CarCard';
-import type { Car } from '@/lib/types';
 
 type Props = {
     currentCarId: string;
@@ -9,25 +9,11 @@ type Props = {
 };
 
 export default async function SimilarCars({ currentCarId, brand, price }: Props) {
-    const allCars = await getCars();
+    const t = await getTranslations('car_detail');
 
-    // Find similar: same brand first, then similar price range (±30%)
-    const sameBrand = allCars.filter(
-        (c) => c.id !== currentCarId &&
-            c.brand &&
-            brand &&
-            c.brand.toLowerCase() === brand.toLowerCase()
-    );
-
-    const priceRange = allCars.filter(
-        (c) =>
-            c.id !== currentCarId &&
-            (!c.brand || !brand || c.brand.toLowerCase() !== brand.toLowerCase()) &&
-            c.price >= price * 0.7 &&
-            c.price <= price * 1.3
-    );
-
-    const similar: Car[] = [...sameBrand, ...priceRange].slice(0, 3);
+    // Queried directly rather than loading the whole public inventory and
+    // filtering three rows out of it in memory.
+    const similar = await getSimilarCars({ currentCarId, brand, price, limit: 3 });
 
     if (similar.length === 0) return null;
 
@@ -35,8 +21,8 @@ export default async function SimilarCars({ currentCarId, brand, price }: Props)
         <section style={{ padding: '60px 0', background: 'var(--color-gray)' }}>
             <div className="container">
                 <div style={{ marginBottom: '40px' }}>
-                    <p className="ui-subtitle">Poate te interesează</p>
-                    <h2 className="ui-title">Mașini Similare</h2>
+                    <p className="ui-subtitle">{t('similar_cars_subtitle')}</p>
+                    <h2 className="ui-title">{t('similar_cars_title')}</h2>
                     <div className="ui-decor ui-decor--left" />
                 </div>
                 <div style={{

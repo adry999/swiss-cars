@@ -17,6 +17,7 @@ type Props = {
 
 export default function CarLeadForm({ carId, carName, carPrice, phoneNumber, whatsappNumber }: Props) {
     const t = useTranslations('errors');
+    const tc = useTranslations('car_detail');
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [email, setEmail] = useState('');
@@ -65,7 +66,7 @@ export default function CarLeadForm({ carId, carName, carPrice, phoneNumber, wha
                     )}
                     {whatsappNumber && (
                         <a
-                            href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Bună ziua! Sunt interesat de: ${carName} (${formatPrice(carPrice)} €)`)}`}
+                            href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`${tc('whatsapp_message', { carName })} (${formatPrice(carPrice)} €)`)}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className={styles.waBtn}
@@ -79,14 +80,14 @@ export default function CarLeadForm({ carId, carName, carPrice, phoneNumber, wha
 
             {/* Lead Form */}
             <div className={styles.formSeparator}>
-                <span>sau trimite o cerere</span>
+                <span>{tc('form_separator')}</span>
             </div>
 
             {success ? (
                 <div className={styles.successState}>
                     <CheckCircle size={40} color="var(--color-primary)" />
-                    <h4>Cerere trimisă cu succes!</h4>
-                    <p>Te vom contacta în cel mai scurt timp.</p>
+                    <h4>{tc('form_success_title')}</h4>
+                    <p>{tc('form_success_text')}</p>
                 </div>
             ) : (
                 <form className={styles.form} onSubmit={handleSubmit}>
@@ -94,7 +95,7 @@ export default function CarLeadForm({ carId, carName, carPrice, phoneNumber, wha
                         <User size={16} className={styles.inputIcon} />
                         <input
                             type="text"
-                            placeholder="Numele tău *"
+                            placeholder={tc('form_name_placeholder')}
                             value={name}
                             onChange={e => setName(e.target.value)}
                             className={styles.input}
@@ -105,7 +106,7 @@ export default function CarLeadForm({ carId, carName, carPrice, phoneNumber, wha
                         <PhoneCall size={16} className={styles.inputIcon} />
                         <input
                             type="tel"
-                            placeholder="Numărul de telefon *"
+                            placeholder={tc('form_phone_placeholder')}
                             value={phone}
                             onChange={e => setPhone(e.target.value)}
                             className={styles.input}
@@ -116,14 +117,14 @@ export default function CarLeadForm({ carId, carName, carPrice, phoneNumber, wha
                         <Mail size={16} className={styles.inputIcon} />
                         <input
                             type="email"
-                            placeholder="Email (opțional)"
+                            placeholder={tc('form_email_placeholder')}
                             value={email}
                             onChange={e => setEmail(e.target.value)}
                             className={styles.input}
                         />
                     </div>
                     <textarea
-                        placeholder={`Mesaj (opțional) — ex: Sunt interesat de ${carName}...`}
+                        placeholder={tc('form_message_placeholder', { carName })}
                         value={message}
                         onChange={e => setMessage(e.target.value)}
                         className={styles.textarea}
@@ -134,9 +135,9 @@ export default function CarLeadForm({ carId, carName, carPrice, phoneNumber, wha
 
                     <button type="submit" className={styles.submitBtn} disabled={loading}>
                         {loading ? (
-                            <><Loader2 size={18} className={styles.spinner} /> Se trimite...</>
+                            <><Loader2 size={18} className={styles.spinner} /> {tc('form_loading')}</>
                         ) : (
-                            <><Send size={18} /> Trimite cererea</>
+                            <><Send size={18} /> {tc('form_submit')}</>
                         )}
                     </button>
                 </form>

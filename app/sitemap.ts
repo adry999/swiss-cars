@@ -1,40 +1,41 @@
 import { MetadataRoute } from 'next';
 import { getCars } from '@/lib/supabase/queries';
+import { routing, localeUrl } from '@/i18n/routing';
+
+const STATIC_PATHS = ['', '/about', '/services', '/leasing', '/contact', '/inventory'];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    const baseUrl = 'https://swisscars.md';
-    const locales = ['ro', 'ru', 'en'];
+    // Prefixes come from the routing config, so the sitemap can no longer drift
+    // from it. Under localePrefix 'never' this file emitted /ru and /en URLs
+    // that all redirected to /.
+    const staticEntries: MetadataRoute.Sitemap = STATIC_PATHS.map((path) => ({
+        url: localeUrl(routing.defaultLocale, path),
+        changeFrequency: 'weekly',
+        priority: path === '' ? 1 : 0.8,
+        alternates: {
+            languages: Object.fromEntries(
+                routing.locales.map((locale) => [locale, localeUrl(locale, path)])
+            ),
+        },
+    }));
 
-    // Static pages
-    const staticPaths = ['', '/about', '/services', '/leasing', '/contact', '/inventory'];
-
-    const staticEntries: MetadataRoute.Sitemap = [];
-    for (const locale of locales) {
-        for (const path of staticPaths) {
-            const prefix = locale === 'ro' ? '' : `/${locale}`;
-            staticEntries.push({
-                url: `${baseUrl}${prefix}${path}`,
-                lastModified: new Date(),
-                changeFrequency: 'weekly',
-                priority: path === '' ? 1 : 0.8,
-            });
-        }
-    }
-
-    // Dynamic car pages
     const cars = await getCars();
-    const carEntries: MetadataRoute.Sitemap = [];
-    for (const car of cars) {
-        for (const locale of locales) {
-            const prefix = locale === 'ro' ? '' : `/${locale}`;
-            carEntries.push({
-                url: `${baseUrl}${prefix}/inventory/${car.slug}`,
-                lastModified: new Date(car.created_at || Date.now()),
-                changeFrequency: 'monthly',
+    const carEntries: MetadataRoute.Sitemap = cars
+        .filter((car) => car.slug)
+        .map((car) => {
+            const path = `/inventory/${car.slug}`;
+            return {
+                url: localeUrl(routing.defaultLocale, path),
+                lastModified: car.created_at ? new Date(car.created_at) : undefined,
+                changeFrequency: 'monthly' as const,
                 priority: 0.7,
-            });
-        }
-    }
+                alternates: {
+                    languages: Object.fromEntries(
+                        routing.locales.map((locale) => [locale, localeUrl(locale, path)])
+                    ),
+                },
+            };
+        });
 
     return [...staticEntries, ...carEntries];
 }

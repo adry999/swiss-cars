@@ -28,13 +28,13 @@ The app uses Next.js App Router with three main route groups:
 - **`app/admin/`** — Admin dashboard (protected, requires authentication)
 - **`app/login/`** — Authentication page (no i18n)
 
-The default locale (ro) has no URL prefix; `/ru/` and `/en/` prefixes are used for other locales.
+The default locale (ro) has no URL prefix; `/ru/` and `/en/` prefixes are used for the other locales (`localePrefix: 'as-needed'`).
 
 ### Middleware
 
 `proxy.ts` at the project root handles two concerns (Next.js 16 uses `proxy.ts` instead of `middleware.ts`):
 1. **next-intl locale routing** — detects locale and routes accordingly
-2. **Supabase session refresh** — refreshes auth tokens on every request (keeps sessions alive)
+2. **Supabase session refresh** — refreshes auth tokens on `/admin*` requests only
 3. **Admin edge protection** — redirects unauthenticated users from `/admin*` to `/login`
 
 The second layer of admin protection is the `app/admin/layout.tsx` server component, which calls `getUser()` and redirects if no session exists.
@@ -43,7 +43,7 @@ The second layer of admin protection is the `app/admin/layout.tsx` server compon
 
 - **Login page**: `/login` — Email/password authentication
 - **Admin routes**: Protected by middleware edge redirect + `getUser()` check in admin layout
-- **Auth helper**: `lib/utils/requireAuth.ts` — shared function used by all mutation Server Actions
+- **Auth helper**: `lib/utils/requireAuth.ts` — requires `app_metadata.role === 'admin'`, not merely a signed-in account
 - **Auth actions**: `lib/actions/auth.ts` — `signIn()`, `signOut()`, `getUser()`
 - **Auth callback**: `/auth/callback` — Handles Supabase auth redirects
 
@@ -53,13 +53,15 @@ Every mutation Server Action calls `requireAuth()` at the top before touching th
 
 Protected actions: `saveCar`, `deleteCar`, `duplicateCar`, `saveReview`, `savePartner`, `deleteReview`, `deletePartner`, `saveSettings`, `updateI18nMessages`, `getI18nMessages`, `getSubscribers`, `deleteSubscriber`, `toggleSubscriberStatus`, `markLeadRead`, `markLeadImportant`, `deleteLead`, `markAllLeadsRead`.
 
-Public actions (no auth): `submitLeadInquiry`, `subscribe`, `getSettings`.
+Public actions (no auth): `submitLeadInquiry`, `subscribe`.
+
+Settings **reads** are not Server Actions at all — they live in `lib/settings/` as a plain module. Every export of a `use server` file is a public POST endpoint, so exporting a settings reader there made the whole `site_config` row fetchable by anyone.
 
 ### Internationalization
 
 - **next-intl** handles i18n with configuration in `i18n/`
 - Translation files live in `messages/{locale}.json`
-- `i18n/routing.ts` — locale config with `localePrefix: 'never'` (no URL prefix for any locale)
+- `i18n/routing.ts` — locale config with `localePrefix: 'as-needed'`, plus `localeUrl()` and `localeAlternates()` helpers used by the sitemap and page metadata
 - `i18n/navigation.ts` — typed navigation helpers
 - Content (car descriptions, features) stored as JSON objects: `{ ro: "...", ru: "...", en: "..." }`
 
@@ -79,10 +81,14 @@ Key patterns:
 ### Security Features
 
 - **Auth guards**: `lib/utils/requireAuth.ts` — called at the top of every mutation Server Action
-- **XSS Protection**: `lib/utils/sanitize.ts` — regex-based HTML sanitizer (strips scripts, iframes, event handlers, javascript: links)
+- **XSS Protection**: `lib/utils/sanitize.ts` — wraps `isomorphic-dompurify`. The previous regex implementation was bypassed by `<svg/onload=…>` and `<img/onerror=…>`; those payloads are now regression-tested
 - **Rate Limiting**: `lib/utils/rateLimit.ts` — in-memory IP-based rate limiting (5 req/min for lead submissions). Note: in-memory only; does not survive across serverless cold starts.
 - **CSP + Security Headers**: configured in `next.config.ts` — includes Content-Security-Policy, HSTS, X-Frame-Options, X-Content-Type-Options, Permissions-Policy
 - **Error Handling**: Error boundaries at global, locale, and admin levels
+
+### Notification credentials
+
+Telegram and email credentials are **environment variables only** (`TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `NOTIFICATION_EMAIL`), read by `getNotificationConfig()` in `lib/settings/`. They previously lived in the anon-readable `site_settings` row and were also serialized into every public page's RSC payload. See `database/2026-08-26_security_hardening.sql`.
 
 ### Maintenance Mode
 
@@ -90,7 +96,7 @@ The site is **live** — maintenance mode has been removed. The full layout (Hea
 
 ### Pagination
 
-- `getCarsPaginated()` — Public cars listing (12 per page)
+- `getCarsPaginated()` — Public cars listing (15 per page on /inventory)
 - `getAllCarsPaginated()` — Admin cars listing (20 per page)
 - `getAllReviewsPaginated()` — Admin reviews listing (20 per page)
 - Leads page has built-in pagination (20 per page)

@@ -45,7 +45,8 @@ type Props = {
 
 export default async function LeadsPage({ searchParams }: Props) {
     const resolvedParams = await searchParams;
-    const page = parseInt(resolvedParams.page || '1', 10);
+    // Guard against ?page=abc / negative values reaching .range(NaN, NaN).
+    const page = Math.max(1, Number.parseInt(resolvedParams.page ?? '1', 10) || 1);
 
     const [{ data: leads, totalCount, totalPages }, unread] = await Promise.all([
         getLeadsPaginated(page),

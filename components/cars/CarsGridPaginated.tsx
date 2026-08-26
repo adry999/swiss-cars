@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
 import CarCard from '@/components/cars/CarCard';
 import Pagination from '@/components/ui/Pagination';
@@ -14,6 +15,7 @@ type Props = {
 };
 
 export default function CarsGridPaginated({ cars, currentPage, totalPages }: Props) {
+    const t = useTranslations('offers');
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -34,7 +36,7 @@ export default function CarsGridPaginated({ cars, currentPage, totalPages }: Pro
                             animate={{ opacity: 1 }}
                             className={styles.empty}
                         >
-                            No cars found
+                            {t('no_cars')}
                         </motion.p>
                     ) : (
                         cars.map((car) => (

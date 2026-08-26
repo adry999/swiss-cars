@@ -7,15 +7,17 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "vitest",
+    "test": "vitest run",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest --coverage"
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "verify": "npm run lint && npm run typecheck && npm run test"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.97.0",
-    "@types/uuid": "^10.0.0",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.34.3",
     "isomorphic-dompurify": "^3.0.0",
@@ -43,6 +45,7 @@
     "eslint-config-next": "16.1.6",
     "jsdom": "^28.1.0",
     "typescript": "^5",
-    "vitest": "^4.0.18"
+    "vitest": "^4.0.18",
+    "@types/uuid": "^10.0.0"
   }
 }

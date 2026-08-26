@@ -2,6 +2,7 @@
 
 import { useTranslations, useLocale } from 'next-intl';
 import Image from 'next/image';
+import { CarFront } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import type { Car } from '@/lib/types';
 import FavoriteButton from './FavoriteButton';
@@ -14,21 +15,29 @@ export default function CarCard({ car }: Props) {
     const t = useTranslations('offers');
     const locale = useLocale();
 
-    const primaryImage = car.car_images?.find((img: any) => img.is_primary) || car.car_images?.[0];
-    const imageUrl = primaryImage?.url || '/media/content/b-goods/placeholder.jpg';
+    const primaryImage = car.car_images?.find((img) => img.is_primary) || car.car_images?.[0];
+    const imageUrl = primaryImage?.url;
 
     return (
         <article className={styles.card}>
             <div className={styles.imageWrap}>
                 <Link href={`/inventory/${car.slug}`}>
-                    <Image
-                        src={imageUrl}
-                        alt={`${car.brand} ${car.model} ${car.year}`}
-                        fill
-                        className={styles.image}
-                        sizes="(max-width: 600px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        quality={75}
-                    />
+                    {imageUrl ? (
+                        <Image
+                            src={imageUrl}
+                            alt={`${car.brand} ${car.model} ${car.year}`}
+                            fill
+                            className={styles.image}
+                            sizes="(max-width: 600px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            quality={75}
+                        />
+                    ) : (
+                        // The old fallback pointed at /media/content/b-goods/placeholder.jpg,
+                        // which does not exist — every car without photos rendered broken.
+                        <div className={styles.imageFallback} role="img" aria-label={`${car.brand} ${car.model} ${car.year}`}>
+                            <CarFront size={48} aria-hidden />
+                        </div>
+                    )}
                 </Link>
                 <div className={`${styles.priceTag} ${!car.is_available ? styles.soldTag : ''}`}>
                     {car.is_available ? `${formatPrice(car.price)} €` : t('sold')}

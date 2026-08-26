@@ -253,27 +253,30 @@ export async function getDashboardStats(): Promise<DashboardStats> {
 
     const supabase = await createClient();
 
-    // Optimized: 4 queries instead of 6
-    // Fetch minimal data for cars/leads and count in-memory
+    // Counted in the database. This previously fetched every car row and every
+    // lead row and counted them in JS, which grows with the table.
+    const countOnly = { count: 'exact' as const, head: true };
+
     const [
-        carsResult,
-        leadsResult,
+        totalCarsResult,
+        availableCarsResult,
+        totalLeadsResult,
+        unreadLeadsResult,
         reviewsResult,
         partnersResult,
     ] = await Promise.all([
-        supabase.from('cars').select('is_available'),
-        supabase.from('leads_inquiries').select('is_read'),
-        supabase.from('reviews').select('*', { count: 'exact', head: true }),
-        supabase.from('partners').select('*', { count: 'exact', head: true }),
+        supabase.from('cars').select('*', countOnly),
+        supabase.from('cars').select('*', countOnly).eq('is_available', true),
+        supabase.from('leads_inquiries').select('*', countOnly),
+        supabase.from('leads_inquiries').select('*', countOnly).eq('is_read', false),
+        supabase.from('reviews').select('*', countOnly),
+        supabase.from('partners').select('*', countOnly),
     ]);
 
-    const cars = carsResult.data || [];
-    const leads = leadsResult.data || [];
-
-    const totalCars = cars.length;
-    const availableCars = cars.filter(c => c.is_available).length;
-    const totalLeads = leads.length;
-    const unreadLeads = leads.filter(l => !l.is_read).length;
+    const totalCars = totalCarsResult.count || 0;
+    const availableCars = availableCarsResult.count || 0;
+    const totalLeads = totalLeadsResult.count || 0;
+    const unreadLeads = unreadLeadsResult.count || 0;
 
     return {
         totalCars,
@@ -302,6 +305,64 @@ export async function getRecentLeads(limit: number = 5) {
     }
 
     return data;
+}
+
+/**
+ * Cars related to the one being viewed: same brand first, then anything within
+ * ±30% of its price.
+ *
+ * Previously the detail page called getCars() and filtered the entire public
+ * inventory in memory to pick three rows.
+ */
+export async function getSimilarCars(options: {
+    currentCarId: string;
+    brand: string;
+    price: number;
+    limit?: number;
+}): Promise<Car[]> {
+    if (!isSupabaseConfigured) return [];
+    const { currentCarId, brand, price } = options;
+    const limit = options.limit ?? 3;
+
+    const supabase = createStaticClient();
+
+    const base = () =>
+        supabase
+            .from('cars')
+            .select('*, car_images(*)')
+            .eq('is_available', true)
+            .neq('id', currentCarId)
+            .order('created_at', { ascending: false })
+            .limit(limit);
+
+    const collected: Car[] = [];
+    const seen = new Set<string>([currentCarId]);
+
+    const push = (rows: Car[] | null) => {
+        for (const car of rows ?? []) {
+            if (collected.length >= limit) return;
+            const id = car.id ?? '';
+            if (seen.has(id)) continue;
+            seen.add(id);
+            collected.push(car);
+        }
+    };
+
+    if (brand) {
+        const { data, error } = await base().ilike('brand', brand);
+        if (error) console.error('Error fetching similar cars by brand:', error);
+        push(data as Car[] | null);
+    }
+
+    if (collected.length < limit && price > 0) {
+        const { data, error } = await base()
+            .gte('price', price * 0.7)
+            .lte('price', price * 1.3);
+        if (error) console.error('Error fetching similar cars by price:', error);
+        push(data as Car[] | null);
+    }
+
+    return collected;
 }
 
 export async function getFeaturedCars(): Promise<Car[]> {
