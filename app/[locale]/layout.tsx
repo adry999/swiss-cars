@@ -8,6 +8,7 @@ import WhatsAppFloat from '@/components/ui/WhatsAppFloat';
 import GoogleAnalytics from '@/components/analytics/GoogleAnalytics';
 import GTMScript, { GTMNoscript } from '@/components/analytics/GTMScript';
 import { ToastProvider } from '@/components/ui/Toast';
+import { MotionConfig } from 'framer-motion';
 import { getPublicSiteConfig } from '@/lib/settings';
 import type { Metadata } from 'next';
 
@@ -85,19 +86,23 @@ export default async function LocaleLayout({ children, params }: Props) {
         <html lang={locale} suppressHydrationWarning>
             <body suppressHydrationWarning>
                 {gtmId && <GTMScript gtmId={gtmId} />}
-                <NextIntlClientProvider locale={locale} messages={messages}>
-                    <ToastProvider>
-                        <Preloader />
-                        <Header
-                            logoUrl={settings.logo_url}
-                            logoHeight={settings.logo_height}
-                            phone={settings.phone}
-                        />
-                        <main>{children}</main>
-                        <Footer settings={settings} />
-                        <WhatsAppFloat phone={settings.whatsapp || settings.phone} />
-                    </ToastProvider>
-                </NextIntlClientProvider>
+                {/* reducedMotion="user" makes every framer-motion animation in the
+                    tree respect prefers-reduced-motion automatically. */}
+                <MotionConfig reducedMotion="user">
+                    <NextIntlClientProvider locale={locale} messages={messages}>
+                        <ToastProvider>
+                            <Preloader />
+                            <Header
+                                logoUrl={settings.logo_url}
+                                logoHeight={settings.logo_height}
+                                phone={settings.phone}
+                            />
+                            <main>{children}</main>
+                            <Footer settings={settings} />
+                            <WhatsAppFloat phone={settings.whatsapp || settings.phone} />
+                        </ToastProvider>
+                    </NextIntlClientProvider>
+                </MotionConfig>
                 {gtmId && <GTMNoscript gtmId={gtmId} />}
                 <GoogleAnalytics />
             </body>

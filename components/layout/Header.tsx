@@ -108,6 +108,9 @@ export default function Header({ logoUrl, logoHeight = 50, phone }: { logoUrl?: 
                             className={`${styles.hamburger} ${isMobileOpen ? styles.hamburgerOpen : ''}`}
                             onClick={() => setIsMobileOpen(true)}
                             aria-label="Open menu"
+                            aria-haspopup="dialog"
+                            aria-expanded={isMobileOpen}
+                            aria-controls="mobile-menu-panel"
                         >
                             <span />
                             <span />

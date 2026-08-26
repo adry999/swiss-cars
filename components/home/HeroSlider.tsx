@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useLocale, useTranslations } from 'next-intl';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useLocale } from 'next-intl';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { Pause, Play } from 'lucide-react';
 import type { HeroSlide } from '@/lib/types';
 import styles from './HeroSlider.module.css';
 
@@ -32,15 +33,22 @@ export default function HeroSlider({ slides: propSlides }: Props) {
     const slides = propSlides && propSlides.length > 0 ? propSlides : defaultSlides;
 
     const [current, setCurrent] = useState(0);
+    const prefersReducedMotion = useReducedMotion();
+    const [isPaused, setIsPaused] = useState(false);
+    const autoplay = !isPaused && !prefersReducedMotion && slides.length > 1;
 
     const next = useCallback(() => {
         setCurrent((c) => (c + 1) % slides.length);
     }, [slides.length]);
 
+    // WCAG 2.2.2: auto-advancing content needs a way to pause it. Also
+    // respects prefers-reduced-motion outright rather than just softening
+    // the transition.
     useEffect(() => {
+        if (!autoplay) return;
         const interval = setInterval(next, 6000);
         return () => clearInterval(interval);
-    }, [next]);
+    }, [next, autoplay]);
 
     const slide = slides[current];
     if (!slide) return null;
@@ -116,7 +124,7 @@ export default function HeroSlider({ slides: propSlides }: Props) {
                 </motion.div>
             </div>
 
-            {/* Dots */}
+            {/* Dots + pause control */}
             <div className={styles.dots}>
                 {slides.map((_, i) => (
                     <button
@@ -124,8 +132,18 @@ export default function HeroSlider({ slides: propSlides }: Props) {
                         className={`${styles.dot} ${i === current ? styles.dotActive : ''}`}
                         onClick={() => setCurrent(i)}
                         aria-label={`Slide ${i + 1}`}
+                        aria-current={i === current}
                     />
                 ))}
+                {slides.length > 1 && !prefersReducedMotion && (
+                    <button
+                        className={styles.dot}
+                        onClick={() => setIsPaused((p) => !p)}
+                        aria-label={isPaused ? 'Play slideshow' : 'Pause slideshow'}
+                    >
+                        {isPaused ? <Play size={12} /> : <Pause size={12} />}
+                    </button>
+                )}
             </div>
         </section>
     );

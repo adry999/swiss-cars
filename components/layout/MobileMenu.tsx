@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { Link } from '@/i18n/navigation';
 import styles from './MobileMenu.module.css';
@@ -16,7 +16,14 @@ type Props = {
     phone?: string;
 };
 
+const FOCUSABLE_SELECTOR =
+    'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
 export default function MobileMenu({ isOpen, onClose, navLinks, locale, pathname, phone }: Props) {
+    const panelRef = useRef<HTMLDivElement>(null);
+    const closeBtnRef = useRef<HTMLButtonElement>(null);
+    const triggerRef = useRef<HTMLElement | null>(null);
+
     // Lock body scroll when menu is open
     useEffect(() => {
         if (isOpen) {
@@ -27,16 +34,68 @@ export default function MobileMenu({ isOpen, onClose, navLinks, locale, pathname
         return () => { document.body.style.overflow = ''; };
     }, [isOpen]);
 
+    // Remember what had focus before opening, move focus into the panel, and
+    // restore it on close — without this, closing the menu drops keyboard
+    // focus back to <body>.
+    useEffect(() => {
+        if (isOpen) {
+            triggerRef.current = document.activeElement as HTMLElement | null;
+            closeBtnRef.current?.focus();
+        } else {
+            triggerRef.current?.focus();
+        }
+    }, [isOpen]);
+
+    // Escape closes the menu; Tab is trapped inside the panel so focus can't
+    // silently leave into content hidden behind the overlay.
+    useEffect(() => {
+        if (!isOpen) return;
+
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                onClose();
+                return;
+            }
+            if (e.key !== 'Tab' || !panelRef.current) return;
+
+            const focusable = panelRef.current.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR);
+            if (focusable.length === 0) return;
+
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+
+            if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [isOpen, onClose]);
+
     return (
         <>
             {/* Overlay */}
             <div
                 className={`${styles.overlay} ${isOpen ? styles.overlayOpen : ''}`}
                 onClick={onClose}
+                aria-hidden="true"
             />
 
             {/* Slide-in panel */}
-            <div className={`${styles.panel} ${isOpen ? styles.panelOpen : ''}`}>
+            <div
+                id="mobile-menu-panel"
+                ref={panelRef}
+                role="dialog"
+                aria-modal="true"
+                aria-label="Menu"
+                className={`${styles.panel} ${isOpen ? styles.panelOpen : ''}`}
+                inert={!isOpen ? true : undefined}
+            >
                 <div className={styles.panelHeader}>
                     <Image
                         src="/media/general/swiss-logo-2-red.png"
@@ -44,7 +103,12 @@ export default function MobileMenu({ isOpen, onClose, navLinks, locale, pathname
                         width={130}
                         height={44}
                     />
-                    <button onClick={onClose} className={styles.closeBtn} aria-label="Close menu">
+                    <button
+                        ref={closeBtnRef}
+                        onClick={onClose}
+                        className={styles.closeBtn}
+                        aria-label="Close menu"
+                    >
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                             <path d="M15 5L5 15M5 5l10 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                         </svg>
@@ -55,9 +119,9 @@ export default function MobileMenu({ isOpen, onClose, navLinks, locale, pathname
                     <ul className={styles.navList}>
                         {navLinks.map((link) => (
                             <li key={link.href}>
-                                <a href={link.href} className={styles.navLink} onClick={onClose}>
+                                <Link href={link.href} className={styles.navLink} onClick={onClose}>
                                     {link.label}
-                                </a>
+                                </Link>
                             </li>
                         ))}
                     </ul>
