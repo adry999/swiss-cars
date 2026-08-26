@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { getCarBySlug } from '@/lib/supabase/queries';
 import { createStaticClient } from '@/lib/supabase/server';
 import { getPublicSiteConfig } from '@/lib/settings';
-import { routing, localeAlternates, localeUrl } from '@/i18n/routing';
+import { routing, localeAlternates, localeUrl, localeOpenGraph, localeTwitter } from '@/i18n/routing';
 import { sanitizeHtml } from '@/lib/utils/sanitize';
 import { formatPrice } from '@/lib/utils/format';
 import { Link } from '@/i18n/navigation';
@@ -48,14 +48,26 @@ export async function generateMetadata({ params }: Props) {
     const car = await getCarBySlug(slug);
     if (!car) return {};
     const primaryImage = car.car_images?.find((img: any) => img.is_primary) || car.car_images?.[0];
+    const title = `${car.brand} ${car.model} ${car.year} ${!car.is_available ? '(Vândut)' : ''} | SwissCars.md`;
+    const description = `${car.brand} ${car.model} ${car.year} — ${car.is_available ? `${formatPrice(car.price)} €` : 'Vândut'}. Import auto din Elveția.`;
+
     return {
-        title: `${car.brand} ${car.model} ${car.year} ${!car.is_available ? '(Vândut)' : ''} | SwissCars.md`,
-        description: `${car.brand} ${car.model} ${car.year} — ${car.is_available ? `${formatPrice(car.price)} €` : 'Vândut'}. Import auto din Elveția.`,
+        title,
+        description,
         alternates: localeAlternates(locale, `/inventory/${slug}`),
-        openGraph: {
-            url: localeUrl(locale, `/inventory/${slug}`),
-            images: primaryImage?.url ? [{ url: primaryImage.url }] : [],
-        },
+        // The previous openGraph object here only set url/images — since a
+        // page's openGraph fully replaces the layout's rather than merging,
+        // og:title and og:description were silently absent on every car
+        // page, and there was no twitter block at all (inherited the root
+        // layout's hardcoded Romanian one, same bug as every other page).
+        openGraph: localeOpenGraph({
+            locale,
+            path: `/inventory/${slug}`,
+            title,
+            description,
+            image: primaryImage?.url,
+        }),
+        twitter: localeTwitter({ title, description, image: primaryImage?.url }),
     };
 }
 

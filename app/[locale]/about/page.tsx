@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { Link } from '@/i18n/navigation';
 import type { Metadata } from 'next';
 import { ShieldCheck, Zap, Globe, Search, ClipboardCheck, Truck, ChevronRight } from 'lucide-react';
-import { localeAlternates } from '@/i18n/routing';
+import { localeAlternates, localeOpenGraph, localeTwitter } from '@/i18n/routing';
 import styles from './about.module.css';
 
 type Props = {
@@ -22,6 +22,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         title: `${current.title} | SwissCars.md`,
         description: current.description,
         alternates: localeAlternates(locale, '/about'),
+        openGraph: localeOpenGraph({ locale, path: '/about', title: `${current.title} | SwissCars.md`, description: current.description }),
+        twitter: localeTwitter({ title: `${current.title} | SwissCars.md`, description: current.description }),
     };
 }
 

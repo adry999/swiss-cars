@@ -72,10 +72,22 @@ BEGIN
     RAISE EXCEPTION 'invalid_message' USING ERRCODE = '22023';
   END IF;
 
+  IF p_car_id IS NOT NULL AND length(p_car_id) > 100 THEN
+    RAISE EXCEPTION 'invalid_car_id' USING ERRCODE = '22023';
+  END IF;
+
+  -- Matches the http(s)-only check safeUrl() in lib/utils/notifications.ts
+  -- already applies before rendering this as a link. Direct RPC callers
+  -- bypass that app-layer check entirely, so it belongs here too.
+  IF p_source_url IS NOT NULL AND p_source_url <> ''
+     AND p_source_url !~ '^https?://' THEN
+    RAISE EXCEPTION 'invalid_source_url' USING ERRCODE = '22023';
+  END IF;
+
   INSERT INTO public.leads_inquiries (
     car_id, car_name, name, phone, email, message, preferred_date, form_type, source_url
   ) VALUES (
-    p_car_id,
+    nullif(left(p_car_id, 100), ''),
     left(nullif(trim(p_car_name), ''), 200),
     left(trim(p_name), 100),
     left(trim(p_phone), 35),

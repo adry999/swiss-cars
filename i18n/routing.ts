@@ -35,3 +35,49 @@ export function localeAlternates(locale: string, path = '') {
         },
     };
 }
+
+const OG_LOCALE_MAP: Record<string, string> = { ro: 'ro_RO', ru: 'ru_RU', en: 'en_US' };
+
+/**
+ * `openGraph` for Next metadata, locale- and path-aware.
+ *
+ * Next replaces a segment's whole `openGraph` object rather than
+ * deep-merging it with an ancestor's — a page that defines its own
+ * `openGraph` loses whatever the layout set (siteName, url, type, …)
+ * unless it's repeated here. Confirmed live: pages that didn't override this
+ * inherited the locale layout's openGraph object, which never set `url` at
+ * all, so `og:url` was simply absent on every page under [locale].
+ */
+export function localeOpenGraph(params: {
+    locale: string;
+    path?: string;
+    title: string;
+    description: string;
+    image?: string;
+}) {
+    return {
+        type: 'website' as const,
+        siteName: 'SwissCars.md',
+        locale: OG_LOCALE_MAP[params.locale] || OG_LOCALE_MAP[routing.defaultLocale],
+        url: localeUrl(params.locale, params.path ?? ''),
+        title: params.title,
+        description: params.description,
+        images: [params.image ?? '/media/general/swiss-logo-2-red.png'],
+    };
+}
+
+/**
+ * `twitter` for Next metadata, locale-aware.
+ *
+ * Confirmed live: pages under [locale] never defined their own `twitter`
+ * block, so every locale — Russian and English included — inherited the
+ * root layout's hardcoded Romanian title/description.
+ */
+export function localeTwitter(params: { title: string; description: string; image?: string }) {
+    return {
+        card: 'summary_large_image' as const,
+        title: params.title,
+        description: params.description,
+        images: [params.image ?? '/media/general/swiss-logo-2-red.png'],
+    };
+}

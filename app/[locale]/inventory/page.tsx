@@ -1,5 +1,5 @@
 import { getCarsPaginated } from '@/lib/supabase/queries';
-import { localeAlternates } from '@/i18n/routing';
+import { localeAlternates, localeOpenGraph, localeTwitter } from '@/i18n/routing';
 import CarsGridPaginated from '@/components/cars/CarsGridPaginated';
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
@@ -25,10 +25,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         en: 'Browse every car currently available at SwissCars.',
     };
 
+    const title = titles[locale] || titles.ro;
+    const description = descriptions[locale] || descriptions.ro;
+
     return {
-        title: titles[locale] || titles.ro,
-        description: descriptions[locale] || descriptions.ro,
+        title,
+        description,
         alternates: localeAlternates(locale, '/inventory'),
+        openGraph: localeOpenGraph({ locale, path: '/inventory', title, description }),
+        twitter: localeTwitter({ title, description }),
     };
 }
 

@@ -1,7 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { PackageSearch, ShieldCheck, Truck, CarFront, Wrench, HeadphonesIcon } from 'lucide-react';
-import { localeAlternates } from '@/i18n/routing';
+import { localeAlternates, localeOpenGraph, localeTwitter } from '@/i18n/routing';
 import styles from './page.module.css';
 
 type Props = {
@@ -20,6 +20,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         title: `${current.title} | SwissCars.md`,
         description: current.description,
         alternates: localeAlternates(locale, '/services'),
+        openGraph: localeOpenGraph({ locale, path: '/services', title: `${current.title} | SwissCars.md`, description: current.description }),
+        twitter: localeTwitter({ title: `${current.title} | SwissCars.md`, description: current.description }),
     };
 }
 

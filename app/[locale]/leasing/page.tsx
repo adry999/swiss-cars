@@ -2,19 +2,25 @@ import { getTranslations } from 'next-intl/server';
 import { getPartners } from '@/lib/supabase/queries';
 import Image from 'next/image';
 import LeasingCalculator from '@/components/leasing/LeasingCalculator';
-import { localeAlternates } from '@/i18n/routing';
+import { localeAlternates, localeOpenGraph, localeTwitter } from '@/i18n/routing';
 import type { Metadata } from 'next';
 
 type Props = {
     params: Promise<{ locale: string }>;
 };
 
+// TODO: title/description are Romanian-only regardless of locale — a
+// pre-existing gap, not introduced or fixed here.
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { locale } = await params;
+    const title = 'Leasing Auto | SwissCars.md';
+    const description = 'Află opțiunile de finanțare și leasing pentru mașinile importate din Elveția.';
     return {
-        title: 'Leasing Auto | SwissCars.md',
-        description: 'Află opțiunile de finanțare și leasing pentru mașinile importate din Elveția.',
+        title,
+        description,
         alternates: localeAlternates(locale, '/leasing'),
+        openGraph: localeOpenGraph({ locale, path: '/leasing', title, description }),
+        twitter: localeTwitter({ title, description }),
     };
 }
 

@@ -1,6 +1,6 @@
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
-import { routing, localeAlternates } from '@/i18n/routing';
+import { routing, localeAlternates, localeOpenGraph, localeTwitter } from '@/i18n/routing';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import Preloader from '@/components/ui/Preloader';
@@ -39,7 +39,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
 
     const current = meta[locale] || meta.ro;
-    const localeMap: Record<string, string> = { ro: 'ro_RO', ru: 'ru_RU', en: 'en_US' };
 
     return {
         title: {
@@ -49,13 +48,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         description: current.description,
         keywords: current.keywords,
         alternates: localeAlternates(locale),
-        openGraph: {
-            siteName: 'SwissCars.md',
-            locale: localeMap[locale] || 'ro_RO',
-            title: current.title,
-            description: current.description,
-            images: ['/media/general/swiss-logo-2-red.png'],
-        },
+        // Pages under this layout that don't define their own openGraph/
+        // twitter inherit these wholesale (Next replaces the whole object
+        // per segment rather than deep-merging it) — confirmed live that
+        // omitting `url` here left og:url entirely absent everywhere, and
+        // omitting `twitter` here left every locale showing the root
+        // layout's hardcoded Romanian Twitter card.
+        openGraph: localeOpenGraph({ locale, title: current.title, description: current.description }),
+        twitter: localeTwitter({ title: current.title, description: current.description }),
     };
 }
 

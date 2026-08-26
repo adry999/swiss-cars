@@ -58,14 +58,40 @@ UPDATE site_settings
 SET value = value - 'telegram_bot_token' - 'telegram_chat_id' - 'notification_email'
 WHERE key = 'site_config';
 
--- Defence in depth: even if a secret is written back by mistake, anonymous
--- clients can only read keys on this allowlist.
+-- This policy restricts which ROWS (keys) are anon-readable. It does NOT and
+-- cannot filter fields inside the JSON `value` column — RLS operates on
+-- rows, not on JSON keys within one. 'site_config' is itself an allowed
+-- row, so if a future write puts telegram_bot_token back into that JSON
+-- blob, this policy does nothing to stop it being read back out.
 DROP POLICY IF EXISTS "Allow public read on site_settings" ON site_settings;
 
 CREATE POLICY "Anon reads public settings keys"
   ON site_settings FOR SELECT
   TO anon
   USING (key IN ('site_config', 'homepage_content', 'contact_info'));
+
+-- The actual defence against secrets re-entering site_config: a trigger
+-- that strips them on every write, regardless of what wrote it (the admin
+-- form, a future code change, a manual SQL/API call). Belt-and-suspenders
+-- with the application no longer collecting these fields
+-- (app/admin/settings/SettingsForm.tsx) and reading them from environment
+-- variables (lib/settings/getNotificationConfig()).
+CREATE OR REPLACE FUNCTION public.strip_site_config_secrets()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $$
+BEGIN
+  IF NEW.key = 'site_config' THEN
+    NEW.value := NEW.value - 'telegram_bot_token' - 'telegram_chat_id' - 'notification_email';
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS site_config_strip_secrets ON site_settings;
+CREATE TRIGGER site_config_strip_secrets
+  BEFORE INSERT OR UPDATE ON site_settings
+  FOR EACH ROW EXECUTE FUNCTION public.strip_site_config_secrets();
 
 
 -- ==========================================================================
