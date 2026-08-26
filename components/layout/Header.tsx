@@ -71,12 +71,15 @@ export default function Header({ logoUrl, logoHeight = 50, phone }: { logoUrl?: 
                         <ul className={styles.navList}>
                             {navLinks.map((link) => (
                                 <li key={link.href}>
-                                    <a
+                                    {/* Raw <a> here dropped the locale prefix: on /ru/about, this
+                                        linked to plain /inventory, silently switching the visitor
+                                        back to Romanian. next-intl's Link keeps the current locale. */}
+                                    <Link
                                         href={link.href}
                                         className={`${styles.navLink} ${pathname === link.href ? styles.navActive : ''}`}
                                     >
                                         {link.label}
-                                    </a>
+                                    </Link>
                                 </li>
                             ))}
                         </ul>

@@ -99,6 +99,21 @@ export async function saveCar(carData: CarWithImages) {
             .eq('car_id', savedId);
         if (existingError) throw existingError;
 
+        // database/2026-08-26_security_hardening.sql adds a unique partial
+        // index allowing at most one is_primary=true row per car_id. Inserting
+        // the new primary image while the old one still has is_primary=true
+        // would violate it. Clearing the flag on the old rows first — rather
+        // than deleting them — means a car keeps every existing image even if
+        // the insert below fails; it just loses its "primary" designation
+        // until the next successful save.
+        if ((existing ?? []).length > 0) {
+            const { error: clearError } = await supabase
+                .from('car_images')
+                .update({ is_primary: false })
+                .eq('car_id', savedId);
+            if (clearError) throw clearError;
+        }
+
         const imagesToInsert = car_images.map((img, index) => ({
             car_id: savedId,
             url: img.url,

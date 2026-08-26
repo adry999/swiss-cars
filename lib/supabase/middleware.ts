@@ -32,13 +32,14 @@ export async function updateSession(request: NextRequest) {
         data: { user },
     } = await supabase.auth.getUser();
 
-    if (
-        !user &&
-        !request.nextUrl.pathname.startsWith('/login') &&
-        request.nextUrl.pathname.includes('/admin')
-    ) {
-        // no user, potentially redirect to login if we have a login page
-        // for now we just return the response, but in a real app we'd redirect
+    // Being signed in is not being an admin. This previously only checked
+    // `!user`, so any authenticated Supabase account — a leftover test user,
+    // anyone if signup is ever enabled — could reach the admin shell; only
+    // the mutation Server Actions were actually gated by role. Checked again
+    // in app/admin/layout.tsx as defense-in-depth.
+    const role = (user?.app_metadata as { role?: string } | undefined)?.role;
+
+    if ((!user || role !== 'admin') && !request.nextUrl.pathname.startsWith('/login')) {
         const url = request.nextUrl.clone();
         url.pathname = '/login';
         return NextResponse.redirect(url);

@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { Link } from '@/i18n/navigation';
 import type { Metadata } from 'next';
 import { ShieldCheck, Zap, Globe, Search, ClipboardCheck, Truck, ChevronRight } from 'lucide-react';
+import { localeAlternates } from '@/i18n/routing';
 import styles from './about.module.css';
 
 type Props = {
@@ -20,6 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return {
         title: `${current.title} | SwissCars.md`,
         description: current.description,
+        alternates: localeAlternates(locale, '/about'),
     };
 }
 
@@ -151,7 +153,7 @@ export default async function AboutPage() {
                             {t('cta_button')} <ChevronRight size={18} />
                         </Link>
                         <Link href="/contact" className="btn btn-outline btn-lg">
-                            {t('contact_label', { defaultValue: 'Contactează-ne' })}
+                            {t('contact_label')}
                         </Link>
                     </div>
                 </div>

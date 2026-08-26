@@ -10,11 +10,19 @@ type Props = {
     images: { url: string; is_primary: boolean }[];
 };
 
+const FOCUSABLE_SELECTOR =
+    'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
 export default function CarGallery({ images }: Props) {
     const [index, setIndex] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
     const closeBtnRef = useRef<HTMLButtonElement>(null);
     const expandBtnRef = useRef<HTMLButtonElement>(null);
+    const lightboxRef = useRef<HTMLDivElement>(null);
+    // Distinguishes "just closed" from "never opened" — without this, the
+    // focus-restore effect below also ran on first mount and stole focus
+    // into the expand button the instant every car detail page loaded.
+    const wasOpen = useRef(false);
     const hasMultiple = images.length > 1;
 
     const next = useCallback(() => setIndex((prev) => (prev + 1) % images.length), [images.length]);
@@ -23,9 +31,26 @@ export default function CarGallery({ images }: Props) {
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (!isOpen) return;
-            if (e.key === 'Escape') setIsOpen(false);
+            if (e.key === 'Escape') {
+                setIsOpen(false);
+                return;
+            }
             if (e.key === 'ArrowRight' && hasMultiple) next();
             if (e.key === 'ArrowLeft' && hasMultiple) prev();
+            if (e.key !== 'Tab' || !lightboxRef.current) return;
+
+            const focusable = lightboxRef.current.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR);
+            if (focusable.length === 0) return;
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+
+            if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
+            }
         };
 
         if (isOpen) {
@@ -41,12 +66,17 @@ export default function CarGallery({ images }: Props) {
         };
     }, [isOpen, next, prev, hasMultiple]);
 
-    // Move focus into the lightbox on open, restore it to the trigger on close.
+    // Move focus into the lightbox on open, restore it to the trigger on
+    // close — but only across an actual open->close transition, not on
+    // mount (isOpen starts false, so a naive [isOpen]-only effect fires the
+    // "restore" branch immediately when the gallery first renders).
     useEffect(() => {
         if (isOpen) {
             closeBtnRef.current?.focus();
-        } else {
+            wasOpen.current = true;
+        } else if (wasOpen.current) {
             expandBtnRef.current?.focus();
+            wasOpen.current = false;
         }
     }, [isOpen]);
 
@@ -130,6 +160,7 @@ export default function CarGallery({ images }: Props) {
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
+                        ref={lightboxRef}
                         role="dialog"
                         aria-modal="true"
                         aria-label={`Image gallery — ${caption}`}

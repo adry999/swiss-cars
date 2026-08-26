@@ -7,7 +7,11 @@ const ContactSchema = z.object({
     name: z.string().min(2, 'Name must be at least 2 characters').max(100, 'Name too long').trim(),
     phone: z.string().min(7, 'Numărul de telefon trebuie să aibă minim 7 caractere').max(35, 'Numărul de telefon este prea lung'),
     email: z.string().email('Invalid email format').max(255).optional().or(z.literal('')),
-    message: z.string().max(5000, 'Message too long').optional(),
+    // Must match submit_lead()'s p_message cap (database/2026-08-26_lead_subscriber_rpc.sql)
+    // and LeadInquirySchema.message (lib/types/index.ts) — both routes write
+    // through the same RPC. A higher limit here let 2001-5000 char messages
+    // pass validation and then fail as a 500 when the RPC rejected them.
+    message: z.string().max(2000, 'Message too long').optional(),
     preferredDate: z.string().max(50).optional(),
     formType: z.enum(['contact', 'inquiry', 'callback', 'testdrive']).optional().default('contact'),
     sourceUrl: z.string().url().optional(),

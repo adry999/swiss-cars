@@ -82,30 +82,35 @@ export default async function LocaleLayout({ children, params }: Props) {
     const settings = await getPublicSiteConfig();
     const gtmId = settings.gtm_id || '';
 
+    // No <html>/<body> here — app/layout.tsx (the actual root layout) owns
+    // the only one in the tree and sets lang from getLocale(), which reads
+    // the same locale this layout resolves via params. Rendering a second
+    // <html> here used to get silently dropped by the browser, so the outer
+    // (always "ro") one was the only one assistive tech and crawlers saw —
+    // Russian and English pages were announced as Romanian regardless of
+    // their actual content.
     return (
-        <html lang={locale} suppressHydrationWarning>
-            <body suppressHydrationWarning>
-                {gtmId && <GTMScript gtmId={gtmId} />}
-                {/* reducedMotion="user" makes every framer-motion animation in the
-                    tree respect prefers-reduced-motion automatically. */}
-                <MotionConfig reducedMotion="user">
-                    <NextIntlClientProvider locale={locale} messages={messages}>
-                        <ToastProvider>
-                            <Preloader />
-                            <Header
-                                logoUrl={settings.logo_url}
-                                logoHeight={settings.logo_height}
-                                phone={settings.phone}
-                            />
-                            <main>{children}</main>
-                            <Footer settings={settings} />
-                            <WhatsAppFloat phone={settings.whatsapp || settings.phone} />
-                        </ToastProvider>
-                    </NextIntlClientProvider>
-                </MotionConfig>
-                {gtmId && <GTMNoscript gtmId={gtmId} />}
-                <GoogleAnalytics />
-            </body>
-        </html>
+        <>
+            {gtmId && <GTMScript gtmId={gtmId} />}
+            {/* reducedMotion="user" makes every framer-motion animation in the
+                tree respect prefers-reduced-motion automatically. */}
+            <MotionConfig reducedMotion="user">
+                <NextIntlClientProvider locale={locale} messages={messages}>
+                    <ToastProvider>
+                        <Preloader />
+                        <Header
+                            logoUrl={settings.logo_url}
+                            logoHeight={settings.logo_height}
+                            phone={settings.phone}
+                        />
+                        <main>{children}</main>
+                        <Footer settings={settings} />
+                        <WhatsAppFloat phone={settings.whatsapp || settings.phone} />
+                    </ToastProvider>
+                </NextIntlClientProvider>
+            </MotionConfig>
+            {gtmId && <GTMNoscript gtmId={gtmId} />}
+            <GoogleAnalytics />
+        </>
     );
 }

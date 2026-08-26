@@ -18,7 +18,9 @@ import type { User } from '@supabase/supabase-js';
  *
  * `app_metadata` is signed into the JWT and cannot be modified by the user,
  * unlike `user_metadata`. The matching RLS policies live in
- * database/2026-08-26_admin_role.sql.
+ * database/2026-08-26_security_hardening.sql. The same role check is also
+ * applied at the edge (lib/supabase/middleware.ts) and in the admin layout
+ * (app/admin/layout.tsx) — this function only gates mutations.
  */
 export async function requireAuth(): Promise<User> {
     const supabase = await createClient();
@@ -33,12 +35,4 @@ export async function requireAuth(): Promise<User> {
     }
 
     return user;
-}
-
-/** Non-throwing variant for layouts that redirect instead of erroring. */
-export async function isAdmin(): Promise<boolean> {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return false;
-    return (user.app_metadata as { role?: string } | undefined)?.role === 'admin';
 }

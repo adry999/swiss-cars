@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { getLocale } from 'next-intl/server';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -44,13 +45,23 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // This is the only <html>/<body> in the tree. app/[locale]/layout.tsx and
+  // app/admin/layout.tsx used to render their own on top of this one — the
+  // browser silently drops the inner tags, so the outer lang="ro" here was
+  // the one assistive tech and crawlers actually saw on every page,
+  // regardless of locale. getLocale() works outside the [locale] segment
+  // too (it reads next-intl's request-scoped detection, not the URL param),
+  // and falls back to the default locale for non-localized routes like
+  // /login and /admin.
+  const locale = await getLocale();
+
   return (
-    <html lang="ro" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <body suppressHydrationWarning>{children}</body>
     </html>
   );

@@ -2,12 +2,21 @@ import { getTranslations } from 'next-intl/server';
 import { getPartners } from '@/lib/supabase/queries';
 import Image from 'next/image';
 import LeasingCalculator from '@/components/leasing/LeasingCalculator';
+import { localeAlternates } from '@/i18n/routing';
 import type { Metadata } from 'next';
 
-export const metadata: Metadata = {
-    title: 'Leasing Auto | SwissCars.md',
-    description: 'Află opțiunile de finanțare și leasing pentru mașinile importate din Elveția.',
+type Props = {
+    params: Promise<{ locale: string }>;
 };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    const { locale } = await params;
+    return {
+        title: 'Leasing Auto | SwissCars.md',
+        description: 'Află opțiunile de finanțare și leasing pentru mașinile importate din Elveția.',
+        alternates: localeAlternates(locale, '/leasing'),
+    };
+}
 
 export default async function LeasingPage() {
     const t = await getTranslations('leasing');

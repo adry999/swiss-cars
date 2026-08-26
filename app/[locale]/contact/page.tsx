@@ -1,11 +1,20 @@
 import type { Metadata } from 'next';
 import ContactPageClient from '@/components/contact/ContactPageClient';
 import { getPublicSiteConfig } from '@/lib/settings';
+import { localeAlternates } from '@/i18n/routing';
 
-export const metadata: Metadata = {
-    title: 'Contact | SwissCars.md',
-    description: 'Contactează SwissCars pentru orice informație legată de importul sau vânzarea auto din Elveția.',
+type Props = {
+    params: Promise<{ locale: string }>;
 };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    const { locale } = await params;
+    return {
+        title: 'Contact | SwissCars.md',
+        description: 'Contactează SwissCars pentru orice informație legată de importul sau vânzarea auto din Elveția.',
+        alternates: localeAlternates(locale, '/contact'),
+    };
+}
 
 export default async function ContactPage() {
     const siteConfig = await getPublicSiteConfig();
