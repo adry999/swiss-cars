@@ -1,23 +1,13 @@
 'use server';
 
-import { createClient, createStaticClient } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 import { requireAuth } from '@/lib/utils/requireAuth';
 import { revalidatePath } from 'next/cache';
 
-export async function getSettings(key: string) {
-    const supabase = createStaticClient();
-    const { data, error } = await supabase
-        .from('site_settings')
-        .select('value')
-        .eq('key', key)
-        .maybeSingle();
-
-    if (error) {
-        console.error('Error fetching settings:', error);
-        return null;
-    }
-    return data?.value || null;
-}
+// NOTE: reads live in `lib/settings` — a plain module, not a Server Action.
+// Every export of a 'use server' file is a public POST endpoint, so exporting
+// a settings reader here made the whole `site_config` row (including the
+// Telegram bot token) fetchable by anyone.
 
 export async function saveSettings(key: string, value: unknown) {
     await requireAuth();

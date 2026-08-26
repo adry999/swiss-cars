@@ -15,7 +15,7 @@ const ReviewsSlider = dynamic(() => import('@/components/home/ReviewsSlider'), {
 const PartnersSlider = dynamic(() => import('@/components/home/PartnersSlider'), { ssr: true });
 
 import { getFeaturedCars, getReviews, getPartners } from '@/lib/supabase/queries';
-import { getSettings } from '@/lib/actions/settings';
+import { getHomepageContent, getPublicSiteConfig } from '@/lib/settings';
 import type { Metadata } from 'next';
 
 type Props = {
@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { locale } = await params;
 
     // Fetch settings for SEO
-    const siteConfig = await getSettings('site_config') || {};
+    const siteConfig = await getPublicSiteConfig();
 
     return {
         title: siteConfig.site_title || undefined,
@@ -42,22 +42,22 @@ export default async function HomePage({ params }: Props) {
         getFeaturedCars(),
         getReviews(),
         getPartners(),
-        getSettings('homepage_content'),
-        getSettings('site_config')
+        getHomepageContent(),
+        getPublicSiteConfig()
     ]);
-    const phone = (siteConfig as any)?.phone;
+    const phone = siteConfig.phone;
 
     const schema = {
         "@context": "https://schema.org",
         "@type": "AutoDealer",
         "name": siteConfig.site_title || "SwissCars.md",
         "url": "https://swisscars.md",
-        "logo": (siteConfig as any)?.logo_url || "https://swisscars.md/media/general/swiss-logo-2-red.png",
+        "logo": siteConfig.logo_url || "https://swisscars.md/media/general/swiss-logo-2-red.png",
         "description": siteConfig.site_description || "",
         "telephone": phone || "",
         "address": {
             "@type": "PostalAddress",
-            "streetAddress": (siteConfig as any)?.address || "",
+            "streetAddress": siteConfig.address || "",
             "addressCountry": "MD"
         }
     };

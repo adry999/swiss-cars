@@ -1,6 +1,6 @@
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
-import { routing } from '@/i18n/routing';
+import { routing, localeAlternates } from '@/i18n/routing';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import Preloader from '@/components/ui/Preloader';
@@ -8,6 +8,7 @@ import WhatsAppFloat from '@/components/ui/WhatsAppFloat';
 import GoogleAnalytics from '@/components/analytics/GoogleAnalytics';
 import GTMScript, { GTMNoscript } from '@/components/analytics/GTMScript';
 import { ToastProvider } from '@/components/ui/Toast';
+import { getPublicSiteConfig } from '@/lib/settings';
 import type { Metadata } from 'next';
 
 type Props = {
@@ -46,6 +47,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         },
         description: current.description,
         keywords: current.keywords,
+        alternates: localeAlternates(locale),
         openGraph: {
             siteName: 'SwissCars.md',
             locale: localeMap[locale] || 'ro_RO',
@@ -74,11 +76,12 @@ export default async function LocaleLayout({ children, params }: Props) {
         notFound();
     }
 
-    const { getSettings } = await import('@/lib/actions/settings');
-    const settings = await getSettings('site_config') || {};
-    const gtmId: string = (settings as any)?.gtm_id || '';
+    // Public config only — this object is serialized into the RSC payload the
+    // moment it reaches a client component such as <Footer>.
+    const settings = await getPublicSiteConfig();
+    const gtmId = settings.gtm_id || '';
 
-return (
+    return (
         <html lang={locale} suppressHydrationWarning>
             <body suppressHydrationWarning>
                 {gtmId && <GTMScript gtmId={gtmId} />}
@@ -86,13 +89,13 @@ return (
                     <ToastProvider>
                         <Preloader />
                         <Header
-                            logoUrl={(settings as any)?.logo_url}
-                            logoHeight={(settings as any)?.logo_height}
-                            phone={(settings as any)?.phone}
+                            logoUrl={settings.logo_url}
+                            logoHeight={settings.logo_height}
+                            phone={settings.phone}
                         />
                         <main>{children}</main>
                         <Footer settings={settings} />
-                        <WhatsAppFloat phone={(settings as any)?.whatsapp || (settings as any)?.phone} />
+                        <WhatsAppFloat phone={settings.whatsapp || settings.phone} />
                     </ToastProvider>
                 </NextIntlClientProvider>
                 {gtmId && <GTMNoscript gtmId={gtmId} />}

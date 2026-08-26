@@ -1,4 +1,4 @@
-import { getSettings } from '@/lib/actions/settings';
+import { getSiteConfig } from '@/lib/settings';
 import SettingsForm from './SettingsForm';
 
 export default async function SettingsPage() {
@@ -14,14 +14,21 @@ export default async function SettingsPage() {
         site_description: 'Dealer autorizat de mașini din Elveția',
         gtm_id: '',
         logo_url: '',
-        notification_email: '',
-        telegram_bot_token: '',
-        telegram_chat_id: '',
         header_height: 80,
     };
 
-    const savedSettings = await getSettings('site_config');
-    const settings = { ...defaultSettings, ...(savedSettings || {}) };
+    // Notification credentials are environment variables now, not settings.
+    // Strip them so the form cannot write them back into the anon-readable row.
+    const {
+        /* eslint-disable @typescript-eslint/no-unused-vars */
+        telegram_bot_token: _token,
+        telegram_chat_id: _chatId,
+        notification_email: _email,
+        /* eslint-enable @typescript-eslint/no-unused-vars */
+        ...savedSettings
+    } = await getSiteConfig();
+
+    const settings = { ...defaultSettings, ...savedSettings };
 
     return (
         <div>

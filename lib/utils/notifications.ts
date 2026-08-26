@@ -1,3 +1,12 @@
+export interface LeadNotification {
+    name?: string;
+    phone?: string;
+    email?: string;
+    car_name?: string;
+    message?: string;
+    source_url?: string;
+}
+
 // Escape HTML special characters to prevent XSS
 function escapeHtml(str: string): string {
     return str
@@ -8,12 +17,31 @@ function escapeHtml(str: string): string {
         .replace(/'/g, '&#039;');
 }
 
-// Escape Markdown special characters for Telegram
+// Escape Telegram MarkdownV2 special characters
 function escapeMarkdown(str: string): string {
     return str.replace(/[_*[\]()~`>#+=|{}.!-]/g, '\\$&');
 }
 
-export async function sendTelegramNotification(token: string, chatId: string, lead: any) {
+/**
+ * Only allow absolute http(s) URLs through to notification templates.
+ * `source_url` arrives from the browser, so it is attacker-controlled.
+ */
+function safeUrl(raw?: string): string | null {
+    if (!raw) return null;
+    try {
+        const url = new URL(raw);
+        if (url.protocol !== 'http:' && url.protocol !== 'https:') return null;
+        return url.toString();
+    } catch {
+        return null;
+    }
+}
+
+export async function sendTelegramNotification(
+    token: string,
+    chatId: string,
+    lead: LeadNotification
+) {
     if (!token || !chatId) return;
 
     // Escape user-provided content to prevent injection
@@ -21,12 +49,14 @@ export async function sendTelegramNotification(token: string, chatId: string, le
     const safePhone = escapeMarkdown(lead.phone || '');
     const safeEmail = escapeMarkdown(lead.email || 'N/A');
     const safeCarName = escapeMarkdown(lead.car_name || 'Inquiry General');
-    // DO NOT escape the URL, otherwise the Telegram Markdown link [text](${url}) breaks
-    const rawUrl = lead.source_url || '';
     const safeMessage = lead.message ? escapeMarkdown(lead.message) : '_Fără mesaj_';
 
+    // Link label must be escaped; the URL inside (…) must not be.
+    const url = safeUrl(lead.source_url);
+    const header = url ? `[${escapeMarkdown(url)}](${url})` : 'SwissCars\\.md';
+
     const message = `
-🔔 *Lead Nou* ${rawUrl ? `- [${rawUrl}](${rawUrl})` : '- SwissCars.md'}
+🔔 *Lead Nou* \\- ${header}
 
 👤 *Nume:* ${safeName}
 📱 *Telefon:* \`${safePhone}\`
@@ -36,8 +66,7 @@ export async function sendTelegramNotification(token: string, chatId: string, le
 💬 *Mesaj:*
 ${safeMessage}
 
----
-📅 _Data: ${new Date().toLocaleString('ro-RO')}_
+📅 _Data: ${escapeMarkdown(new Date().toLocaleString('ro-RO'))}_
   `.trim();
 
     try {
@@ -47,7 +76,9 @@ ${safeMessage}
             body: JSON.stringify({
                 chat_id: chatId,
                 text: message,
-                parse_mode: 'Markdown',
+                // escapeMarkdown() escapes the MarkdownV2 character set; the
+                // legacy 'Markdown' parser leaves those backslashes visible.
+                parse_mode: 'MarkdownV2',
             }),
         });
 
@@ -59,10 +90,12 @@ ${safeMessage}
     }
 }
 
-export async function sendEmailNotification(to: string, lead: any) {
+export async function sendEmailNotification(to: string, lead: LeadNotification) {
     // This requires the RESEND_API_KEY to be set in environment variables
     const apiKey = process.env.RESEND_API_KEY;
     if (!apiKey || !to) return;
+
+    const url = safeUrl(lead.source_url);
 
     try {
         const response = await fetch('https://api.resend.com/emails', {
@@ -81,12 +114,12 @@ export async function sendEmailNotification(to: string, lead: any) {
                     <p><strong>Telefon:</strong> <a href="tel:${escapeHtml(lead.phone || '')}">${escapeHtml(lead.phone || '')}</a></p>
                     <p><strong>Email:</strong> ${escapeHtml(lead.email || 'N/A')}</p>
                     <p><strong>Mașină:</strong> ${escapeHtml(lead.car_name || 'N/A')}</p>
-                    ${lead.source_url ? `<p><strong>Sursă:</strong> <a href="${lead.source_url}">${lead.source_url}</a></p>` : ''}
+                    ${url ? `<p><strong>Sursă:</strong> <a href="${escapeHtml(url)}">${escapeHtml(url)}</a></p>` : ''}
                     <hr />
                     <p><strong>Mesaj:</strong></p>
                     <p>${escapeHtml(lead.message || 'N/A')}</p>
                     <hr />
-                    <p><small>Trimis la: ${new Date().toLocaleString('ro-RO')}</small></p>
+                    <p><small>Trimis la: ${escapeHtml(new Date().toLocaleString('ro-RO'))}</small></p>
                 `,
             }),
         });

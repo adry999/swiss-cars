@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import ContactPageClient from '@/components/contact/ContactPageClient';
-import { getSettings } from '@/lib/actions/settings';
+import { getPublicSiteConfig } from '@/lib/settings';
 
 export const metadata: Metadata = {
     title: 'Contact | SwissCars.md',
@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ContactPage() {
-    const siteConfig = (await getSettings('site_config') || {}) as any;
+    const siteConfig = await getPublicSiteConfig();
 
     return (
         <ContactPageClient

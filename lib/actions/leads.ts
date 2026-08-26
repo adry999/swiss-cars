@@ -6,7 +6,7 @@ import { checkRateLimit } from '@/lib/utils/rateLimit';
 import { LeadInquirySchema, type LeadInquiry } from '@/lib/types';
 import { revalidatePath } from 'next/cache';
 import { sendTelegramNotification, sendEmailNotification } from '@/lib/utils/notifications';
-import { getSettings } from './settings';
+import { getNotificationConfig } from '@/lib/settings';
 import { headers } from 'next/headers';
 
 export async function submitLeadInquiry(data: LeadInquiry) {
@@ -49,30 +49,24 @@ export async function submitLeadInquiry(data: LeadInquiry) {
     });
 
     if (error) {
+        // Log the driver error, but never surface it — it leaks schema details.
         console.error('Database insertion error:', error);
-        return { success: false, error: `Eroare baze de date: ${error.message}` };
+        return { success: false, error: 'Nu am putut salva cererea. Te rugăm să încerci din nou.' };
     }
 
-    // Trigger notifications in background
+    // Notifications are awaited: a serverless function can terminate before a
+    // floating promise resolves, silently dropping the alert.
     try {
-        const settings = await getSettings('site_config');
-        if (settings) {
-            // Telegram
-            if (settings.telegram_bot_token && settings.telegram_chat_id) {
-                void sendTelegramNotification(
-                    settings.telegram_bot_token,
-                    settings.telegram_chat_id,
-                    data
-                );
-            }
-            // Email
-            if (settings.notification_email) {
-                void sendEmailNotification(
-                    settings.notification_email,
-                    data
-                );
-            }
-        }
+        const notify = await getNotificationConfig();
+
+        await Promise.allSettled([
+            notify.telegramBotToken && notify.telegramChatId
+                ? sendTelegramNotification(notify.telegramBotToken, notify.telegramChatId, validData)
+                : Promise.resolve(),
+            notify.notificationEmail
+                ? sendEmailNotification(notify.notificationEmail, validData)
+                : Promise.resolve(),
+        ]);
     } catch (notifyError) {
         console.error('Notification trigger error:', notifyError);
     }

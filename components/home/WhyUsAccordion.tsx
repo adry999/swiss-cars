@@ -1,12 +1,12 @@
 import { getTranslations, getLocale } from 'next-intl/server';
-import { getSettings } from '@/lib/actions/settings';
+import { getHomepageContent } from '@/lib/settings';
 import WhyUsAccordionClient from './WhyUsAccordionClient';
 
 export default async function WhyUsAccordion() {
     const t = await getTranslations('whyus');
     const locale = await getLocale();
 
-    const homepageData = await getSettings('homepage_content') || {};
+    const homepageData = await getHomepageContent();
     const data = homepageData.why_us_section || null;
 
     const getText = (translations?: Record<string, string>, fallbackKey?: string) => {

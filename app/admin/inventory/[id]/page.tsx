@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import CarEditForm from '@/components/admin/CarEditForm';
-import { getSettings } from '@/lib/actions/settings';
+import { getPublicSiteConfig } from '@/lib/settings';
 
 type Props = {
     params: Promise<{ id: string }>;
@@ -13,7 +13,7 @@ export default async function EditCarPage({ params }: Props) {
 
     const [carResponse, settings] = await Promise.all([
         supabase.from('cars').select('*, car_images(*)').eq('id', id).single(),
-        getSettings('site_config')
+        getPublicSiteConfig()
     ]);
 
     if (carResponse.error || !carResponse.data) notFound();

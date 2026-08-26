@@ -1,13 +1,13 @@
 import { getTranslations, getLocale } from 'next-intl/server';
-import { getSettings } from '@/lib/actions/settings';
+import { getHomepageContent, getPublicSiteConfig } from '@/lib/settings';
 import styles from './ContactBanner.module.css';
 
 export default async function ContactBanner() {
     const t = await getTranslations('contact_banner');
     const locale = await getLocale();
 
-    const settings = await getSettings('site_config') || {};
-    const homepageData = await getSettings('homepage_content') || {};
+    const settings = await getPublicSiteConfig();
+    const homepageData = await getHomepageContent();
     const data = homepageData.contact_banner || null;
 
     const phone = settings.phone;

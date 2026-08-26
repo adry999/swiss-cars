@@ -1,12 +1,12 @@
 import { getTranslations, getLocale } from 'next-intl/server';
-import { getSettings } from '@/lib/actions/settings';
+import { getHomepageContent } from '@/lib/settings';
 import styles from './AboutSection.module.css';
 
 export default async function AboutSection() {
     const t = await getTranslations('about');
     const locale = await getLocale();
 
-    const homepageData = await getSettings('homepage_content') || {};
+    const homepageData = await getHomepageContent();
     const aboutData = homepageData.about_section || null;
 
     const getText = (translations?: Record<string, string>, fallbackKey?: string) => {

@@ -30,13 +30,13 @@ export async function POST(req: NextRequest) {
         }
 
         const body = await req.json();
-        console.log('Incoming contact request:', body);
 
-        // Validate input with Zod
+        // Validate input with Zod. Never log the body — it carries names,
+        // phone numbers, emails and free-text messages.
         const validation = ContactSchema.safeParse(body);
         if (!validation.success) {
             const errors = validation.error.issues.map(e => e.message).join(', ');
-            console.error('Contact validation error:', errors, body);
+            console.error('Contact validation error:', errors);
             return NextResponse.json({ error: `Validation: ${errors}` }, { status: 400 });
         }
 
@@ -58,47 +58,37 @@ export async function POST(req: NextRequest) {
             created_at: new Date().toISOString(),
         };
 
-        console.log('Inserting into leads_inquiries:', insertData);
-
         const { error } = await supabase.from('leads_inquiries').insert(insertData);
 
         if (error) {
             console.error('Contact form DB error details:', error);
-            return NextResponse.json({ error: `Database error: ${error.message}` }, { status: 500 });
+            return NextResponse.json({ error: 'Could not save your request. Please try again.' }, { status: 500 });
         }
 
-        // Trigger notifications in background
+        // Awaited, not fire-and-forget: the function may terminate before a
+        // floating promise resolves, dropping the alert.
         try {
-            const { getSettings } = await import('@/lib/actions/settings');
+            const { getNotificationConfig } = await import('@/lib/settings');
             const { sendTelegramNotification, sendEmailNotification } = await import('@/lib/utils/notifications');
 
-            const settings = await getSettings('site_config');
-            if (settings) {
-                const leadData = {
-                    name,
-                    phone,
-                    email,
-                    car_name: formType === 'testdrive' ? '📅 Programare Vizionare' : '📩 Contact General',
-                    message: `${message ? `"${message}"` : ''}${preferredDate ? `\n📅 Data preferată: ${preferredDate}` : ''}${formType ? `\n(Tip: ${formType})` : ''}`,
-                    source_url: sourceUrl
-                };
+            const notify = await getNotificationConfig();
+            const leadData = {
+                name,
+                phone,
+                email,
+                car_name: formType === 'testdrive' ? '📅 Programare Vizionare' : '📩 Contact General',
+                message: `${message ? `"${message}"` : ''}${preferredDate ? `\n📅 Data preferată: ${preferredDate}` : ''}${formType ? `\n(Tip: ${formType})` : ''}`,
+                source_url: sourceUrl,
+            };
 
-                // Telegram
-                if (settings.telegram_bot_token && settings.telegram_chat_id) {
-                    void sendTelegramNotification(
-                        settings.telegram_bot_token,
-                        settings.telegram_chat_id,
-                        leadData
-                    );
-                }
-                // Email
-                if (settings.notification_email) {
-                    void sendEmailNotification(
-                        settings.notification_email,
-                        leadData
-                    );
-                }
-            }
+            await Promise.allSettled([
+                notify.telegramBotToken && notify.telegramChatId
+                    ? sendTelegramNotification(notify.telegramBotToken, notify.telegramChatId, leadData)
+                    : Promise.resolve(),
+                notify.notificationEmail
+                    ? sendEmailNotification(notify.notificationEmail, leadData)
+                    : Promise.resolve(),
+            ]);
         } catch (notifyError) {
             console.error('Contact notification trigger error:', notifyError);
         }

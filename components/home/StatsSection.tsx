@@ -1,13 +1,13 @@
 import { getTranslations, getLocale } from 'next-intl/server';
-import { getSettings } from '@/lib/actions/settings';
+import { getHomepageContent, getPublicSiteConfig } from '@/lib/settings';
 import StatsSectionClient from './StatsSectionClient';
 
 export default async function StatsSection() {
     const t = await getTranslations('stats');
     const locale = await getLocale();
 
-    const homepageData = await getSettings('homepage_content') || {};
-    const siteConfig = await getSettings('site_config') || {};
+    const homepageData = await getHomepageContent();
+    const siteConfig = await getPublicSiteConfig();
     const statsData = homepageData.stats_section || null;
     const phone = siteConfig.phone;
 

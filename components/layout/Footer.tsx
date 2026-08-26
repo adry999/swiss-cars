@@ -6,9 +6,10 @@ import Image from 'next/image';
 import { Link } from '@/i18n/navigation';
 import { useOptionalToast } from '@/components/ui/Toast';
 import { subscribe } from '@/lib/actions/subscribers';
+import type { PublicSiteConfig } from '@/lib/settings';
 import styles from './Footer.module.css';
 
-export default function Footer({ settings = {} }: { settings?: any }) {
+export default function Footer({ settings = {} }: { settings?: PublicSiteConfig }) {
     const t = useTranslations('footer');
     const year = new Date().getFullYear();
     const [email, setEmail] = useState('');

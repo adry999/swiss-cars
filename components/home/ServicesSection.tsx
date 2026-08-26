@@ -1,5 +1,5 @@
 import { getTranslations, getLocale } from 'next-intl/server';
-import { getSettings } from '@/lib/actions/settings';
+import { getHomepageContent } from '@/lib/settings';
 import ServicesSectionClient from './ServicesSectionClient';
 
 const SERVICE_KEYS = [
@@ -15,7 +15,7 @@ export default async function ServicesSection() {
     const t = await getTranslations('services');
     const locale = await getLocale();
 
-    const homepageData = await getSettings('homepage_content') || {};
+    const homepageData = await getHomepageContent();
     const servicesData = homepageData.services_section || null;
 
     // Helper: get translated value from object or fall back to i18n key

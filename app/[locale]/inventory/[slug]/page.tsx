@@ -2,8 +2,8 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { getCarBySlug } from '@/lib/supabase/queries';
 import { createStaticClient } from '@/lib/supabase/server';
-import { getSettings } from '@/lib/actions/settings';
-import { routing } from '@/i18n/routing';
+import { getPublicSiteConfig } from '@/lib/settings';
+import { routing, localeAlternates, localeUrl } from '@/i18n/routing';
 import { sanitizeHtml } from '@/lib/utils/sanitize';
 import { formatPrice } from '@/lib/utils/format';
 import { Link } from '@/i18n/navigation';
@@ -43,15 +43,17 @@ export async function generateStaticParams() {
     return params;
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
-    const { slug } = await params;
+export async function generateMetadata({ params }: Props) {
+    const { locale, slug } = await params;
     const car = await getCarBySlug(slug);
     if (!car) return {};
     const primaryImage = car.car_images?.find((img: any) => img.is_primary) || car.car_images?.[0];
     return {
         title: `${car.brand} ${car.model} ${car.year} ${!car.is_available ? '(Vândut)' : ''} | SwissCars.md`,
         description: `${car.brand} ${car.model} ${car.year} — ${car.is_available ? `${formatPrice(car.price)} €` : 'Vândut'}. Import auto din Elveția.`,
+        alternates: localeAlternates(locale, `/inventory/${slug}`),
         openGraph: {
+            url: localeUrl(locale, `/inventory/${slug}`),
             images: primaryImage?.url ? [{ url: primaryImage.url }] : [],
         },
     };
@@ -61,13 +63,13 @@ export default async function CarDetailPage({ params }: Props) {
     const { locale, slug } = await params;
     const [car, siteConfig] = await Promise.all([
         getCarBySlug(slug),
-        getSettings('site_config'),
+        getPublicSiteConfig(),
     ]);
     const t = await getTranslations('car_detail');
 
     if (!car) notFound();
 
-    const config = (siteConfig || {}) as any;
+    const config = siteConfig;
 
     const getTranslatedDescription = () => {
         if (!car.description) return '';
@@ -113,7 +115,8 @@ export default async function CarDetailPage({ params }: Props) {
             "price": car.price,
             "itemCondition": "https://schema.org/UsedCondition",
             "availability": car.is_available ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-            "url": `https://swisscars.md/${locale}/inventory/${car.slug}`
+            // localePrefix is as-needed: /ro/... does not exist.
+            "url": localeUrl(locale, `/inventory/${car.slug}`)
         }
     };
 

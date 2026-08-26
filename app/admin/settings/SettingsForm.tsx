@@ -512,54 +512,34 @@ export default function SettingsForm({
           <h2 className={styles.subtitle}>
             <Bell size={16} /> Lead Notifications
           </h2>
-          <div className={styles.grid}>
-            <div className={styles.field}>
-              <label>
-                <Send size={14} /> Telegram Bot Token
-              </label>
-              <input
-                placeholder="123456789:ABCDefGh..."
-                value={settings.telegram_bot_token || ""}
-                onChange={(e) =>
-                  setSettings({
-                    ...settings,
-                    telegram_bot_token: e.target.value,
-                  })
-                }
-              />
-            </div>
-            <div className={styles.field}>
-              <label>
-                <Hash size={14} /> Telegram Chat ID
-              </label>
-              <input
-                placeholder="-100123456789"
-                value={settings.telegram_chat_id || ""}
-                onChange={(e) =>
-                  setSettings({ ...settings, telegram_chat_id: e.target.value })
-                }
-              />
-            </div>
-            <div className={styles.field} style={{ gridColumn: "1 / -1" }}>
-              <label>
-                <Mail size={14} /> Notification Email (Resend)
-              </label>
-              <input
-                placeholder="admin@example.com"
-                type="email"
-                value={settings.notification_email || ""}
-                onChange={(e) =>
-                  setSettings({
-                    ...settings,
-                    notification_email: e.target.value,
-                  })
-                }
-              />
-              <p style={{ fontSize: "12px", color: "#999", marginTop: "4px" }}>
-                Vei primi un email la fiecare lead nou. Necesită configurare
-                Resend API Key în .env.
-              </p>
-            </div>
+          {/* These used to be editable here and were stored inside the
+              `site_config` row, which is readable by anyone holding the public
+              anon key — and was also serialized into every public page's HTML.
+              They now live in server-side environment variables only. */}
+          <div className={styles.field} style={{ gridColumn: "1 / -1" }}>
+            <p style={{ fontSize: "13px", lineHeight: 1.6, color: "#555" }}>
+              <AlertTriangle size={14} style={{ verticalAlign: "-2px" }} />{" "}
+              Credențialele de notificare se configurează acum din variabilele
+              de mediu ale serverului, nu din această pagină:
+            </p>
+            <pre
+              style={{
+                fontSize: "12px",
+                background: "#f6f7f9",
+                border: "1px solid #e6e8eb",
+                borderRadius: "6px",
+                padding: "12px",
+                marginTop: "8px",
+                overflowX: "auto",
+              }}
+            >
+              {`TELEGRAM_BOT_TOKEN=...\nTELEGRAM_CHAT_ID=...\nNOTIFICATION_EMAIL=...\nRESEND_API_KEY=...`}
+            </pre>
+            <p style={{ fontSize: "12px", color: "#999", marginTop: "8px" }}>
+              <Send size={12} style={{ verticalAlign: "-1px" }} /> Telegram și{" "}
+              <Mail size={12} style={{ verticalAlign: "-1px" }} /> email pentru
+              fiecare lead nou. Vezi database/2026-08-26_security_hardening.sql.
+            </p>
           </div>
         </section>
 

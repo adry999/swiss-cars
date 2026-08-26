@@ -78,4 +78,36 @@ describe('sanitizeHtml', () => {
         expect(result).toContain('<th>');
         expect(result).toContain('<td>');
     });
+
+    // Regression tests: every payload below defeated the previous regex-based
+    // sanitizer and was returned to the caller unchanged.
+    describe('bypasses of the previous regex sanitizer', () => {
+        it('strips a slash-separated svg onload handler', () => {
+            const result = sanitizeHtml('<svg/onload=alert(1)>');
+            expect(result).not.toContain('onload');
+            expect(result).not.toContain('alert');
+        });
+
+        it('strips a slash-separated img onerror handler', () => {
+            const result = sanitizeHtml('<img/onerror=alert(1) src=x>');
+            expect(result).not.toContain('onerror');
+            expect(result).not.toContain('alert');
+        });
+
+        it('strips a javascript: href broken up by a control character', () => {
+            const result = sanitizeHtml('<a href="jav\tascript:alert(1)">x</a>');
+            expect(result).not.toContain('javascript:');
+            expect(result).not.toContain('alert');
+        });
+
+        it('strips a javascript: href', () => {
+            const result = sanitizeHtml('<a href="javascript:alert(1)">x</a>');
+            expect(result).not.toContain('javascript:');
+        });
+
+        it('strips nested/malformed script tags', () => {
+            const result = sanitizeHtml('<scri<script>pt>alert(1)</script>');
+            expect(result).not.toContain('<script');
+        });
+    });
 });
