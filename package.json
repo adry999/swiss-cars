@@ -22,7 +22,7 @@
     "framer-motion": "^12.34.3",
     "isomorphic-dompurify": "^3.0.0",
     "lucide-react": "^0.575.0",
-    "next": "16.1.6",
+    "next": "16.3.3",
     "next-intl": "^4.8.3",
     "react": "19.2.3",
     "react-dom": "19.2.3",
@@ -38,14 +38,14 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/uuid": "^10.0.0",
     "@vitejs/plugin-react": "^5.1.4",
     "@vitest/coverage-v8": "^4.0.18",
     "@vitest/ui": "^4.0.18",
     "eslint": "^9",
-    "eslint-config-next": "16.1.6",
+    "eslint-config-next": "16.3.3",
     "jsdom": "^28.1.0",
     "typescript": "^5",
-    "vitest": "^4.0.18",
-    "@types/uuid": "^10.0.0"
+    "vitest": "^4.0.18"
   }
 }
