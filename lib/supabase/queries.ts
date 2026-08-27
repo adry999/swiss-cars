@@ -1,5 +1,5 @@
 import { createClient, createStaticClient } from './server';
-import { type Car, type Review, type Partner } from '../types';
+import { type Car, type Review, type Partner, type Lead } from '../types';
 
 const isSupabaseConfigured = !!(
     process.env.NEXT_PUBLIC_SUPABASE_URL &&
@@ -289,7 +289,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     };
 }
 
-export async function getRecentLeads(limit: number = 5) {
+export async function getRecentLeads(limit: number = 5): Promise<Lead[]> {
     if (!isSupabaseConfigured) return [];
 
     const supabase = await createClient();
@@ -304,7 +304,8 @@ export async function getRecentLeads(limit: number = 5) {
         return [];
     }
 
-    return data;
+    // The Supabase client here isn't wired to generated Database types.
+    return data as Lead[];
 }
 
 /**

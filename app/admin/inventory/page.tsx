@@ -27,7 +27,7 @@ export default async function AdminCarsPage({ searchParams }: Props) {
             </div>
 
             <CarsTable
-                cars={cars as any}
+                cars={cars}
                 currentPage={page}
                 totalPages={totalPages}
             />

@@ -47,7 +47,7 @@ export async function generateMetadata({ params }: Props) {
     const { locale, slug } = await params;
     const car = await getCarBySlug(slug);
     if (!car) return {};
-    const primaryImage = car.car_images?.find((img: any) => img.is_primary) || car.car_images?.[0];
+    const primaryImage = car.car_images?.find((img) => img.is_primary) || car.car_images?.[0];
     const title = `${car.brand} ${car.model} ${car.year} ${!car.is_available ? '(Vândut)' : ''} | SwissCars.md`;
     const description = `${car.brand} ${car.model} ${car.year} — ${car.is_available ? `${formatPrice(car.price)} €` : 'Vândut'}. Import auto din Elveția.`;
 
@@ -86,7 +86,7 @@ export default async function CarDetailPage({ params }: Props) {
     const getTranslatedDescription = () => {
         if (!car.description) return '';
         if (typeof car.description === 'string') return car.description;
-        const desc = car.description as any;
+        const desc = car.description;
 
         // Try current locale first, then fallback to 'ro', finally any available language
         const currentDesc = desc[locale];
@@ -103,7 +103,7 @@ export default async function CarDetailPage({ params }: Props) {
         "@context": "https://schema.org",
         "@type": "Vehicle",
         "name": `${car.brand} ${car.model} ${car.year}`,
-        "image": car.car_images?.map((img: any) => img.url) || [],
+        "image": car.car_images?.map((img) => img.url) || [],
         "brand": {
             "@type": "Brand",
             "name": car.brand

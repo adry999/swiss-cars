@@ -4,9 +4,14 @@ import { useState, useTransition } from 'react';
 import { Save, Loader2, Search, Globe, ChevronRight, ChevronDown, AlertCircle } from 'lucide-react';
 import { updateI18nMessages } from '@/lib/actions/translations';
 
+// The messages/*.json files nest to arbitrary depth with string leaves —
+// this is the standard recursive shape for "arbitrary JSON object", sound
+// without needing `any`.
+export type MessagesTree = { [key: string]: string | MessagesTree };
+
 type Props = {
     locales: string[];
-    initialMessages: Record<string, any>;
+    initialMessages: Record<string, MessagesTree>;
 };
 
 export default function TranslationsEditor({ locales, initialMessages }: Props) {
@@ -25,8 +30,12 @@ export default function TranslationsEditor({ locales, initialMessages }: Props) 
         setMessages(prev => {
             const next = { ...prev };
             let current = next[activeLocale];
+            // Every path segment but the last is assumed to be a nested
+            // object (only leaves are strings) — an invariant this
+            // recursive tree structure enforces by construction, not
+            // something the type system can verify at this indexing step.
             for (let i = 0; i < path.length - 1; i++) {
-                current = current[path[i]];
+                current = current[path[i]] as MessagesTree;
             }
             current[path[path.length - 1]] = value;
             return next;
@@ -49,7 +58,7 @@ export default function TranslationsEditor({ locales, initialMessages }: Props) 
     };
 
     // Recursive component to render nested keys
-    const renderNode = (obj: any, path: string[] = []) => {
+    const renderNode = (obj: MessagesTree, path: string[] = []): (React.ReactNode | null)[] => {
         return Object.entries(obj).map(([key, value]) => {
             const currentPath = [...path, key];
             const isObject = typeof value === 'object' && value !== null;

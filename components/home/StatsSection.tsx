@@ -31,7 +31,7 @@ export default async function StatsSection() {
         text: { ro: t('partnerships_text') }
     };
 
-    const finalStats = stats.map((stat: any) => ({
+    const finalStats = stats.map((stat) => ({
         count: stat.count,
         suffix: stat.suffix,
         label: getText(stat.label)

@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { Suspense } from 'react';
 import LeadsTable from './LeadsTable';
+import type { Lead } from '@/lib/types';
 import LeadsPagination from './LeadsPagination';
 import styles from './page.module.css';
 
@@ -24,7 +25,9 @@ async function getLeadsPaginated(page: number) {
     const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
     return {
-        data: dataResult.data || [],
+        // The Supabase client here isn't wired to generated Database types,
+        // so .select() returns an untyped row.
+        data: (dataResult.data || []) as Lead[],
         totalCount,
         totalPages,
     };
@@ -56,7 +59,7 @@ export default async function LeadsPage({ searchParams }: Props) {
     return (
         <div className={styles.page}>
             <Suspense>
-                <LeadsTable initialLeads={leads as any} unreadCount={unread} />
+                <LeadsTable initialLeads={leads} unreadCount={unread} />
                 <LeadsPagination currentPage={page} totalPages={totalPages} />
             </Suspense>
         </div>

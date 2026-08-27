@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
+import { useForm, type FieldErrors, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Save, ArrowLeft, Loader2, Image as ImageIcon, FileText, Settings, AlertCircle, X } from 'lucide-react';
 import { CarSchema, type Car } from '@/lib/types';
@@ -34,7 +34,15 @@ export default function CarEditForm({ initialData, maxImages = 25 }: Props) {
     }, [initialData]);
 
     const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<Car>({
-        resolver: zodResolver(CarSchema) as any,
+        // zodResolver infers against CarSchema's z.preprocess *input* type
+        // (unknown, since preprocess accepts raw form values before
+        // coercion), which structurally differs from Car — CarSchema's
+        // *output*/parsed type, and what every field below is typed
+        // against. Asserting the named Resolver<Car> type here is the
+        // documented workaround for schemas with preprocess/transform
+        // without threading a second, input-shaped generic through every
+        // child component's register/watch/setValue/errors props.
+        resolver: zodResolver(CarSchema) as Resolver<Car>,
         defaultValues: initialData || {
             is_available: true,
             is_featured: false,
@@ -42,7 +50,7 @@ export default function CarEditForm({ initialData, maxImages = 25 }: Props) {
         },
     });
 
-    const onInvalid = (errs: any) => {
+    const onInvalid = (errs: FieldErrors<Car>) => {
         console.error('Validation Errors:', errs);
         setFormError('Please check the form for errors. Some required fields might be missing or invalid.');
     };
@@ -51,7 +59,7 @@ export default function CarEditForm({ initialData, maxImages = 25 }: Props) {
         setIsSubmitting(true);
         setFormError(null);
         try {
-            const result = await saveCar(data as any);
+            const result = await saveCar(data);
             if (result.success) {
                 router.push('/admin/inventory');
                 router.refresh();
@@ -65,7 +73,7 @@ export default function CarEditForm({ initialData, maxImages = 25 }: Props) {
     };
 
     return (
-        <form onSubmit={handleSubmit(onSubmit as any, onInvalid)} className={styles.form}>
+        <form onSubmit={handleSubmit(onSubmit, onInvalid)} className={styles.form}>
             <header className={styles.header}>
                 <div className={styles.headerLeft}>
                     <button type="button" onClick={() => router.back()} className={styles.backBtn}>

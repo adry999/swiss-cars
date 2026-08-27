@@ -140,3 +140,22 @@ export const LeadInquirySchema = z.object({
 });
 
 export type LeadInquiry = z.infer<typeof LeadInquirySchema>;
+
+// A stored leads_inquiries row, as read back for the admin panel. Distinct
+// from LeadInquiry (the shape submitted by the public forms) — this one is
+// never validated by Zod, it's just what the database returns.
+export type Lead = {
+    id: string;
+    car_id: string | null;
+    car_name: string | null;
+    name: string;
+    phone: string;
+    email: string | null;
+    message: string | null;
+    preferred_date: string | null;
+    form_type: string | null;
+    source_url: string | null;
+    is_read: boolean;
+    is_important: boolean;
+    created_at: string;
+};

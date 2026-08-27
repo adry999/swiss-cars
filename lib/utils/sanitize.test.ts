@@ -4,8 +4,8 @@ import { sanitizeHtml } from './sanitize';
 describe('sanitizeHtml', () => {
     it('should return empty string for null/undefined input', () => {
         expect(sanitizeHtml('')).toBe('');
-        expect(sanitizeHtml(null as any)).toBe('');
-        expect(sanitizeHtml(undefined as any)).toBe('');
+        expect(sanitizeHtml(null as unknown as string)).toBe('');
+        expect(sanitizeHtml(undefined as unknown as string)).toBe('');
     });
 
     it('should allow basic formatting tags', () => {

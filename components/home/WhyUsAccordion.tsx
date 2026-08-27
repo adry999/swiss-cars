@@ -24,8 +24,8 @@ export default async function WhyUsAccordion() {
         { title: t('q4_title'), text: t('q4_text') }
     ];
 
-    const items = (data?.items || []).length > 0
-        ? data.items.map((item: any) => ({
+    const items = data?.items && data.items.length > 0
+        ? data.items.map((item) => ({
             title: getText(item.title),
             text: getText(item.text)
         }))

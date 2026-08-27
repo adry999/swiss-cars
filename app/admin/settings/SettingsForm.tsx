@@ -23,12 +23,13 @@ import {
 } from "lucide-react"
 import { saveSettings } from "@/lib/actions/settings"
 import ImageUploader from "@/components/admin/ImageUploader"
+import type { SiteConfig } from "@/lib/settings"
 import styles from "./page.module.css"
 
 export default function SettingsForm({
   initialSettings,
 }: {
-  initialSettings: any
+  initialSettings: Partial<SiteConfig>
 }) {
   const [isSaving, setIsSaving] = useState(false)
   const [settings, setSettings] = useState(initialSettings)
@@ -376,7 +377,7 @@ export default function SettingsForm({
               />
               <p style={{ fontSize: "12px", color: "#999", marginTop: "4px" }}>
                 Copiază URL-ul din Google Maps → Share → Embed a map → Copiază
-                doar partea src="..."
+                doar partea src=&quot;...&quot;
               </p>
             </div>
           </div>

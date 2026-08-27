@@ -1,8 +1,16 @@
 'use client';
 
-import type { UseFormRegister, FieldErrors } from 'react-hook-form';
+import type { UseFormRegister, FieldErrors, FieldPath } from 'react-hook-form';
 import type { Car } from '@/lib/types';
 import styles from '../CarEditForm.module.css';
+
+// Car.description is a Zod z.record (dynamic locale keys), so react-hook-form's
+// Path<Car> can't statically enumerate 'description.ro' as a valid field path —
+// it only traverses fixed-shape objects. This is the narrowest honest escape
+// hatch short of reshaping the Zod schema to a fixed { ro, ru, en } object,
+// which would ripple into every other place description is read.
+const descriptionField = (lang: 'ro' | 'ru' | 'en') =>
+    `description.${lang}` as unknown as FieldPath<Car>;
 
 interface GeneralInfoTabProps {
     register: UseFormRegister<Car>;
@@ -50,21 +58,21 @@ export default function GeneralInfoTab({ register, errors, descLang, onDescLangC
                 </div>
                 {descLang === 'ro' && (
                     <textarea
-                        {...register('description.ro' as any)}
+                        {...register(descriptionField('ro'))}
                         placeholder="Descriere detaliată (RO)..."
                         rows={8}
                     />
                 )}
                 {descLang === 'ru' && (
                     <textarea
-                        {...register('description.ru' as any)}
+                        {...register(descriptionField('ru'))}
                         placeholder="Подробное описание (RU)..."
                         rows={8}
                     />
                 )}
                 {descLang === 'en' && (
                     <textarea
-                        {...register('description.en' as any)}
+                        {...register(descriptionField('en'))}
                         placeholder="Detailed description (EN)..."
                         rows={8}
                     />

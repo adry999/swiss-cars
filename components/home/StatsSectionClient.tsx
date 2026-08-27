@@ -1,8 +1,10 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { useTranslations } from 'next-intl';
 import styles from './StatsSection.module.css';
+
+type Stat = { count: number; suffix: string; label: string };
+type Partnerships = { title: string; count: number; suffix: string; text: string };
 
 function Counter({ target, suffix = '' }: { target: number; suffix?: string }) {
     const [count, setCount] = useState(0);
@@ -42,8 +44,8 @@ export default function StatsSectionClient({
     phoneLabel,
     phone
 }: {
-    stats: any[];
-    partnerships: any;
+    stats: Stat[];
+    partnerships: Partnerships;
     questionLabel: string;
     phoneLabel: string;
     phone?: string;

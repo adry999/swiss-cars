@@ -4,22 +4,10 @@ import { useState, useTransition } from 'react';
 import { format } from 'date-fns';
 import { CheckCheck, Eye, EyeOff, Star, StarOff, Trash2, Phone, Mail, Car, Link as LinkIcon, CalendarCheck } from 'lucide-react';
 import { markLeadRead, markLeadImportant, deleteLead, markAllLeadsRead } from '@/lib/actions/leads';
+import type { Lead } from '@/lib/types';
 import styles from './LeadsTable.module.css';
 
-type Lead = {
-    id: string;
-    car_name: string | null;
-    name: string;
-    phone: string;
-    email: string | null;
-    message: string | null;
-    preferred_date: string | null;
-    form_type: string | null;
-    source_url: string | null;
-    is_read: boolean;
-    is_important: boolean;
-    created_at: string;
-};
+export type { Lead };
 
 type Props = {
     initialLeads: Lead[];

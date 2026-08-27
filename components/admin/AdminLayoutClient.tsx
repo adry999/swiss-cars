@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, useState, useEffect } from 'react';
+import { ReactNode, useState } from 'react';
 import { Menu, ExternalLink } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -19,10 +19,16 @@ export default function AdminLayoutClient({ children, userEmail, logoUrl }: Admi
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const pathname = usePathname();
 
-    // Close sidebar on route change on mobile
-    useEffect(() => {
+    // Close sidebar on route change on mobile. Adjusting state during render
+    // (React's own pattern for "reset state when a prop changes") rather than
+    // in a useEffect — setState synchronously inside an effect triggers an
+    // extra cascading render every navigation, even when the sidebar was
+    // already closed.
+    const [prevPathname, setPrevPathname] = useState(pathname);
+    if (pathname !== prevPathname) {
+        setPrevPathname(pathname);
         setIsSidebarOpen(false);
-    }, [pathname]);
+    }
 
     const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 

@@ -1,6 +1,14 @@
 import { getTranslations, getLocale } from 'next-intl/server';
 import { getHomepageContent } from '@/lib/settings';
+import type { TranslatedField } from '@/lib/types';
 import ServicesSectionClient from './ServicesSectionClient';
+
+type ServiceEntry = {
+    icon?: string;
+    name?: TranslatedField;
+    short?: TranslatedField;
+    full?: TranslatedField;
+};
 
 const SERVICE_KEYS = [
     { key: 'service1', icon: '🔍' },
@@ -26,7 +34,7 @@ export default async function ServicesSection() {
         }
         if (typeof translations === 'string' && (translations as string).length > 0) return translations as string;
         if (fallbackKey) {
-            try { return t(fallbackKey as any); } catch { return ''; }
+            try { return t(fallbackKey); } catch { return ''; }
         }
         return '';
     };
@@ -39,12 +47,12 @@ export default async function ServicesSection() {
         ? servicesData.services
         : SERVICE_KEYS;
 
-    const services = rawServices.map((s: any, idx: number) => {
+    const services: { icon: string; name: string; short: string; full: string }[] = rawServices.map((s: ServiceEntry, idx) => {
         const defaultKey = SERVICE_KEYS[idx]?.key || `service${idx + 1}`;
         const icon = s.icon || SERVICE_KEYS[idx]?.icon || '⭐';
-        const name = getText(s.name, `${defaultKey}_name` as any);
-        const short = getText(s.short, `${defaultKey}_short` as any);
-        const fullText = getText(s.full, `${defaultKey}_full` as any);
+        const name = getText(s.name, `${defaultKey}_name`);
+        const short = getText(s.short, `${defaultKey}_short`);
+        const fullText = getText(s.full, `${defaultKey}_full`);
         return { icon, name, short, full: fullText };
     });
 

@@ -99,7 +99,7 @@ export default function ReviewsTable({ reviews, currentPage, totalPages }: Props
         <>
             <DataTable
                 data={reviews}
-                columns={columns as any}
+                columns={columns}
                 actions={(r) => (
                     <div className={styles.actions}>
                         <button

@@ -59,7 +59,7 @@ export default function CarsTable({ cars, currentPage, totalPages }: Props) {
         {
             header: '',
             accessor: (car: Car) => {
-                const primaryImage = car.car_images?.find((img: any) => img.is_primary) || car.car_images?.[0];
+                const primaryImage = car.car_images?.find((img) => img.is_primary) || car.car_images?.[0];
                 return (
                     <div className={styles.thumbnailWrapper}>
                         {primaryImage ? (
@@ -106,7 +106,7 @@ export default function CarsTable({ cars, currentPage, totalPages }: Props) {
         <>
             <DataTable
                 data={cars}
-                columns={columns as any}
+                columns={columns}
                 actions={(car: Car) => (
                     <div className={styles.actions}>
                         <Link href={`/inventory/${car.slug}`} target="_blank" className={styles.actionBtn} title="Vezi pe site">

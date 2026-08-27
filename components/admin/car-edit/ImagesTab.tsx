@@ -13,8 +13,8 @@ interface ImagesTabProps {
 }
 
 export default function ImagesTab({ watch, setValue, maxImages, initialImages }: ImagesTabProps) {
-    const carImages = watch('car_images' as any) || initialImages || [];
-    const images = carImages.map((img: any) => typeof img === 'string' ? img : img.url);
+    const carImages = watch('car_images') || initialImages || [];
+    const images = carImages.map((img) => typeof img === 'string' ? img : img.url);
 
     return (
         <div>
@@ -26,7 +26,7 @@ export default function ImagesTab({ watch, setValue, maxImages, initialImages }:
             <ImageUploader
                 value={images}
                 onChange={(urls) => {
-                    setValue('car_images' as any, urls.map((url, i) => ({ url, is_primary: i === 0 })));
+                    setValue('car_images', urls.map((url, i) => ({ url, is_primary: i === 0 })));
                 }}
                 maxFiles={maxImages}
             />

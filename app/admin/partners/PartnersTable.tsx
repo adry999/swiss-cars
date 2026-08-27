@@ -44,7 +44,7 @@ export default function PartnersTable({ partners }: { partners: Partner[] }) {
                 </a>
             ) : '-'
         },
-        { header: 'Ordine', accessor: 'sort_order' as any },
+        { header: 'Ordine', accessor: 'sort_order' as const },
         {
             header: 'Status',
             accessor: (p: Partner) => (
@@ -58,7 +58,7 @@ export default function PartnersTable({ partners }: { partners: Partner[] }) {
     return (
         <DataTable
             data={partners}
-            columns={columns as any}
+            columns={columns}
             actions={(p) => (
                 <div className={styles.actions}>
                     <button

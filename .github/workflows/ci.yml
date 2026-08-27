@@ -25,11 +25,8 @@ jobs:
       - name: Test
         run: npm test
 
-      # Not yet blocking: the repo still carries pre-existing lint errors
-      # (mostly no-explicit-any). Flip continue-on-error off once they are gone.
       - name: Lint
         run: npm run lint
-        continue-on-error: true
 
       - name: Audit production dependencies
         run: npm audit --omit=dev --audit-level=critical

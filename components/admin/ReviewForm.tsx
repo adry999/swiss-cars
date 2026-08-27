@@ -7,23 +7,24 @@ import { saveReview } from '@/lib/actions/content';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import ImageUploader from './ImageUploader';
+import type { Review } from '@/lib/types';
 
 import styles from './ReviewForm.module.css';
 
-export default function ReviewForm({ initialData }: { initialData?: any }) {
+export default function ReviewForm({ initialData }: { initialData?: Review }) {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [contentLang, setContentLang] = useState<'ro' | 'ru' | 'en'>('ro');
     const [avatarUrl, setAvatarUrl] = useState<string>(initialData?.avatar_url || '');
 
-    const { register, handleSubmit } = useForm({
+    const { register, handleSubmit } = useForm<Review>({
         defaultValues: initialData || {
             name: '', rating: 5, is_visible: true, content_ro: '', content_ru: '', content_en: ''
         }
     });
 
-    const onSubmit = async (data: any) => {
+    const onSubmit = async (data: Review) => {
         setIsSubmitting(true);
         setError(null);
         try {

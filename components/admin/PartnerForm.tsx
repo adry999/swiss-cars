@@ -7,13 +7,14 @@ import { savePartner } from '@/lib/actions/content';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import ImageUploader from '@/components/admin/ImageUploader';
+import type { Partner } from '@/lib/types';
 
-export default function PartnerForm({ initialData }: { initialData?: any }) {
+export default function PartnerForm({ initialData }: { initialData?: Partner }) {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const { register, handleSubmit, setValue, watch } = useForm({
+    const { register, handleSubmit, setValue, watch } = useForm<Partner>({
         defaultValues: initialData || {
             name: '', website_url: '', sort_order: 0, is_visible: true, logo_url: ''
         }
@@ -21,7 +22,7 @@ export default function PartnerForm({ initialData }: { initialData?: any }) {
 
     const logoUrl = watch('logo_url');
 
-    const onSubmit = async (data: any) => {
+    const onSubmit = async (data: Partner) => {
         setIsSubmitting(true);
         setError(null);
         try {

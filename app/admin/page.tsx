@@ -1,5 +1,6 @@
 import { Car, MessageSquare, Users, Inbox, CheckCircle, Clock, TrendingUp } from 'lucide-react';
 import { getDashboardStats, getRecentLeads } from '@/lib/supabase/queries';
+import type { Lead } from '@/lib/types';
 import { formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';
 import styles from './page.module.css';
@@ -89,7 +90,7 @@ export default async function AdminDashboard() {
                         </div>
                     ) : (
                         <div className={styles.leadsList}>
-                            {recentLeads.map((lead: any) => (
+                            {recentLeads.map((lead: Lead) => (
                                 <div key={lead.id} className={styles.leadItem}>
                                     <div className={styles.leadInfo}>
                                         <span className={styles.leadName}>{lead.name}</span>

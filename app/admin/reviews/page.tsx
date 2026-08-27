@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { getAllReviewsPaginated } from '@/lib/supabase/queries';
 import ReviewsTable from './ReviewsTable';
 import styles from './page.module.css';
@@ -19,10 +20,10 @@ export default async function AdminReviewsPage({ searchParams }: Props) {
         <div>
             <div className={styles.header}>
                 <h1 className={styles.title}>Customer Reviews ({totalCount})</h1>
-                <a href="/admin/reviews/new" className="btn btn-primary">Add Review</a>
+                <Link href="/admin/reviews/new" className="btn btn-primary">Add Review</Link>
             </div>
             <ReviewsTable
-                reviews={reviews as any}
+                reviews={reviews}
                 currentPage={page}
                 totalPages={totalPages}
             />

@@ -1,5 +1,6 @@
 import { cache } from 'react';
 import { createStaticClient } from '@/lib/supabase/server';
+import type { HomepageContent } from '@/lib/types';
 
 /**
  * Fields that are safe to send to the browser.
@@ -98,11 +99,13 @@ export async function getPublicSiteConfig(): Promise<PublicSiteConfig> {
     return publicConfig;
 }
 
-// TODO: type against `HomepageContent` in lib/types once the section
-// components stop indexing this blob loosely.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function getHomepageContent(): Promise<Record<string, any>> {
-    return (await getSettingRow('homepage_content')) ?? {};
+// Partial, not HomepageContent: this is a hand-edited JSON blob, not
+// something Zod validates on the way in, so any section can legitimately be
+// missing (a fresh install, a partially-filled admin form). Every reader
+// already falls back to defaults when a section is absent — this type just
+// makes that the compiler's problem instead of `any`'s.
+export async function getHomepageContent(): Promise<Partial<HomepageContent>> {
+    return ((await getSettingRow('homepage_content')) ?? {}) as Partial<HomepageContent>;
 }
 
 export interface NotificationConfig {
