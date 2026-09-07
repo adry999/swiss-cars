@@ -14,7 +14,7 @@ export async function submitLeadInquiry(data: LeadInquiry) {
     const h = await headers();
     const req = new Request('http://localhost', { headers: h });
     const ip = getClientIp(req);
-    const rateCheck = checkRateLimit(`lead:${ip}`, LEAD_RATE_LIMIT);
+    const rateCheck = await checkRateLimit(`lead:${ip}`, LEAD_RATE_LIMIT);
 
     if (!rateCheck.success) {
         return {

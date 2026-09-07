@@ -3,77 +3,71 @@ import { checkRateLimit, getClientIp } from './rateLimit';
 
 describe('checkRateLimit', () => {
     beforeEach(() => {
-        // Clear the rate limit map between tests by using unique identifiers
         vi.useFakeTimers();
     });
 
-    it('should allow first request', () => {
-        const result = checkRateLimit('test-1', { limit: 5, windowMs: 60000 });
+    it('should allow first request', async () => {
+        const result = await checkRateLimit('test-1', { limit: 5, windowMs: 60000 });
         expect(result.success).toBe(true);
         expect(result.remaining).toBe(4);
     });
 
-    it('should decrement remaining count on each request', () => {
+    it('should decrement remaining count on each request', async () => {
         const id = 'test-2';
         const options = { limit: 3, windowMs: 60000 };
 
-        const r1 = checkRateLimit(id, options);
+        const r1 = await checkRateLimit(id, options);
         expect(r1.remaining).toBe(2);
 
-        const r2 = checkRateLimit(id, options);
+        const r2 = await checkRateLimit(id, options);
         expect(r2.remaining).toBe(1);
 
-        const r3 = checkRateLimit(id, options);
+        const r3 = await checkRateLimit(id, options);
         expect(r3.remaining).toBe(0);
     });
 
-    it('should block requests after limit exceeded', () => {
+    it('should block requests after limit exceeded', async () => {
         const id = 'test-3';
         const options = { limit: 2, windowMs: 60000 };
 
-        checkRateLimit(id, options); // 1
-        checkRateLimit(id, options); // 2
+        await checkRateLimit(id, options);
+        await checkRateLimit(id, options);
 
-        const blocked = checkRateLimit(id, options); // should be blocked
+        const blocked = await checkRateLimit(id, options);
         expect(blocked.success).toBe(false);
         expect(blocked.remaining).toBe(0);
     });
 
-    it('should reset after window expires', () => {
+    it('should reset after window expires', async () => {
         const id = 'test-4';
-        const options = { limit: 2, windowMs: 1000 }; // 1 second window
+        const options = { limit: 2, windowMs: 1000 };
 
-        checkRateLimit(id, options);
-        checkRateLimit(id, options);
+        await checkRateLimit(id, options);
+        await checkRateLimit(id, options);
 
-        // Should be blocked
-        const blocked = checkRateLimit(id, options);
+        const blocked = await checkRateLimit(id, options);
         expect(blocked.success).toBe(false);
 
-        // Advance time past the window
         vi.advanceTimersByTime(1500);
 
-        // Should be allowed again
-        const allowed = checkRateLimit(id, options);
+        const allowed = await checkRateLimit(id, options);
         expect(allowed.success).toBe(true);
         expect(allowed.remaining).toBe(1);
     });
 
-    it('should track different identifiers separately', () => {
+    it('should track different identifiers separately', async () => {
         const options = { limit: 1, windowMs: 60000 };
 
-        const r1 = checkRateLimit('user-a', options);
-        const r2 = checkRateLimit('user-b', options);
+        const r1 = await checkRateLimit('user-a', options);
+        const r2 = await checkRateLimit('user-b', options);
 
         expect(r1.success).toBe(true);
         expect(r2.success).toBe(true);
 
-        // User A should be blocked
-        const r3 = checkRateLimit('user-a', options);
+        const r3 = await checkRateLimit('user-a', options);
         expect(r3.success).toBe(false);
 
-        // User B should also be blocked
-        const r4 = checkRateLimit('user-b', options);
+        const r4 = await checkRateLimit('user-b', options);
         expect(r4.success).toBe(false);
     });
 });

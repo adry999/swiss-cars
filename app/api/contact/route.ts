@@ -20,7 +20,7 @@ const ContactSchema = z.object({
 export async function POST(req: NextRequest) {
     try {
         const clientIp = getClientIp(req);
-        const rateLimit = checkRateLimit(`contact:${clientIp}`, LEAD_RATE_LIMIT);
+        const rateLimit = await checkRateLimit(`contact:${clientIp}`, LEAD_RATE_LIMIT);
 
         if (!rateLimit.success) {
             return NextResponse.json(

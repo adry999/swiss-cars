@@ -1,19 +1,4 @@
-type RateLimitEntry = {
-    count: number;
-    resetTime: number;
-};
-
-const rateLimitMap = new Map<string, RateLimitEntry>();
-
-// Clean up expired entries periodically
-setInterval(() => {
-    const now = Date.now();
-    for (const [key, entry] of rateLimitMap.entries()) {
-        if (entry.resetTime < now) {
-            rateLimitMap.delete(key);
-        }
-    }
-}, 60000); // Clean up every minute
+import { Redis } from '@upstash/redis';
 
 export const LEAD_RATE_LIMIT = { limit: 5, windowMs: 60000 } as const;
 
@@ -28,16 +13,51 @@ interface RateLimitResult {
     resetTime: number;
 }
 
-export function checkRateLimit(
+const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+    ? new Redis({
+        url: process.env.UPSTASH_REDIS_REST_URL,
+        token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    })
+    : null;
+
+type RateLimitEntry = { count: number; resetTime: number };
+const fallbackMap = new Map<string, RateLimitEntry>();
+
+export async function checkRateLimit(
     identifier: string,
     options: RateLimitOptions = { limit: 10, windowMs: 60000 }
-): RateLimitResult {
+): Promise<RateLimitResult> {
     const now = Date.now();
-    const entry = rateLimitMap.get(identifier);
+    const key = `rate:${identifier}`;
 
+    if (redis) {
+        try {
+            const stored = await redis.get<string>(key);
+            const entry = stored ? JSON.parse(stored) : null;
+
+            if (!entry || entry.resetTime < now) {
+                const reset = now + options.windowMs;
+                const newEntry = { count: 1, resetTime: reset };
+                await redis.setex(key, Math.ceil(options.windowMs / 1000), JSON.stringify(newEntry));
+                return { success: true, remaining: options.limit - 1, resetTime: reset };
+            }
+
+            if (entry.count >= options.limit) {
+                return { success: false, remaining: 0, resetTime: entry.resetTime };
+            }
+
+            entry.count++;
+            await redis.setex(key, Math.ceil((entry.resetTime - now) / 1000), JSON.stringify(entry));
+            return { success: true, remaining: options.limit - entry.count, resetTime: entry.resetTime };
+        } catch (error) {
+            console.error('Redis rate limit error, falling back to memory:', error);
+        }
+    }
+
+    const entry = fallbackMap.get(identifier);
     if (!entry || entry.resetTime < now) {
         const reset = now + options.windowMs;
-        rateLimitMap.set(identifier, { count: 1, resetTime: reset });
+        fallbackMap.set(identifier, { count: 1, resetTime: reset });
         return { success: true, remaining: options.limit - 1, resetTime: reset };
     }
 
