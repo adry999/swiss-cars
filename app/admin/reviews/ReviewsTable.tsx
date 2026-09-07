@@ -88,7 +88,7 @@ export default function ReviewsTable({ reviews, currentPage, totalPages }: Props
         {
             header: 'Status',
             accessor: (r: Review) => (
-                <span className={r.is_visible ? styles.badgeSuccess : styles.badgeMuted}>
+                <span className={r.is_visible ? 'badge-success' : 'badge-muted'}>
                     {r.is_visible ? 'Vizibil' : 'Ascuns'}
                 </span>
             )
@@ -103,21 +103,21 @@ export default function ReviewsTable({ reviews, currentPage, totalPages }: Props
                 actions={(r) => (
                     <div className={styles.actions}>
                         <button
-                            className={styles.actionBtn}
+                            className={'action-btn'}
                             onClick={() => onToggleVisibility(r)}
                             title={r.is_visible ? 'Hide' : 'Show'}
                         >
                             {r.is_visible ? <EyeOff size={16} /> : <Eye size={16} />}
                         </button>
                         <button
-                            className={styles.actionBtn}
+                            className={'action-btn'}
                             onClick={() => router.push(`/admin/reviews/${r.id}`)}
                             title="Edit Review"
                         >
                             <Edit size={16} />
                         </button>
                         <button
-                            className={`${styles.actionBtn} ${styles.deleteBtn}`}
+                            className={`${'action-btn'} ${'action-btn-delete'}`}
                             onClick={() => onDelete(r.id!)}
                         >
                             <Trash2 size={16} />

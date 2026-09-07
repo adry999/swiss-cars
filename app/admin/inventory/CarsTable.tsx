@@ -97,7 +97,7 @@ export default function CarsTable({ cars, currentPage, totalPages }: Props) {
         {
             header: 'Status',
             accessor: (car: Car) => (
-                <span className={car.is_available ? styles.badgeSuccess : styles.badgeError}>
+                <span className={car.is_available ? 'badge-success' : 'badge-error'}>
                     {car.is_available ? 'Active' : 'Sold'}
                 </span>
             ),
@@ -112,14 +112,14 @@ export default function CarsTable({ cars, currentPage, totalPages }: Props) {
                 columns={columns}
                 actions={(car: Car) => (
                     <div className={styles.actions}>
-                        <Link href={`/inventory/${car.slug}`} target="_blank" className={styles.actionBtn} title="Vezi pe site">
+                        <Link href={`/inventory/${car.slug}`} target="_blank" className="action-btn" title="Vezi pe site">
                             <Eye size={16} />
                         </Link>
-                        <Link href={`/admin/inventory/${car.id}`} className={styles.actionBtn} title="Editează">
+                        <Link href={`/admin/inventory/${car.id}`} className="action-btn" title="Editează">
                             <Edit2 size={16} />
                         </Link>
                         <button
-                            className={styles.actionBtn}
+                            className="action-btn"
                             onClick={() => onDuplicate(car.id!)}
                             disabled={!!isDuplicating}
                             title="Duplică (Creează o copie)"
@@ -131,7 +131,7 @@ export default function CarsTable({ cars, currentPage, totalPages }: Props) {
                             )}
                         </button>
                         <button
-                            className={`${styles.actionBtn} ${styles.deleteBtn}`}
+                            className="action-btn action-btn-delete"
                             onClick={() => onDelete(car.id!)}
                             title="Șterge"
                         >

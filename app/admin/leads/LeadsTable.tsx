@@ -124,14 +124,14 @@ export default function LeadsTable({ initialLeads, unreadCount }: Props) {
                                 <div className={styles.row1}>
                                     <div className={styles.nameBlock}>
                                         <span className={styles.name}>{lead.name}</span>
-                                        <span className={`${styles.badge} ${lead.is_read ? styles.badgeRead : styles.badgeNew}`}>
+                                        <span className={lead.is_read ? 'badge-success' : 'badge badge-error'}>
                                             {lead.is_read ? 'Read' : 'New'}
                                         </span>
                                         {lead.form_type === 'testdrive' && (
-                                            <span className={styles.badgeTestDrive}>Test Drive</span>
+                                            <span className="badge-info">Test Drive</span>
                                         )}
                                         {lead.is_important && (
-                                            <span className={styles.badgeImportant}>Flagged</span>
+                                            <span className="badge-warning">Flagged</span>
                                         )}
                                     </div>
                                     <span className={styles.date}>
@@ -179,26 +179,26 @@ export default function LeadsTable({ initialLeads, unreadCount }: Props) {
                             {/* Actions */}
                             <div className={styles.actions}>
                                 <button
-                                    className={styles.actionBtn}
+                                    className="action-btn"
                                     onClick={() => handleMarkRead(lead.id, !lead.is_read)}
                                     title={lead.is_read ? 'Mark unread' : 'Mark read'}
                                 >
                                     {lead.is_read ? <EyeOff size={14} /> : <Eye size={14} />}
                                 </button>
                                 <button
-                                    className={`${styles.actionBtn} ${lead.is_important ? styles.actionImportant : ''}`}
+                                    className={lead.is_important ? 'action-btn action-btn-warning' : 'action-btn'}
                                     onClick={() => handleMarkImportant(lead.id, !lead.is_important)}
                                     title={lead.is_important ? 'Unflag' : 'Flag'}
                                 >
                                     {lead.is_important ? <StarOff size={14} /> : <Star size={14} />}
                                 </button>
                                 <button
-                                    className={`${styles.actionBtn} ${styles.actionDelete} ${confirmDelete === lead.id ? styles.actionDeleteConfirm : ''}`}
+                                    className={confirmDelete === lead.id ? 'action-btn action-btn-delete' : 'action-btn action-btn-delete'}
                                     onClick={() => handleDelete(lead.id)}
                                     title={confirmDelete === lead.id ? 'Click again to confirm' : 'Delete'}
                                 >
                                     <Trash2 size={14} />
-                                    {confirmDelete === lead.id && <span className={styles.confirmText}>Confirm</span>}
+                                    {confirmDelete === lead.id && <span style={{ fontSize: '10px', fontWeight: 700 }}>Confirm</span>}
                                 </button>
                             </div>
                         </div>

@@ -241,55 +241,6 @@ a.meta:hover {
     border-left: 2px solid #e5e7eb;
 }
 
-/* ── Badges ──────────────────────────────── */
-.badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 2px 7px;
-    border-radius: 3px;
-    font-size: 10px;
-    font-weight: 700;
-    border: 1px solid;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-}
-
-.badgeNew {
-    background: #fef2f2;
-    color: #dc2626;
-    border-color: #fee2e2;
-}
-
-.badgeRead {
-    background: #ecfdf5;
-    color: #059669;
-    border-color: #d1fae5;
-}
-
-.badgeImportant {
-    display: inline-flex;
-    align-items: center;
-    padding: 2px 7px;
-    border-radius: 3px;
-    font-size: 10px;
-    font-weight: 700;
-    background: #fffbeb;
-    color: #d97706;
-    border: 1px solid #fef3c7;
-}
-
-.badgeTestDrive {
-    display: inline-flex;
-    align-items: center;
-    padding: 2px 7px;
-    border-radius: 3px;
-    font-size: 10px;
-    font-weight: 700;
-    background: #f0f9ff;
-    color: #0369a1;
-    border: 1px solid #e0f2fe;
-    gap: 3px;
-}
 
 .preferredDateRow {
     display: flex;
@@ -317,61 +268,4 @@ a.meta:hover {
     gap: 4px;
     flex-shrink: 0;
     margin-left: auto;
-}
-
-.actionBtn {
-    display: flex;
-    align-items: center;
-    gap: 3px;
-    padding: 6px 8px;
-    border: 1px solid #e5e7eb;
-    border-radius: 4px;
-    background: transparent;
-    color: #6b7280;
-    font-size: 11px;
-    cursor: pointer;
-    transition: all 0.15s;
-    white-space: nowrap;
-}
-
-.actionBtn:hover {
-    background: #f3f4f6;
-    color: #111827;
-    border-color: #d1d5db;
-}
-
-.actionImportant {
-    color: #d97706;
-    border-color: #fde68a;
-}
-
-.actionImportant:hover {
-    background: #fffbeb;
-    border-color: #fcd34d;
-}
-
-.actionDelete {
-    color: #dc2626;
-    border-color: #fee2e2;
-}
-
-.actionDelete:hover {
-    background: #fef2f2;
-    border-color: #fecaca;
-}
-
-.actionDeleteConfirm {
-    background: #dc2626;
-    color: white;
-    border-color: #dc2626;
-}
-
-.actionDeleteConfirm:hover {
-    background: #b91c1c;
-    border-color: #991b1b;
-}
-
-.confirmText {
-    font-size: 10px;
-    font-weight: 700;
 }

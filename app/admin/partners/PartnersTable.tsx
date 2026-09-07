@@ -48,7 +48,7 @@ export default function PartnersTable({ partners }: { partners: Partner[] }) {
         {
             header: 'Status',
             accessor: (p: Partner) => (
-                <span className={p.is_visible ? styles.badgeSuccess : styles.badgeMuted}>
+                <span className={p.is_visible ? 'badge-success' : 'badge-muted'}>
                     {p.is_visible ? 'Vizibil' : 'Ascuns'}
                 </span>
             )
@@ -62,19 +62,19 @@ export default function PartnersTable({ partners }: { partners: Partner[] }) {
             actions={(p) => (
                 <div className={styles.actions}>
                     <button
-                        className={styles.actionBtn}
+                        className={'action-btn'}
                         onClick={() => onToggleVisibility(p)}
                     >
                         {p.is_visible ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                     <button
-                        className={styles.actionBtn}
+                        className={'action-btn'}
                         onClick={() => router.push(`/admin/partners/${p.id}`)}
                     >
                         <Edit size={16} />
                     </button>
                     <button
-                        className={`${styles.actionBtn} ${styles.deleteBtn}`}
+                        className={`${'action-btn'} ${'action-btn-delete'}`}
                         onClick={() => onDelete(p.id!)}
                     >
                         <Trash2 size={16} />
