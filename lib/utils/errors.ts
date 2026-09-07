@@ -45,18 +45,8 @@ export const errorMessages: Record<ErrorCode, string> = {
     UNKNOWN_ERROR: 'An unexpected error occurred. Please try again.',
 };
 
-/**
- * Get user-friendly message from an error
- */
 export function getUserFriendlyMessage(error: unknown): string {
-    if (error instanceof AppError) {
-        return errorMessages[error.code];
-    }
-
-    if (error instanceof Error) {
-        // Don't expose internal error messages to users
-        return errorMessages.UNKNOWN_ERROR;
-    }
-
-    return errorMessages.UNKNOWN_ERROR;
+    return error instanceof AppError
+        ? errorMessages[error.code]
+        : errorMessages.UNKNOWN_ERROR;
 }

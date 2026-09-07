@@ -8,10 +8,12 @@ import { revalidatePath } from 'next/cache';
 import { sendTelegramNotification, sendEmailNotification } from '@/lib/utils/notifications';
 import { getNotificationConfig } from '@/lib/settings';
 import { headers } from 'next/headers';
+import { getClientIp } from '@/lib/utils/rateLimit';
 
 export async function submitLeadInquiry(data: LeadInquiry) {
     const h = await headers();
-    const ip = h.get('x-forwarded-for')?.split(',')[0].trim() ?? h.get('x-real-ip') ?? 'unknown';
+    const req = new Request('http://localhost', { headers: h });
+    const ip = getClientIp(req);
     const rateCheck = checkRateLimit(`lead:${ip}`, LEAD_RATE_LIMIT);
 
     if (!rateCheck.success) {

@@ -7,20 +7,8 @@ import { CarSchema, type Car } from '@/lib/types';
 
 type CarWithImages = Car & { car_images?: { url: string; is_primary: boolean }[] };
 
-const CAR_COLUMNS = [
-    'slug', 'brand', 'model', 'year', 'price', 'mileage', 'fuel_type',
-    'transmission', 'engine_cc', 'color_exterior', 'color_interior',
-    'body_type', 'drive', 'seats', 'is_featured', 'is_available',
-    'description', 'features',
-] as const;
-
-function pickCarColumns(raw: Car): Pick<Car, typeof CAR_COLUMNS[number]> {
-    return Object.fromEntries(CAR_COLUMNS.map(k => [k, raw[k]])) as Pick<Car, typeof CAR_COLUMNS[number]>;
-}
-
 const STORAGE_BUCKET = 'car-images';
 
-/** Maps a public storage URL back to its object path, or null if it isn't one. */
 function storagePathFromUrl(url: string): string | null {
     const marker = `/storage/v1/object/public/${STORAGE_BUCKET}/`;
     const index = url.indexOf(marker);
@@ -29,12 +17,6 @@ function storagePathFromUrl(url: string): string | null {
     return path ? decodeURIComponent(path) : null;
 }
 
-/**
- * Best-effort removal of storage objects.
- *
- * Deliberately non-fatal: an orphaned file is a cost problem, a thrown error
- * here would be a broken admin save.
- */
 async function deleteStorageObjects(
     supabase: Awaited<ReturnType<typeof createClient>>,
     urls: string[]
@@ -42,8 +24,6 @@ async function deleteStorageObjects(
     const candidates = [...new Set(urls)].filter(url => storagePathFromUrl(url) !== null);
     if (candidates.length === 0) return;
 
-    // duplicateCar() copies image URLs rather than the files, so two cars can
-    // point at the same object. Only delete what nothing references any more.
     const { data: stillReferenced, error: refError } = await supabase
         .from('car_images')
         .select('url')
@@ -73,11 +53,9 @@ export async function saveCar(carData: CarWithImages) {
     const parsed = CarSchema.safeParse(carData);
     if (!parsed.success) throw new Error('Invalid car data');
 
-    const { car_images, id: carId, ...rawCar } = parsed.data as CarWithImages & { id?: string };
-    const car = pickCarColumns(rawCar as Car);
+    const { car_images, id: carId, created_at, updated_at, ...car } = parsed.data as CarWithImages & { id?: string };
 
     let savedId = carId;
-
     if (savedId) {
         const { error } = await supabase.from('cars').update(car).eq('id', savedId);
         if (error) throw error;
@@ -88,24 +66,12 @@ export async function saveCar(carData: CarWithImages) {
     }
 
     if (car_images && savedId) {
-        // Insert the new rows BEFORE removing the old ones. The previous order
-        // (delete-all, then insert) left the car with zero images whenever the
-        // insert failed. This is still not a transaction — see
-        // database/2026-08-26_security_hardening.sql section 6 — but a failure
-        // now leaves the previous images in place instead of destroying them.
         const { data: existing, error: existingError } = await supabase
             .from('car_images')
             .select('id, url')
             .eq('car_id', savedId);
         if (existingError) throw existingError;
 
-        // database/2026-08-26_security_hardening.sql adds a unique partial
-        // index allowing at most one is_primary=true row per car_id. Inserting
-        // the new primary image while the old one still has is_primary=true
-        // would violate it. Clearing the flag on the old rows first — rather
-        // than deleting them — means a car keeps every existing image even if
-        // the insert below fails; it just loses its "primary" designation
-        // until the next successful save.
         if ((existing ?? []).length > 0) {
             const { error: clearError } = await supabase
                 .from('car_images')
@@ -135,8 +101,6 @@ export async function saveCar(carData: CarWithImages) {
             if (delError) throw delError;
         }
 
-        // Drop storage objects for images the admin removed, otherwise every
-        // edit leaves files in the bucket forever.
         const keptUrls = new Set(car_images.map(img => img.url));
         const removedUrls = (existing ?? [])
             .map(row => row.url)
@@ -155,8 +119,6 @@ export async function deleteCar(id: string) {
     await requireAuth();
     const supabase = await createClient();
 
-    // Read the image URLs first: the car_images rows disappear via ON DELETE
-    // CASCADE, but the storage objects they point at do not.
     const { data: images } = await supabase
         .from('car_images')
         .select('url')
@@ -184,11 +146,11 @@ export async function duplicateCar(id: string) {
 
     if (carError || !car) throw new Error('Car not found');
 
-    const { id: _oldId, created_at: _ca, updated_at: _ua, car_images, ...rawCar } = car;
+    const { id: _, created_at, updated_at, car_images, ...carData } = car;
 
     const clonedCar = {
-        ...pickCarColumns(rawCar as Car),
-        slug: `${rawCar.slug}-${Date.now()}`,
+        ...carData,
+        slug: `${carData.slug}-${Date.now()}`,
         is_available: true,
     };
 

@@ -15,19 +15,10 @@ setInterval(() => {
     }
 }, 60000); // Clean up every minute
 
-/**
- * Shared limit for the two lead-submission entry points (submitLeadInquiry
- * and /api/contact). They used to carry different numbers — 5/min and
- * 10/min — for no reason tied to the actual abuse risk; both write to the
- * same table through the same submit_lead() RPC now, so they share one
- * policy.
- */
 export const LEAD_RATE_LIMIT = { limit: 5, windowMs: 60000 } as const;
 
 interface RateLimitOptions {
-    /** Maximum number of requests allowed within the window */
     limit: number;
-    /** Time window in milliseconds */
     windowMs: number;
 }
 
@@ -37,10 +28,6 @@ interface RateLimitResult {
     resetTime: number;
 }
 
-/**
- * Simple in-memory rate limiter.
- * For production with multiple servers, use Redis-based rate limiting.
- */
 export function checkRateLimit(
     identifier: string,
     options: RateLimitOptions = { limit: 10, windowMs: 60000 }
@@ -49,40 +36,19 @@ export function checkRateLimit(
     const entry = rateLimitMap.get(identifier);
 
     if (!entry || entry.resetTime < now) {
-        // First request or window expired
-        rateLimitMap.set(identifier, {
-            count: 1,
-            resetTime: now + options.windowMs,
-        });
-        return {
-            success: true,
-            remaining: options.limit - 1,
-            resetTime: now + options.windowMs,
-        };
+        const reset = now + options.windowMs;
+        rateLimitMap.set(identifier, { count: 1, resetTime: reset });
+        return { success: true, remaining: options.limit - 1, resetTime: reset };
     }
 
     if (entry.count >= options.limit) {
-        // Rate limit exceeded
-        return {
-            success: false,
-            remaining: 0,
-            resetTime: entry.resetTime,
-        };
+        return { success: false, remaining: 0, resetTime: entry.resetTime };
     }
 
-    // Increment count
     entry.count++;
-    return {
-        success: true,
-        remaining: options.limit - entry.count,
-        resetTime: entry.resetTime,
-    };
+    return { success: true, remaining: options.limit - entry.count, resetTime: entry.resetTime };
 }
 
-/**
- * Get client IP from request headers.
- * Handles X-Forwarded-For for proxied requests.
- */
 export function getClientIp(request: Request): string {
     const forwarded = request.headers.get('x-forwarded-for');
     if (forwarded) {
