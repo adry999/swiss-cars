@@ -1,24 +1,24 @@
 .card {
     background: var(--color-white);
-    border-radius: var(--radius-lg);
+    border-radius: 4px;
     overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    border: 1px solid rgba(0, 0, 0, 0.03);
-    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
+    transition: all 0.15s;
     height: 100%;
     display: flex;
     flex-direction: column;
 }
 
 .card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
-    border-color: rgba(229, 57, 53, 0.15);
+    transform: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    border-color: #d1d5db;
 }
 
 .imageWrap {
     position: relative;
-    height: 220px;
+    height: 200px;
     overflow: hidden;
     flex-shrink: 0;
 }
@@ -44,35 +44,35 @@
 
 .priceTag {
     position: absolute;
-    bottom: 12px;
-    right: 12px;
+    bottom: 8px;
+    right: 8px;
     background: var(--color-primary);
-    color: var(--color-white);
+    color: white;
     font-family: var(--font-primary);
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 800;
-    padding: 6px 14px;
-    border-radius: var(--radius-sm);
+    padding: 4px 10px;
+    border-radius: 4px;
     letter-spacing: 0.5px;
-    transition: all 0.3s ease;
+    transition: all 0.15s;
 }
 
 .soldTag {
-    background: var(--color-dark);
+    background: #6b7280;
     text-transform: uppercase;
-    font-size: 13px;
-    opacity: 0.9;
+    font-size: 11px;
+    color: white;
 }
 
 .favBtn {
     position: absolute;
-    top: 12px;
-    right: 12px;
+    top: 8px;
+    right: 8px;
     z-index: 2;
 }
 
 .body {
-    padding: 20px;
+    padding: 12px;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -83,68 +83,100 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 8px;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .name {
     font-family: var(--font-primary);
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 700;
     color: var(--color-dark);
     line-height: 1.2;
 }
 
 .year {
-    font-family: var(--font-primary);
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
-    color: var(--color-text-muted);
-    background: var(--color-gray);
-    padding: 3px 8px;
-    border-radius: 30px;
+    color: #6b7280;
+    background: #f3f4f6;
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid #e5e7eb;
     flex-shrink: 0;
 }
 
 .mileage {
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    color: var(--color-text-light);
-    margin-bottom: 12px;
+    gap: 4px;
+    font-size: 12px;
+    color: #6b7280;
+    margin-bottom: 8px;
 }
 
 .specs {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 18px;
+    gap: 4px;
+    margin-bottom: 12px;
 }
 
 .specs li {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 500;
-    padding: 4px 10px;
-    background: var(--color-gray);
-    border-radius: 30px;
-    color: var(--color-text-light);
+    padding: 2px 6px;
+    background: #f3f4f6;
+    border-radius: 4px;
+    border: 1px solid #e5e7eb;
+    color: #6b7280;
     text-transform: capitalize;
 }
 
 .link {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     font-family: var(--font-primary);
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
     text-transform: uppercase;
     color: var(--color-primary);
     margin-top: auto;
-    transition: gap 0.2s ease;
+    transition: gap 0.15s;
 }
 
 .link:hover {
-    gap: 12px;
+    gap: 8px;
+}
+
+@media (prefers-color-scheme: dark) {
+    .card {
+        background: #1f2937;
+        border-color: #4b5563;
+    }
+
+    .card:hover {
+        border-color: #6b7280;
+    }
+
+    .name {
+        color: #e5e7eb;
+    }
+
+    .year {
+        background: #374151;
+        border-color: #4b5563;
+        color: #d1d5db;
+    }
+
+    .mileage {
+        color: #9ca3af;
+    }
+
+    .specs li {
+        background: #374151;
+        border-color: #4b5563;
+        color: #9ca3af;
+    }
 }

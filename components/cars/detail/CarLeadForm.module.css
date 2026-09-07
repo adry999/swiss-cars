@@ -17,14 +17,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    padding: 14px 20px;
-    border-radius: var(--radius-md);
+    gap: 8px;
+    padding: 11px 16px;
+    border-radius: 4px;
     font-family: var(--font-primary);
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 700;
     text-decoration: none;
-    transition: all 0.25s ease;
+    transition: all 0.15s;
     letter-spacing: 0.5px;
 }
 
@@ -94,71 +94,72 @@
 
 .input {
     width: 100%;
-    padding: 12px 14px 12px 40px;
-    background: var(--color-gray);
-    border: 1.5px solid var(--color-gray-2);
-    border-radius: var(--radius-md);
-    font-size: 14px;
-    font-family: var(--font-body, inherit);
-    color: var(--color-dark);
+    padding: 9px 12px 9px 36px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
+    color: #111827;
     outline: none;
-    transition: border-color 0.2s;
+    transition: all 0.15s;
 }
 
 .input:focus {
     border-color: var(--color-primary);
-    background: var(--color-white);
+    background: white;
+    box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.1);
 }
 
 .input::placeholder {
-    color: var(--color-text-muted);
+    color: #9ca3af;
 }
 
 .textarea {
     width: 100%;
-    padding: 12px 14px;
-    background: var(--color-gray);
-    border: 1.5px solid var(--color-gray-2);
-    border-radius: var(--radius-md);
-    font-size: 14px;
-    font-family: var(--font-body, inherit);
-    color: var(--color-dark);
+    padding: 9px 12px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
+    color: #111827;
     outline: none;
     resize: vertical;
-    transition: border-color 0.2s;
+    transition: all 0.15s;
 }
 
 .textarea:focus {
     border-color: var(--color-primary);
-    background: var(--color-white);
+    background: white;
+    box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.1);
 }
 
 .textarea::placeholder {
-    color: var(--color-text-muted);
+    color: #9ca3af;
 }
 
 .submitBtn {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 14px 20px;
-    background: var(--color-dark);
+    gap: 6px;
+    padding: 11px 16px;
+    background: #111827;
     color: white;
     border: none;
-    border-radius: var(--radius-md);
+    border-radius: 4px;
     font-family: var(--font-primary);
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 700;
     letter-spacing: 0.5px;
     cursor: pointer;
-    transition: all 0.25s ease;
+    transition: all 0.15s;
 }
 
 .submitBtn:hover:not(:disabled) {
     background: var(--color-primary);
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(215, 0, 21, 0.3);
+    box-shadow: 0 2px 8px rgba(229, 57, 53, 0.2);
 }
 
 .submitBtn:disabled {
@@ -192,20 +193,74 @@
     flex-direction: column;
     align-items: center;
     text-align: center;
-    padding: 30px 20px;
+    padding: 24px 16px;
     gap: 12px;
-    background: var(--color-gray);
-    border-radius: var(--radius-md);
+    background: #ecfdf5;
+    border-radius: 4px;
+    border: 1px solid #d1fae5;
 }
 
 .successState h4 {
     font-family: var(--font-primary);
-    font-size: 18px;
-    font-weight: 800;
-    color: var(--color-dark);
+    font-size: 16px;
+    font-weight: 700;
+    color: #059669;
 }
 
 .successState p {
-    font-size: 14px;
-    color: var(--color-text-light);
+    font-size: 13px;
+    color: #047857;
+}
+
+@media (prefers-color-scheme: dark) {
+    .input {
+        background: #1f2937;
+        border-color: #4b5563;
+        color: #e5e7eb;
+    }
+
+    .input:focus {
+        border-color: #e53935;
+        box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.2);
+    }
+
+    .input::placeholder {
+        color: #6b7280;
+    }
+
+    .textarea {
+        background: #1f2937;
+        border-color: #4b5563;
+        color: #e5e7eb;
+    }
+
+    .textarea:focus {
+        border-color: #e53935;
+        box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.2);
+    }
+
+    .textarea::placeholder {
+        color: #6b7280;
+    }
+
+    .submitBtn {
+        background: #374151;
+    }
+
+    .submitBtn:hover:not(:disabled) {
+        background: #e53935;
+    }
+
+    .successState {
+        background: rgba(5, 150, 105, 0.15);
+        border-color: rgba(5, 150, 105, 0.3);
+    }
+
+    .successState h4 {
+        color: #6ee7b7;
+    }
+
+    .successState p {
+        color: #5eead4;
+    }
 }

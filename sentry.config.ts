@@ -14,22 +14,10 @@ export function initSentry() {
     enabled: process.env.NODE_ENV === "production",
 
     // Performance Monitoring
-    tracesSampleRate: 0.1, // 10% of transactions
-    profilesSampleRate: 0.1, // 10% of profiles
+    tracesSampleRate: 0.1,
 
     // Release tracking
     release: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 8) || "unknown",
-
-    // Capture unhandled exceptions
-    integrations: [
-      new Sentry.Replay({
-        maskAllText: false,
-        blockAllMedia: false,
-      }),
-    ],
-
-    replaySessionSampleRate: 0.1,
-    replayOnErrorSampleRate: 1.0,
   });
 }
 
