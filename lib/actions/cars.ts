@@ -53,7 +53,7 @@ export async function saveCar(carData: CarWithImages) {
     const parsed = CarSchema.safeParse(carData);
     if (!parsed.success) throw new Error('Invalid car data');
 
-    const { car_images, id: carId, created_at, updated_at, ...car } = parsed.data as CarWithImages & { id?: string };
+    const { car_images, id: carId, created_at, ...car } = parsed.data as CarWithImages & { id?: string };
 
     let savedId = carId;
     if (savedId) {
