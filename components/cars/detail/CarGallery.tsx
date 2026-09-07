@@ -150,6 +150,7 @@ export default function CarGallery({ images }: Props) {
                                 className={styles.image}
                                 sizes="120px"
                                 quality={60}
+                                loading="lazy"
                             />
                         </button>
                     ))}

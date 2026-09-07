@@ -30,6 +30,7 @@ export default function CarCard({ car }: Props) {
                             className={styles.image}
                             sizes="(max-width: 600px) 100vw, (max-width: 1024px) 50vw, 33vw"
                             quality={75}
+                            loading="lazy"
                         />
                     ) : (
                         // The old fallback pointed at /media/content/b-goods/placeholder.jpg,
