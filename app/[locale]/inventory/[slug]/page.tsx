@@ -132,11 +132,40 @@ export default async function CarDetailPage({ params }: Props) {
         }
     };
 
+    const breadcrumbSchema = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": t('breadcrumb_home'),
+                "item": localeUrl(locale, "/")
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": t('breadcrumb_inventory'),
+                "item": localeUrl(locale, "/inventory")
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": `${car.brand} ${car.model}`,
+                "item": localeUrl(locale, `/inventory/${car.slug}`)
+            }
+        ]
+    };
+
     return (
         <>
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
             />
 
             <main className={styles.main}>
