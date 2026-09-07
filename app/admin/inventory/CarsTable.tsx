@@ -72,14 +72,15 @@ export default function CarsTable({ cars, currentPage, totalPages }: Props) {
                                 quality={20}
                             />
                         ) : (
-                            <div className={styles.noImage}>No image</div>
+                            <div className={styles.noImage}>—</div>
                         )}
                     </div>
                 );
-            }
+            },
+            width: '80px'
         },
         {
-            header: 'Mașină',
+            header: 'Vehicle',
             accessor: (car: Car) => (
                 <div className={styles.carInfo}>
                     <span className={styles.carName}>{car.brand} {car.model}</span>
@@ -87,18 +88,20 @@ export default function CarsTable({ cars, currentPage, totalPages }: Props) {
                 </div>
             )
         },
-        { header: 'An', accessor: (car: Car) => car.year },
+        { header: 'Year', accessor: (car: Car) => car.year, width: '80px' },
         {
-            header: 'Preț',
-            accessor: (car: Car) => `${formatPrice(car.price)} €`
+            header: 'Price',
+            accessor: (car: Car) => <code style={{ fontSize: '12px' }}>{formatPrice(car.price)} €</code>,
+            width: '120px'
         },
         {
             header: 'Status',
             accessor: (car: Car) => (
                 <span className={car.is_available ? styles.badgeSuccess : styles.badgeError}>
-                    {car.is_available ? 'Disponibil' : 'Vândut'}
+                    {car.is_available ? 'Active' : 'Sold'}
                 </span>
-            )
+            ),
+            width: '100px'
         },
     ];
 

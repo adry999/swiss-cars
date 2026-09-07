@@ -59,12 +59,9 @@ export default function LeadsTable({ initialLeads, unreadCount }: Props) {
             {/* Header */}
             <div className={styles.header}>
                 <div>
-                    <h1 className={styles.title}>Cereri Primite</h1>
+                    <h1 className={styles.title}>Leads</h1>
                     <p className={styles.subtitle}>
-                        {leads.length} total &nbsp;·&nbsp;
-                        <span style={{ color: currentUnread > 0 ? 'var(--color-primary)' : '#16a34a', fontWeight: 600 }}>
-                            {currentUnread} necitite
-                        </span>
+                        <code>{leads.length}</code> total · <code style={{ color: currentUnread > 0 ? 'var(--color-primary)' : '#059669' }}>{currentUnread} unread</code>
                     </p>
                 </div>
                 <div className={styles.headerActions}>
@@ -74,8 +71,8 @@ export default function LeadsTable({ initialLeads, unreadCount }: Props) {
                             onClick={handleMarkAllRead}
                             disabled={isPending}
                         >
-                            <CheckCheck size={16} />
-                            Marchează toate citite
+                            <CheckCheck size={15} />
+                            Mark all read
                         </button>
                     )}
                 </div>
@@ -87,27 +84,27 @@ export default function LeadsTable({ initialLeads, unreadCount }: Props) {
                     className={`${styles.filterBtn} ${filter === 'all' ? styles.filterActive : ''}`}
                     onClick={() => setFilter('all')}
                 >
-                    Toate ({leads.length})
+                    All<code style={{ marginLeft: '4px' }}>({leads.length})</code>
                 </button>
                 <button
                     className={`${styles.filterBtn} ${filter === 'unread' ? styles.filterActive : ''}`}
                     onClick={() => setFilter('unread')}
                 >
                     <span className={styles.dot} />
-                    Necitite ({currentUnread})
+                    Unread<code style={{ marginLeft: '4px' }}>({currentUnread})</code>
                 </button>
                 <button
                     className={`${styles.filterBtn} ${filter === 'important' ? styles.filterActive : ''}`}
                     onClick={() => setFilter('important')}
                 >
-                    <Star size={13} />
-                    Importante ({leads.filter(l => l.is_important).length})
+                    <Star size={12} />
+                    Flagged<code style={{ marginLeft: '4px' }}>({leads.filter(l => l.is_important).length})</code>
                 </button>
             </div>
 
             {filtered.length === 0 ? (
                 <div className={styles.empty}>
-                    <p>Nu există cereri {filter !== 'all' ? 'în această categorie' : 'încă'}.</p>
+                    No leads {filter !== 'all' ? `in ${filter}` : 'yet'}.
                 </div>
             ) : (
                 <div className={styles.list}>
@@ -128,13 +125,13 @@ export default function LeadsTable({ initialLeads, unreadCount }: Props) {
                                     <div className={styles.nameBlock}>
                                         <span className={styles.name}>{lead.name}</span>
                                         <span className={`${styles.badge} ${lead.is_read ? styles.badgeRead : styles.badgeNew}`}>
-                                            {lead.is_read ? 'Citit' : '● Nou'}
+                                            {lead.is_read ? 'Read' : 'New'}
                                         </span>
                                         {lead.form_type === 'testdrive' && (
-                                            <span className={styles.badgeTestDrive}>📅 Programare</span>
+                                            <span className={styles.badgeTestDrive}>Test Drive</span>
                                         )}
                                         {lead.is_important && (
-                                            <span className={styles.badgeImportant}>⭐ Important</span>
+                                            <span className={styles.badgeImportant}>Flagged</span>
                                         )}
                                     </div>
                                     <span className={styles.date}>
@@ -170,8 +167,8 @@ export default function LeadsTable({ initialLeads, unreadCount }: Props) {
 
                                 {lead.preferred_date && (
                                     <div className={styles.preferredDateRow}>
-                                        <CalendarCheck size={13} />
-                                        <span>Data preferată: <strong>{lead.preferred_date}</strong></span>
+                                        <CalendarCheck size={12} />
+                                        <span>Preferred: <strong>{lead.preferred_date}</strong></span>
                                     </div>
                                 )}
                                 {lead.message && (
@@ -184,24 +181,24 @@ export default function LeadsTable({ initialLeads, unreadCount }: Props) {
                                 <button
                                     className={styles.actionBtn}
                                     onClick={() => handleMarkRead(lead.id, !lead.is_read)}
-                                    title={lead.is_read ? 'Marchează ca necitit' : 'Marchează ca citit'}
+                                    title={lead.is_read ? 'Mark unread' : 'Mark read'}
                                 >
-                                    {lead.is_read ? <EyeOff size={15} /> : <Eye size={15} />}
+                                    {lead.is_read ? <EyeOff size={14} /> : <Eye size={14} />}
                                 </button>
                                 <button
                                     className={`${styles.actionBtn} ${lead.is_important ? styles.actionImportant : ''}`}
                                     onClick={() => handleMarkImportant(lead.id, !lead.is_important)}
-                                    title={lead.is_important ? 'Elimină din importante' : 'Marchează ca important'}
+                                    title={lead.is_important ? 'Unflag' : 'Flag'}
                                 >
-                                    {lead.is_important ? <StarOff size={15} /> : <Star size={15} />}
+                                    {lead.is_important ? <StarOff size={14} /> : <Star size={14} />}
                                 </button>
                                 <button
                                     className={`${styles.actionBtn} ${styles.actionDelete} ${confirmDelete === lead.id ? styles.actionDeleteConfirm : ''}`}
                                     onClick={() => handleDelete(lead.id)}
-                                    title={confirmDelete === lead.id ? 'Click din nou pentru a confirma' : 'Șterge'}
+                                    title={confirmDelete === lead.id ? 'Click again to confirm' : 'Delete'}
                                 >
-                                    <Trash2 size={15} />
-                                    {confirmDelete === lead.id && <span className={styles.confirmText}>Confirmi?</span>}
+                                    <Trash2 size={14} />
+                                    {confirmDelete === lead.id && <span className={styles.confirmText}>Confirm</span>}
                                 </button>
                             </div>
                         </div>

@@ -20,9 +20,9 @@ export default async function AdminCarsPage({ searchParams }: Props) {
     return (
         <div>
             <div className={styles.header}>
-                <h1 className={styles.title}>All Cars ({totalCount})</h1>
+                <h1 className={styles.title}>Vehicles<span style={{ color: '#9ca3af', fontWeight: 400, marginLeft: '8px' }}>({totalCount})</span></h1>
                 <Link href="/admin/inventory/new" className="btn btn-primary">
-                    <Plus size={18} className="me-2" /> Add New Car
+                    <Plus size={16} className="me-2" /> New
                 </Link>
             </div>
 
