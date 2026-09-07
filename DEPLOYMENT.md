@@ -73,3 +73,64 @@ After deployment, check:
 2. Logs: Vercel Dashboard → Functions
 3. Admin: https://your-deployment.vercel.app/admin (requires auth)
 4. Rate Limit: Test /contact form — should rate limit at 5 req/min
+
+## Monitoring with Sentry
+
+### Setup
+
+1. Create Sentry account: https://sentry.io
+2. Create new Next.js project
+3. Copy DSN: Settings → Client Keys (DSN)
+4. Set in Vercel:
+   - `NEXT_PUBLIC_SENTRY_DSN=https://key@sentry.io/project-id`
+   - `SENTRY_AUTH_TOKEN=sntrys_...` (for releases)
+
+### What Gets Tracked
+
+- Unhandled exceptions (frontend + backend)
+- Server errors (API routes, Server Actions)
+- Performance metrics (10% sample rate)
+- Session replays (on errors)
+- Release tracking (Vercel commit SHA)
+
+### Dashboard
+
+Visit sentry.io → Issues to:
+- View errors grouped by type
+- See stack traces
+- Replay session when error occurred
+- Track error trends over time
+
+## Performance Monitoring
+
+### Vercel Speed Insights
+
+After deployment, check:
+1. Vercel Dashboard → Project → Analytics → Speed Insights
+2. Monitors Core Web Vitals in production
+3. Compares vs. previous deployments
+
+### Local Testing
+
+```bash
+npm run build
+npm run start
+
+# Open DevTools → Lighthouse
+# Run audit on http://localhost:3000
+```
+
+### Key Metrics
+
+- **LCP** (Largest Contentful Paint): < 2.5s — images, fonts
+- **CLS** (Cumulative Layout Shift): < 0.1 — prevent layout thrashing
+- **FID** (First Input Delay): < 100ms — JS execution
+
+### Optimization Checklist
+
+- ✓ Next.js Image optimization enabled
+- ✓ CSS-in-JS (zero runtime CSS)
+- ✓ Dynamic imports for admin pages
+- ✓ React Suspense boundaries
+- ✗ TODO: Lazy-load carousel images on homepage
+- ✗ TODO: Reduce bundle size (analyze with `next/bundle-analyzer`)
