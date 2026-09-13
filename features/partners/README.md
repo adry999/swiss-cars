@@ -15,7 +15,9 @@ Partenerii afișați pe homepage și pe pagina de leasing, plus administrarea lo
 - `PartnersTable` — tabelul de parteneri din admin.
 
 `@features/partners/server` (server-only):
-- `listVisiblePartners`, `findPartnerForEditing` — citiri din tabela `partners`.
+- `listVisiblePartners` — partenerii vizibili, pentru paginile publice (la eroare logează și întoarce listă goală).
+- `listAllPartners` — toți partenerii, inclusiv cei ascunși, pentru `/admin/partners` (aruncă la eroare).
+- `findPartnerForEditing` — un partener după id, pentru formularul de editare.
 
 `@features/partners/actions` (Server Actions, protejate de `requireAuth`):
 - `savePartner(data)`, `deletePartner(id)`.
@@ -36,7 +38,7 @@ partners.schema.ts / .test.ts  — PartnerSchema
 partners.types.ts              — Partner
 index.ts / admin.ts / server.ts / actions.ts
 server/
-  partners-repository.ts        — listVisiblePartners, findPartnerForEditing
+  partners-repository.ts        — listVisiblePartners, listAllPartners, findPartnerForEditing
 ui/
   PartnersSlider (+ css), PartnerForm, PartnersTable (+ css)
 ```
@@ -45,8 +47,3 @@ ui/
 
 Citirea publică (`listVisiblePartners`) logează eroarea și întoarce listă goală; `actions.ts` aruncă.
 Testele stau lângă sursă. Rulare izolată: `npx vitest run features/partners`
-
-## De urmat
-
-`/admin/partners` listează partenerii prin `listVisiblePartners`, deci un partener ascuns dispare
-din lista de admin și nu mai poate fi reactivat de acolo (bug cunoscut, se repară într-un pas separat).
