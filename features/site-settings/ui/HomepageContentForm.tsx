@@ -84,12 +84,13 @@ const DEFAULT_CONTENT: HomepageContent = {
     }
 };
 
-export default function HomepageContentForm({ initialData }: { initialData?: HomepageContent }) {
+export default function HomepageContentForm({ initialData }: { initialData?: Partial<HomepageContent> }) {
     const [isSaving, setIsSaving] = useState(false);
     const toast = useToast();
 
+    // The stored row can lack whole sections (no row yet reads as {}); those start from the defaults.
     const { control, register, handleSubmit } = useForm<HomepageContent>({
-        defaultValues: initialData || DEFAULT_CONTENT,
+        defaultValues: { ...DEFAULT_CONTENT, ...initialData },
     });
 
     const onSubmit = async (data: HomepageContent) => {
