@@ -16,7 +16,7 @@ import {
     X,
 } from 'lucide-react';
 import Image from 'next/image';
-import { signOut } from '@/lib/actions/auth';
+import { signOut } from '@features/auth/actions';
 import styles from './AdminSidebar.module.css';
 
 const MENU_ITEMS = [
