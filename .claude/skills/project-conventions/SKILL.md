@@ -23,7 +23,7 @@ description: Convențiile înregistrate ale SwissCars.md (Next.js 16 App Router 
 
 | Folder | Conține | Poate importa |
 |---|---|---|
-| `app/` | rute, pagini subțiri, Route Handlers | orice; un feature doar prin `@features/<x>`, `@features/<x>/server`, `@features/<x>/actions` |
+| `app/` | rute, pagini subțiri, Route Handlers | orice; un feature doar prin `@features/<x>`, `@features/<x>/admin`, `@features/<x>/server`, `@features/<x>/actions` |
 | `app/_composition/` | leagă feature-urile: porturi, abonări la evenimente, `after()` | tot ce poate `app/` |
 | `features/<x>/` | o capabilitate de business | propriul feature (relativ, cel mult un `../`), `@core/*`, `@shared/*`, `@config/*`; tranzitoriu `@/lib/*`, `@/components/ui` |
 | `shared/contracts/` | tipuri cross-feature: evenimente de domeniu, `ActionResult` | nimic din `features/`, `app/`, `components/` |
@@ -36,7 +36,8 @@ Granițele sunt aplicate de `eslint.config.mjs` (`no-restricted-imports`). Nu de
 
 ```text
 features/<feature>/
-├── index.ts             # client-safe: componente, hook-uri, tipuri
+├── index.ts             # client-safe: componente publice, hook-uri, tipuri
+├── admin.ts             # client-safe, doar UI de admin (opțional)
 ├── server.ts            # import 'server-only': use case-uri, repository
 ├── actions.ts           # 'use server': Server Actions ale feature-ului
 ├── <feature>.types.ts   # contracte, porturi
@@ -141,4 +142,9 @@ refactor(leads): move lead submission and inbox into a feature module
 | 2026-09-13 | Event bus in-process, efecte externe în `after()` | serverless, fără proces persistent; pe Vercel `after` e ținut în viață de `waitUntil` |
 | 2026-09-13 | Erori așteptate ca valori `ActionResult`, neașteptate ca excepții | recomandarea din `node_modules/next/dist/docs/01-app/01-getting-started/10-error-handling.md`; mesajele se traduc pe client |
 | 2026-09-13 | Rate limit fix-window cu store Upstash și fallback în memorie | păstrează comportamentul existent; înlocuirea cu `@upstash/ratelimit` e un pas separat |
-| 2026-09-13 | Contextul de sesiune (adminul curent) va sta în `shared/session/`, nu în `features/auth/` | toate feature-urile de admin îl citesc fără să importe feature-ul de autentificare |
+| 2026-09-13 | Contextul de sesiune (adminul curent) stă în `shared/session/`, nu în `features/auth/` | toate feature-urile de admin îl citesc fără să importe feature-ul de autentificare |
+| 2026-09-13 | Punct de intrare opțional `admin.ts` pentru UI-ul de admin al unui feature | `index.ts` e importat de paginile publice; UI-ul de admin reexportat acolo ar putea intra în manifestul client al acestora |
+| 2026-09-13 | Clienții Supabase stau în `core/supabase/`, iar variabilele `NEXT_PUBLIC_*` se citesc prin `config/public-environment.ts` | Next inserează `NEXT_PUBLIC_*` în bundle doar pentru expresii `process.env.NUME` literale, deci citirea stă într-un singur loc |
+| 2026-09-13 | Favoritele fac parte din `features/inventory`, nu din feature separat | `CarCard` include butonul de favorite și e randat de componente client care nu pot primi funcții (render props) din Server Components; favoritele nu au altă logică decât lista din `localStorage` |
+| 2026-09-13 | Citirile publice din catalog (`inventory/server`) logează eroarea și întorc listă goală; citirile de admin aruncă | build-ul CI și prerender-ul rulează fără bază de date; paginile publice trebuie să se genereze și atunci, iar adminul trebuie să vadă eșecul |
+| 2026-09-13 | Node 24 (`engines.node` în `package.json`, CI pe 24) | `nodeVersion` din `vercel.json` fixa Node 18, depreciat; `engines` e mecanismul documentat de Vercel |
