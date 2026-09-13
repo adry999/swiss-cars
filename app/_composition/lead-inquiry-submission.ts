@@ -1,10 +1,8 @@
 import 'server-only';
 import { after } from 'next/server';
-import { Redis } from '@upstash/redis';
 import { getServerEnvironment } from '@config/server-environment';
 import { createEventBus } from '@core/events/event-bus';
-import { createRateLimiter } from '@core/rate-limit/rate-limiter';
-import { createUpstashWindowUsageStore } from '@core/rate-limit/upstash-window-usage-store';
+import { getRateLimiter } from '@core/rate-limit/shared-rate-limiter';
 import type { DomainEvents } from '@shared/contracts/domain-events';
 import { createSubmitLeadInquiry, supabaseLeadsRepository, type SubmitLeadInquiry } from '@features/leads/server';
 import {
@@ -31,7 +29,6 @@ async function resolveLeadAlertChannels(): Promise<LeadAlertChannel[]> {
 }
 
 function composeSubmitLeadInquiry(): SubmitLeadInquiry {
-    const { upstashRedis } = getServerEnvironment();
     const eventBus = createEventBus<DomainEvents>();
 
     eventBus.subscribe('leads.inquiry-submitted', (inquiry) => {
@@ -42,13 +39,9 @@ function composeSubmitLeadInquiry(): SubmitLeadInquiry {
         });
     });
 
-    const rateLimitStore = upstashRedis
-        ? createUpstashWindowUsageStore(new Redis({ url: upstashRedis.restUrl, token: upstashRedis.restToken }))
-        : null;
-
     return createSubmitLeadInquiry({
         leadsRepository: supabaseLeadsRepository,
-        rateLimiter: createRateLimiter({ store: rateLimitStore }),
+        rateLimiter: getRateLimiter(),
         eventPublisher: eventBus,
     });
 }
