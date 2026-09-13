@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { createRateLimiter, type WindowUsage, type WindowUsageStore } from './rate-limiter';
+import { createInMemoryRateLimiter, createRateLimiter, type RateLimiter } from './rate-limiter';
 
 const POLICY = { limit: 3, windowMs: 60_000 };
 
@@ -14,28 +14,9 @@ function createClock(startsAt = 1_000_000) {
     };
 }
 
-function createRecordingStore() {
-    const usageByKey = new Map<string, WindowUsage>();
-    const writes: Array<{ key: string; usage: WindowUsage; ttlMs: number }> = [];
-    const store: WindowUsageStore = {
-        async read(key) {
-            return usageByKey.get(key) ?? null;
-        },
-        async write(key, usage, ttlMs) {
-            usageByKey.set(key, usage);
-            writes.push({ key, usage, ttlMs });
-        },
-    };
-    return { store, writes };
-}
-
-describe('createRateLimiter', () => {
-    afterEach(() => {
-        vi.restoreAllMocks();
-    });
-
+describe('createInMemoryRateLimiter', () => {
     it('allows requests up to the limit and counts down the remaining ones', async () => {
-        const limiter = createRateLimiter({ store: null, now: createClock().now });
+        const limiter = createInMemoryRateLimiter({ now: createClock().now });
 
         const decisions = [
             await limiter.consume('lead:1.1.1.1', POLICY),
@@ -52,7 +33,7 @@ describe('createRateLimiter', () => {
 
     it('blocks requests beyond the limit until the window ends', async () => {
         const clock = createClock();
-        const limiter = createRateLimiter({ store: null, now: clock.now });
+        const limiter = createInMemoryRateLimiter({ now: clock.now });
         for (let request = 0; request < POLICY.limit; request++) {
             await limiter.consume('lead:1.1.1.1', POLICY);
         }
@@ -66,7 +47,7 @@ describe('createRateLimiter', () => {
     });
 
     it('limits each key independently', async () => {
-        const limiter = createRateLimiter({ store: null, now: createClock().now });
+        const limiter = createInMemoryRateLimiter({ now: createClock().now });
         const singleRequest = { limit: 1, windowMs: 60_000 };
 
         await limiter.consume('lead:1.1.1.1', singleRequest);
@@ -74,31 +55,38 @@ describe('createRateLimiter', () => {
         expect((await limiter.consume('lead:2.2.2.2', singleRequest)).allowed).toBe(true);
         expect((await limiter.consume('lead:1.1.1.1', singleRequest)).allowed).toBe(false);
     });
+});
 
-    it('persists usage in the shared store with a TTL matching the rest of the window', async () => {
-        const clock = createClock();
-        const { store, writes } = createRecordingStore();
-        const limiter = createRateLimiter({ store, now: clock.now });
-
-        await limiter.consume('lead:1.1.1.1', POLICY);
-        clock.advance(20_000);
-        await limiter.consume('lead:1.1.1.1', POLICY);
-
-        expect(writes).toEqual([
-            { key: 'lead:1.1.1.1', usage: { count: 1, resetsAt: 1_060_000 }, ttlMs: 60_000 },
-            { key: 'lead:1.1.1.1', usage: { count: 2, resetsAt: 1_060_000 }, ttlMs: 40_000 },
-        ]);
+describe('createRateLimiter', () => {
+    afterEach(() => {
+        vi.restoreAllMocks();
     });
 
-    it('keeps limiting in memory when the shared store is unreachable', async () => {
+    it('follows the shared limiter while it answers', async () => {
+        const shared: RateLimiter = {
+            consume: vi.fn(async () => ({ allowed: false, remaining: 0, resetsAt: 1_060_000 })),
+        };
+        const fallback: RateLimiter = { consume: vi.fn() };
+        const limiter = createRateLimiter({ shared, fallback });
+
+        const decision = await limiter.consume('lead:1.1.1.1', POLICY);
+
+        expect(decision).toEqual({ allowed: false, remaining: 0, resetsAt: 1_060_000 });
+        expect(shared.consume).toHaveBeenCalledWith('lead:1.1.1.1', POLICY);
+        expect(fallback.consume).not.toHaveBeenCalled();
+    });
+
+    it('keeps limiting in memory when the shared limiter is unreachable', async () => {
         vi.spyOn(console, 'error').mockImplementation(() => {});
-        const unreachableStore: WindowUsageStore = {
-            read: async () => {
+        const unreachable: RateLimiter = {
+            consume: async () => {
                 throw new Error('ECONNRESET');
             },
-            write: async () => {},
         };
-        const limiter = createRateLimiter({ store: unreachableStore, now: createClock().now });
+        const limiter = createRateLimiter({
+            shared: unreachable,
+            fallback: createInMemoryRateLimiter({ now: createClock().now }),
+        });
         const singleRequest = { limit: 1, windowMs: 60_000 };
 
         const first = await limiter.consume('lead:1.1.1.1', singleRequest);
@@ -106,5 +94,14 @@ describe('createRateLimiter', () => {
 
         expect([first.allowed, second.allowed]).toEqual([true, false]);
         expect(console.error).toHaveBeenCalled();
+    });
+
+    it('limits in memory when no shared limiter is configured', async () => {
+        const limiter = createRateLimiter({ shared: null });
+        const singleRequest = { limit: 1, windowMs: 60_000 };
+
+        await limiter.consume('subscribe:1.1.1.1', singleRequest);
+
+        expect((await limiter.consume('subscribe:1.1.1.1', singleRequest)).allowed).toBe(false);
     });
 });

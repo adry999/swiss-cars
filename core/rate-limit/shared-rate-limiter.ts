@@ -2,7 +2,7 @@ import 'server-only';
 import { Redis } from '@upstash/redis';
 import { getServerEnvironment } from '@config/server-environment';
 import { createRateLimiter, type RateLimiter } from './rate-limiter';
-import { createUpstashWindowUsageStore } from './upstash-window-usage-store';
+import { createUpstashRateLimiter } from './upstash-rate-limiter';
 
 let rateLimiter: RateLimiter | undefined;
 
@@ -13,10 +13,10 @@ let rateLimiter: RateLimiter | undefined;
 export function getRateLimiter(): RateLimiter {
     if (!rateLimiter) {
         const { upstashRedis } = getServerEnvironment();
-        const store = upstashRedis
-            ? createUpstashWindowUsageStore(new Redis({ url: upstashRedis.restUrl, token: upstashRedis.restToken }))
+        const shared = upstashRedis
+            ? createUpstashRateLimiter(new Redis({ url: upstashRedis.restUrl, token: upstashRedis.restToken }))
             : null;
-        rateLimiter = createRateLimiter({ store });
+        rateLimiter = createRateLimiter({ shared });
     }
     return rateLimiter;
 }

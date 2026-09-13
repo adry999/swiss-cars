@@ -13,18 +13,13 @@ export interface RateLimiter {
     consume(key: string, policy: RateLimitPolicy): Promise<RateLimitDecision>;
 }
 
-export interface WindowUsage {
+interface WindowUsage {
     count: number;
     resetsAt: number;
 }
 
-export interface WindowUsageStore {
-    read(key: string): Promise<WindowUsage | null>;
-    write(key: string, usage: WindowUsage, ttlMs: number): Promise<void>;
-}
-
 function countRequest(
-    current: WindowUsage | null,
+    current: WindowUsage | undefined,
     policy: RateLimitPolicy,
     now: number,
 ): { decision: RateLimitDecision; nextUsage: WindowUsage | null } {
@@ -44,49 +39,39 @@ function countRequest(
     };
 }
 
-function createInMemoryWindowUsageStore(): WindowUsageStore {
+/** Fixed-window limiter that only sees the requests reaching this server instance. */
+export function createInMemoryRateLimiter({ now = () => Date.now() }: { now?: () => number } = {}): RateLimiter {
     const usageByKey = new Map<string, WindowUsage>();
 
     return {
-        async read(key) {
-            return usageByKey.get(key) ?? null;
-        },
-        async write(key, usage) {
-            usageByKey.set(key, usage);
+        async consume(key, policy) {
+            const { decision, nextUsage } = countRequest(usageByKey.get(key), policy, now());
+            if (nextUsage) {
+                usageByKey.set(key, nextUsage);
+            }
+            return decision;
         },
     };
 }
 
-/** Fixed-window limiter. Read-then-write is not atomic, so bursts can slightly exceed the limit. */
 export function createRateLimiter({
-    store,
-    now = () => Date.now(),
+    shared,
+    fallback = createInMemoryRateLimiter(),
 }: {
-    store: WindowUsageStore | null;
-    now?: () => number;
+    shared: RateLimiter | null;
+    fallback?: RateLimiter;
 }): RateLimiter {
-    const inMemoryStore = createInMemoryWindowUsageStore();
-
-    async function consumeFrom(usageStore: WindowUsageStore, key: string, policy: RateLimitPolicy) {
-        const currentTime = now();
-        const { decision, nextUsage } = countRequest(await usageStore.read(key), policy, currentTime);
-        if (nextUsage) {
-            await usageStore.write(key, nextUsage, nextUsage.resetsAt - currentTime);
-        }
-        return decision;
-    }
-
     return {
         async consume(key, policy) {
-            if (store) {
+            if (shared) {
                 try {
-                    return await consumeFrom(store, key, policy);
+                    return await shared.consume(key, policy);
                 } catch (error) {
                     // An unreachable store must not block customers; each instance then limits on its own.
-                    console.error('Rate limit store failed, limiting in memory:', error);
+                    console.error('Shared rate limiter failed, limiting in memory:', error);
                 }
             }
-            return consumeFrom(inMemoryStore, key, policy);
+            return fallback.consume(key, policy);
         },
     };
 }
