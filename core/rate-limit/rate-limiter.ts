@@ -18,6 +18,8 @@ interface WindowUsage {
     resetsAt: number;
 }
 
+const DEFAULT_MAX_TRACKED_KEYS = 10_000;
+
 function countRequest(
     current: WindowUsage | undefined,
     policy: RateLimitPolicy,
@@ -39,13 +41,33 @@ function countRequest(
     };
 }
 
-/** Fixed-window limiter that only sees the requests reaching this server instance. */
-export function createInMemoryRateLimiter({ now = () => Date.now() }: { now?: () => number } = {}): RateLimiter {
+/**
+ * Fixed-window limiter that only sees the requests reaching this server instance.
+ * Long-lived instances would otherwise keep one entry per client IP forever, so expired windows are
+ * swept whenever the map reaches `maxTrackedKeys`.
+ */
+export function createInMemoryRateLimiter({
+    now = () => Date.now(),
+    maxTrackedKeys = DEFAULT_MAX_TRACKED_KEYS,
+}: { now?: () => number; maxTrackedKeys?: number } = {}): RateLimiter {
     const usageByKey = new Map<string, WindowUsage>();
+
+    function removeExpiredWindows(currentTime: number) {
+        for (const [key, usage] of usageByKey) {
+            if (usage.resetsAt <= currentTime) {
+                usageByKey.delete(key);
+            }
+        }
+    }
 
     return {
         async consume(key, policy) {
-            const { decision, nextUsage } = countRequest(usageByKey.get(key), policy, now());
+            const currentTime = now();
+            if (usageByKey.size >= maxTrackedKeys && !usageByKey.has(key)) {
+                removeExpiredWindows(currentTime);
+            }
+
+            const { decision, nextUsage } = countRequest(usageByKey.get(key), policy, currentTime);
             if (nextUsage) {
                 usageByKey.set(key, nextUsage);
             }
