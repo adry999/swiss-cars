@@ -1,37 +1,9 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "npm run build",
   "devCommand": "npm run dev",
   "installCommand": "npm ci",
   "framework": "nextjs",
-  "env": {
-    "NEXT_PUBLIC_SUPABASE_URL": {
-      "description": "Supabase project URL (public, safe to expose)"
-    },
-    "NEXT_PUBLIC_SUPABASE_ANON_KEY": {
-      "description": "Supabase anonymous key (public, safe to expose)"
-    },
-    "UPSTASH_REDIS_REST_URL": {
-      "description": "Redis REST API URL from Upstash (serverless rate limiting)"
-    },
-    "UPSTASH_REDIS_REST_TOKEN": {
-      "description": "Redis REST API token from Upstash"
-    },
-    "TELEGRAM_BOT_TOKEN": {
-      "description": "Telegram bot token for lead notifications (server-only)"
-    },
-    "TELEGRAM_CHAT_ID": {
-      "description": "Telegram chat ID for notifications (server-only)"
-    },
-    "NOTIFICATION_EMAIL": {
-      "description": "Email address to receive lead notifications (server-only)"
-    },
-    "RESEND_API_KEY": {
-      "description": "Resend API key for email notifications (optional, server-only)"
-    },
-    "NEXT_PUBLIC_GA_MEASUREMENT_ID": {
-      "description": "Google Analytics 4 measurement ID (optional, public)"
-    }
-  },
   "git": {
     "deploymentEnabled": {
       "main": true
