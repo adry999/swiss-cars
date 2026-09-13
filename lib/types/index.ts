@@ -9,33 +9,6 @@ export const TranslatedFieldSchema = z.object({
 
 export type TranslatedField = z.infer<typeof TranslatedFieldSchema>;
 
-// Review Schema
-export const ReviewSchema = z.object({
-    id: z.string().uuid().optional(),
-    name: z.string().min(1),
-    content_ro: z.string().nullable(),
-    content_ru: z.string().nullable(),
-    content_en: z.string().nullable(),
-    rating: z.number().int().min(1).max(5),
-    avatar_url: z.string().nullable(),
-    is_visible: z.boolean().default(true),
-    created_at: z.string().optional(),
-});
-
-export type Review = z.infer<typeof ReviewSchema>;
-
-// Partner Schema
-export const PartnerSchema = z.object({
-    id: z.string().uuid().optional(),
-    name: z.string().nullable(),
-    logo_url: z.string().nullable(),
-    website_url: z.string().nullable(),
-    sort_order: z.number().int().default(0),
-    is_visible: z.boolean().default(true),
-});
-
-export type Partner = z.infer<typeof PartnerSchema>;
-
 // HeroSlide — used by HeroSlider component and HomepageForm
 export interface HeroSlide {
     imageSrc: string;

@@ -1,5 +1,5 @@
 import { getTranslations } from 'next-intl/server';
-import { getPartners } from '@/lib/supabase/queries';
+import { listVisiblePartners } from '@features/partners/server';
 import Image from 'next/image';
 import LeasingCalculator from '@/components/leasing/LeasingCalculator';
 import { localeAlternates, localeOpenGraph, localeTwitter } from '@/i18n/routing';
@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function LeasingPage() {
     const t = await getTranslations('leasing');
-    const partners = await getPartners();
+    const partners = await listVisiblePartners();
 
     return (
         <main style={{ paddingTop: 'var(--header-height)', paddingBottom: '80px', minHeight: '80vh', background: 'var(--color-bg)' }}>

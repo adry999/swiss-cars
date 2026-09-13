@@ -12,10 +12,11 @@ import DualCTABanner from '@/components/home/DualCTABanner';
 import LeasingSection from '@/components/home/LeasingSection';
 import { Reveal } from '@/components/ui/Reveal';
 
-const ReviewsSlider = dynamic(() => import('@/components/home/ReviewsSlider'), { ssr: true });
-const PartnersSlider = dynamic(() => import('@/components/home/PartnersSlider'), { ssr: true });
+const ReviewsSlider = dynamic(() => import('@features/reviews').then((reviewsModule) => reviewsModule.ReviewsSlider), { ssr: true });
+const PartnersSlider = dynamic(() => import('@features/partners').then((partnersModule) => partnersModule.PartnersSlider), { ssr: true });
 
-import { getReviews, getPartners } from '@/lib/supabase/queries';
+import { listVisibleReviews } from '@features/reviews/server';
+import { listVisiblePartners } from '@features/partners/server';
 import { getHomepageContent, getPublicSiteConfig } from '@/lib/settings';
 import type { Metadata } from 'next';
 
@@ -41,8 +42,8 @@ export default async function HomePage({ params }: Props) {
     // Fetch data from Supabase (server-side)
     const [cars, reviews, partners, homepageData, siteConfig] = await Promise.all([
         listFeaturedCars(),
-        getReviews(),
-        getPartners(),
+        listVisibleReviews(),
+        listVisiblePartners(),
         getHomepageContent(),
         getPublicSiteConfig()
     ]);

@@ -1,0 +1,40 @@
+.partnerInfo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logoWrap {
+    width: 40px;
+    height: 40px;
+    position: relative;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+}
+
+.logo {
+    object-fit: contain;
+    padding: 4px;
+}
+
+.link {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
+
+.actions {
+    display: flex;
+    gap: 6px;
+    justify-content: flex-end;
+}

@@ -3,11 +3,11 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Save, Loader2, ArrowLeft, AlertCircle, X, User } from 'lucide-react';
-import { saveReview } from '@/lib/actions/content';
+import { saveReview } from '../actions';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
-import ImageUploader from './ImageUploader';
-import type { Review } from '@/lib/types';
+import ImageUploader from '@/components/admin/ImageUploader';
+import type { Review } from '../reviews.types';
 
 import styles from './ReviewForm.module.css';
 

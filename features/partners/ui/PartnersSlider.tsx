@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import type { Partner } from '@/lib/types';
+import type { Partner } from '../partners.types';
 import styles from './PartnersSlider.module.css';
 
 type Props = { partners: Partner[] };

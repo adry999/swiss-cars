@@ -3,11 +3,11 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Save, Loader2, ArrowLeft, AlertCircle, X } from 'lucide-react';
-import { savePartner } from '@/lib/actions/content';
+import { savePartner } from '../actions';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import ImageUploader from '@/components/admin/ImageUploader';
-import type { Partner } from '@/lib/types';
+import type { Partner } from '../partners.types';
 
 export default function PartnerForm({ initialData }: { initialData?: Partner }) {
     const router = useRouter();

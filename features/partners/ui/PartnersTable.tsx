@@ -4,9 +4,9 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Trash2, Eye, EyeOff, ExternalLink, Edit } from 'lucide-react';
 import DataTable from '@/components/admin/DataTable';
-import { deletePartner, savePartner } from '@/lib/actions/content';
-import { type Partner } from '@/lib/types';
-import styles from './page.module.css';
+import { deletePartner, savePartner } from '../actions';
+import { type Partner } from '../partners.types';
+import styles from './PartnersTable.module.css';
 
 export default function PartnersTable({ partners }: { partners: Partner[] }) {
     const router = useRouter();

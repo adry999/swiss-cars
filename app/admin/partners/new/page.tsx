@@ -1,4 +1,4 @@
-import PartnerForm from '@/components/admin/PartnerForm';
+import { PartnerForm } from '@features/partners/admin';
 
 export default function NewPartnerPage() {
     return (

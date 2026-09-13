@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { Review } from '@/lib/types';
+import type { Review } from '../reviews.types';
 import styles from './ReviewsSlider.module.css';
 
 type Props = { reviews: Review[]; locale: string };

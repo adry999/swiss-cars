@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { getAllReviewsPaginated } from '@/lib/supabase/queries';
-import ReviewsTable from './ReviewsTable';
+import { readReviewsAdminPage } from '@features/reviews/server';
+import { ReviewsTable } from '@features/reviews/admin';
 import styles from './page.module.css';
 
 type Props = {
@@ -11,7 +11,7 @@ export default async function AdminReviewsPage({ searchParams }: Props) {
     const resolvedParams = await searchParams;
     const page = parseInt(resolvedParams.page || '1', 10);
 
-    const { data: reviews, totalCount, totalPages } = await getAllReviewsPaginated({
+    const { data: reviews, totalCount, totalPages } = await readReviewsAdminPage({
         page,
         limit: 20,
     });
