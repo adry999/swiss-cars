@@ -15,8 +15,9 @@ Run these three files, in order, in the Supabase SQL Editor:
 3. **`2026-08-26_lead_subscriber_rpc.sql`** — replaces the anonymous
    direct-INSERT policies on `leads_inquiries`/`subscribers` with two
    validated RPC functions. Requires the matching application code
-   (already in `lib/actions/leads.ts`, `lib/actions/subscribers.ts`,
-   `app/api/contact/route.ts`) to be deployed in the same release — the
+   (`features/leads/server/supabase-leads-repository.ts`,
+   `features/subscribers/server/supabase-subscribers-repository.ts`) to be
+   deployed in the same release — the
    public lead form and newsletter signup will fail if this SQL runs
    without that code, or vice versa.
 
