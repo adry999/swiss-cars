@@ -60,7 +60,7 @@ Protected actions (feature — action):
 - `features/site-settings` — `saveSiteConfig`, `saveHomepageContent` (each validated by its own Zod schema in `site-settings.schema.ts`)
 - `features/translations` — `saveLocaleMessages`
 
-Public actions (no auth): `submitLeadInquiryAction` (`app/_composition/lead-inquiry-actions.ts` — rate-limited, Zod-validated), `subscribe` (`features/subscribers`, Zod-validated), `signIn` (`features/auth` — validates the credentials with Zod on the server before calling Supabase Auth).
+Public actions (no auth): `submitLeadInquiryAction` (`app/_composition/lead-inquiry-actions.ts` — rate-limited, Zod-validated), `subscribe` (`features/subscribers` — rate-limited, Zod-validated), `signIn` (`features/auth` — validates the credentials with Zod on the server before calling Supabase Auth).
 
 `getCurrentUser`, `listSubscribers` and `readLocaleMessages` are **not** Server Actions — every export of a `'use server'` file is a public POST endpoint, so a reader that returns the full subscriber list or a settings row must live in a plain server-only module (`server.ts`) and call `requireAdmin()` itself instead. This is also why the old `getSubscribers`/`getI18nMessages` actions were replaced by `listSubscribers()` (`features/subscribers/server`) and `readLocaleMessages()` (`features/translations/server`).
 
@@ -125,7 +125,7 @@ i18n/, messages/        # next-intl
 
 - **Auth guards**: `shared/session/require-admin.ts` (`requireAdmin()`, `server-only`, deliberately not a Server Action) — called at the top of every admin mutation; checks `app_metadata.role === 'admin'`, not merely a signed-in account
 - **XSS Protection**: `shared/formatting/sanitize.ts` — wraps `isomorphic-dompurify`. The previous regex implementation was bypassed by `<svg/onload=…>` and `<img/onerror=…>`; those payloads are now regression-tested
-- **Rate Limiting**: `core/rate-limit/` — fixed window, 5 lead submissions per minute per IP, shared by the car form, the contact page and `/api/contact`. Stored in Upstash Redis when configured (`UPSTASH_REDIS_REST_URL`/`_TOKEN`), otherwise in per-instance memory. Composed in `app/_composition/lead-inquiry-submission.ts`. `subscribe` (newsletter) has no rate limit yet.
+- **Rate Limiting**: `core/rate-limit/` — fixed window, 5 lead submissions per minute per IP, shared by the car form, the contact page and `/api/contact`. Newsletter signups (`subscribe`) are limited to 5 per 10 minutes per IP in their own `subscribe:` bucket. Stored in Upstash Redis when configured (`UPSTASH_REDIS_REST_URL`/`_TOKEN`), otherwise in per-instance memory. Both share the one limiter from `getRateLimiter()` (`core/rate-limit/shared-rate-limiter.ts`).
 - **CSP + Security Headers**: configured in `next.config.ts` — includes Content-Security-Policy (still allows `unsafe-eval`/`unsafe-inline`), HSTS, X-Frame-Options, X-Content-Type-Options, Permissions-Policy
 - **Error Handling**: expected Server Action failures are returned as `ActionResult` values (`shared/contracts/action-result.ts`) and translated on the client via `errors.*` messages; unexpected errors throw to the error boundaries at global, locale, and admin levels — including dashboard count failures, which now reach `app/admin/error.tsx` instead of silently showing 0
 

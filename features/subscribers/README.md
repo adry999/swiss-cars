@@ -21,7 +21,8 @@ Gestionează abonații la newsletter: formularul public de abonare din footer ș
   completă de email-uri oricui o cerea, protejată doar de `requireAdmin()` la momentul apelului.
 
 `@features/subscribers/actions` (Server Actions):
-- `subscribe(email)` — public, fără `requireAdmin()`; validează email-ul cu Zod pe server.
+- `subscribe(email)` — public, fără `requireAdmin()`; compune `createSubscribeToNewsletter` la prima
+  folosire: rate limit de 5 abonări la 10 minute per IP (cheia `subscribe:<ip>`), apoi validare Zod pe server.
 - `deleteSubscriber(subscriberId)` — admin.
 - `toggleSubscriberStatus(subscriberId, isActive)` — admin.
 
@@ -29,6 +30,7 @@ Gestionează abonații la newsletter: formularul public de abonare din footer ș
 
 Poate importa `@core/*` și `@shared/*`:
 - `@core/supabase/server-client` (`createServerSupabaseClient`) în `server/supabase-subscribers-repository.ts`.
+- `@core/rate-limit/shared-rate-limiter` (`getRateLimiter`) și `@core/http/client-ip` (`readClientIp`) în `actions.ts`.
 - `@shared/session/require-admin` (`requireAdmin`) în `server.ts` și `actions.ts`.
 - `@shared/contracts/action-result`.
 - `@shared/ui/Toast/ToastContext` (`useOptionalToast`, `useToast`) în `ui/NewsletterSignupForm.tsx` și `ui/SubscribersTable.tsx`.
@@ -49,13 +51,9 @@ subscribers.schema.test.ts             — teste ale schemei
 index.ts / admin.ts / server.ts / actions.ts — punctele de intrare
 server/
   supabase-subscribers-repository.ts   — SubscribersRepository peste tabela subscribers
+  subscribe-to-newsletter.ts (+ .test.ts) — use case-ul abonării: rate limit, validare, repository
 ui/
   NewsletterSignupForm.tsx (+ .module.css) — formularul din footer
   subscribe-failure-message.ts (+ .test.ts) — mapare motiv → cheie de mesaj
   SubscribersTable.tsx                 — tabelul de admin
 ```
-
-## De urmat
-
-`subscribe` (public) nu are încă rate limit — ar trebui să refolosească `core/rate-limit`, ca
-`features/leads`.

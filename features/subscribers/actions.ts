@@ -1,26 +1,25 @@
 'use server';
 
+import { headers } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
+import { readClientIp } from '@core/http/client-ip';
+import { getRateLimiter } from '@core/rate-limit/shared-rate-limiter';
 import { requireAdmin } from '@shared/session/require-admin';
-import { SubscriberEmailSchema } from './subscribers.schema';
 import type { SubscriberChangeResult, SubscriptionResult } from './subscribers.types';
 import { supabaseSubscribersRepository } from './server/supabase-subscribers-repository';
+import { createSubscribeToNewsletter, type SubscribeToNewsletter } from './server/subscribe-to-newsletter';
 
 const SubscriberIdSchema = z.uuid();
 
-export async function subscribe(email: string): Promise<SubscriptionResult> {
-    const parsed = SubscriberEmailSchema.safeParse(email);
-    if (!parsed.success) return { status: 'rejected', reason: 'invalid-email' };
+let subscribeToNewsletter: SubscribeToNewsletter | undefined;
 
-    try {
-        const outcome = await supabaseSubscribersRepository.subscribe(parsed.data);
-        if (outcome === 'already_subscribed') return { status: 'rejected', reason: 'already-subscribed' };
-        return { status: 'succeeded' };
-    } catch (error) {
-        console.error('Subscribe failed:', error);
-        return { status: 'rejected', reason: 'unavailable' };
-    }
+export async function subscribe(email: string): Promise<SubscriptionResult> {
+    subscribeToNewsletter ??= createSubscribeToNewsletter({
+        subscribersRepository: supabaseSubscribersRepository,
+        rateLimiter: getRateLimiter(),
+    });
+    return subscribeToNewsletter(email, { clientIp: readClientIp(await headers()) });
 }
 
 const invalidInput: SubscriberChangeResult = { status: 'rejected', reason: 'invalid-input' };

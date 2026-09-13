@@ -2,6 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { subscribeFailureMessageKey } from './subscribe-failure-message';
 
 describe('subscribeFailureMessageKey', () => {
+    it('maps a rate-limited signup to its message key', () => {
+        expect(subscribeFailureMessageKey('rate-limited')).toBe('subscribe_rate_limited');
+    });
+
     it('maps an invalid email to its message key', () => {
         expect(subscribeFailureMessageKey('invalid-email')).toBe('subscribe_invalid_email');
     });

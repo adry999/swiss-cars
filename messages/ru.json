@@ -170,6 +170,7 @@
     "subscribe_invalid_email": "Неверный адрес электронной почты.",
     "subscribe_already": "Вы уже подписаны.",
     "subscribe_error": "Ошибка подписки. Попробуйте снова.",
+    "subscribe_rate_limited": "Слишком много попыток. Попробуйте через несколько минут.",
     "copyright": "Авторские права © {year} SwissCars.MD. Все права защищены.",
     "nav_home": "Главная",
     "nav_about": "О нас",

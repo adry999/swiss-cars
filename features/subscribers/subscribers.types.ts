@@ -11,7 +11,7 @@ export interface Subscriber {
 
 export type SubscribeOutcome = 'subscribed' | 'resubscribed' | 'already_subscribed';
 
-export type SubscriptionRejection = 'invalid-email' | 'already-subscribed' | 'unavailable';
+export type SubscriptionRejection = 'rate-limited' | 'invalid-email' | 'already-subscribed' | 'unavailable';
 export type SubscriptionResult = ActionResult<SubscriptionRejection>;
 export type SubscriberChangeResult = ActionResult<'invalid-input' | 'unavailable'>;
 
