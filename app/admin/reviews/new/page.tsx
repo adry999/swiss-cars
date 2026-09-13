@@ -1,4 +1,4 @@
-import ReviewForm from '@/components/admin/ReviewForm';
+import { ReviewForm } from '@features/reviews/admin';
 
 export default function NewReviewPage() {
     return (

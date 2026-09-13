@@ -3,6 +3,9 @@ import createNextIntlPlugin from 'next-intl/plugin';
 
 const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 
+// React uses eval only in development, to rebuild server error stacks in the browser.
+const isDevelopment = process.env.NODE_ENV === 'development';
+
 const nextConfig: NextConfig = {
   images: {
     formats: ['image/avif', 'image/webp'],
@@ -48,7 +51,7 @@ const nextConfig: NextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com",
+              `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ''} https://www.googletagmanager.com https://www.google-analytics.com`,
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: blob: https://*.supabase.co https://www.google-analytics.com",
               "font-src 'self'",

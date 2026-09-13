@@ -41,7 +41,9 @@ yarn-error.log*
 
 # vercel
 .vercel
-.claude
+# Local Claude settings stay private; project skills are shared with the team.
+.claude/*
+!.claude/skills/
 
 # typescript
 *.tsbuildinfo

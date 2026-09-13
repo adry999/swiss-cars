@@ -1,0 +1,35 @@
+'use client';
+
+import type { UseFormSetValue, UseFormWatch } from 'react-hook-form';
+import type { Car } from '../inventory.types';
+import ImageUploader from '@shared/ui/admin/ImageUploader';
+import styles from './CarEditForm.module.css';
+
+interface CarEditImagesTabProps {
+    watch: UseFormWatch<Car>;
+    setValue: UseFormSetValue<Car>;
+    maxImages: number;
+    initialImages: Array<{ url: string; is_primary: boolean }>;
+}
+
+export default function CarEditImagesTab({ watch, setValue, maxImages, initialImages }: CarEditImagesTabProps) {
+    const carImages = watch('car_images') || initialImages || [];
+    const images = carImages.map((img) => typeof img === 'string' ? img : img.url);
+
+    return (
+        <div>
+            {images.length > 0 && (
+                <div className={styles.mainImageNotice}>
+                    <p><strong>Note on Main Image:</strong> The first image in the list above is automatically used as the main/featured photo for the car card. You can delete and re-upload images to change this order.</p>
+                </div>
+            )}
+            <ImageUploader
+                value={images}
+                onChange={(urls) => {
+                    setValue('car_images', urls.map((url, i) => ({ url, is_primary: i === 0 })));
+                }}
+                maxFiles={maxImages}
+            />
+        </div>
+    );
+}

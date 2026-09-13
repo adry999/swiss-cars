@@ -1,8 +1,7 @@
 import { notFound } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
-import CarEditForm from '@/components/admin/CarEditForm';
-import { getPublicSiteConfig } from '@/lib/settings';
-import type { Car } from '@/lib/types';
+import { findCarForEditing } from '@features/inventory/server';
+import { CarEditForm } from '@features/inventory/admin';
+import { getPublicSiteConfig } from '@features/site-settings/server';
 
 type Props = {
     params: Promise<{ id: string }>;
@@ -10,19 +9,15 @@ type Props = {
 
 export default async function EditCarPage({ params }: Props) {
     const { id } = await params;
-    const supabase = await createClient();
 
-    const [carResponse, settings] = await Promise.all([
-        supabase.from('cars').select('*, car_images(*)').eq('id', id).single(),
+    const [car, settings] = await Promise.all([
+        findCarForEditing(id),
         getPublicSiteConfig()
     ]);
 
-    if (carResponse.error || !carResponse.data) notFound();
+    if (!car) notFound();
 
     const maxImages = settings?.max_car_images || 25;
 
-    // The Supabase client here isn't wired to generated Database types, so
-    // .select() returns an untyped row — matches the cast convention already
-    // used throughout lib/supabase/queries.ts.
-    return <CarEditForm initialData={carResponse.data as Car} maxImages={maxImages} />;
+    return <CarEditForm initialData={car} maxImages={maxImages} />;
 }

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
-import { getAllCarsPaginated } from '@/lib/supabase/queries';
-import CarsTable from './CarsTable';
+import { readCatalogPage } from '@features/inventory/server';
+import { InventoryTable } from '@features/inventory/admin';
 import styles from './page.module.css';
 
 type Props = {
@@ -12,9 +12,10 @@ export default async function AdminCarsPage({ searchParams }: Props) {
     const resolvedParams = await searchParams;
     const page = parseInt(resolvedParams.page || '1', 10);
 
-    const { data: cars, totalCount, totalPages } = await getAllCarsPaginated({
+    const { data: cars, totalCount, totalPages } = await readCatalogPage({
         page,
         limit: 20,
+        availableOnly: false,
     });
 
     return (
@@ -26,7 +27,7 @@ export default async function AdminCarsPage({ searchParams }: Props) {
                 </Link>
             </div>
 
-            <CarsTable
+            <InventoryTable
                 cars={cars}
                 currentPage={page}
                 totalPages={totalPages}

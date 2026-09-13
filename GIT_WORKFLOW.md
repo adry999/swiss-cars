@@ -76,6 +76,39 @@ git merge feature/nume-functionalitate
 git push origin dev
 ```
 
+## Mesaje de commit
+
+Format [Conventional Commits](https://www.conventionalcommits.org/), în engleză, la imperativ, maximum 72 de caractere:
+
+```text
+type(scope): subject
+```
+
+| type | când |
+|------|------|
+| `feat` | funcționalitate nouă |
+| `fix` | corectarea unui bug |
+| `refactor` | restructurare fără schimbare de comportament |
+| `test` | teste noi sau corectate |
+| `docs` | documentație |
+| `build` | dependențe, configurare build/lint/TypeScript |
+| `perf` | performanță |
+| `chore` | întreținere care nu intră în categoriile de mai sus |
+
+`scope` = feature-ul sau stratul atins: `auth`, `inventory`, `leads`, `leasing`, `notifications`, `partners`, `reviews`, `site-settings`, `subscribers`, `shared`, `core`, `config`, `admin`, `content`, `tooling`, `i18n`.
+
+```bash
+git commit -m "feat(leads): translate lead form errors on the client"
+git commit -m "fix(core): store rate-limit usage as objects in Upstash"
+git commit -m "refactor(inventory): move car queries into the feature module"
+```
+
+Reguli:
+
+- Un commit = un singur pas logic, cu `npm run verify` trecut.
+- Mutările de fișiere (`git mv`) și schimbările de comportament merg în commit-uri separate.
+- Fără mențiuni despre AI sau agenți și fără trailer `Co-Authored-By`.
+
 ## Remote
 
 - **GitHub:** `https://github.com/adry999/swiss-cars`

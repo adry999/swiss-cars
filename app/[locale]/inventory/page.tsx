@@ -1,6 +1,6 @@
-import { getCarsPaginated } from '@/lib/supabase/queries';
-import { localeAlternates, localeOpenGraph, localeTwitter } from '@/i18n/routing';
-import CarsGridPaginated from '@/components/cars/CarsGridPaginated';
+import { readCatalogPage } from '@features/inventory/server';
+import { localeAlternates, localeOpenGraph, localeTwitter } from '@i18n/routing';
+import { InventoryGrid } from '@features/inventory';
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
 import styles from './page.module.css';
@@ -43,7 +43,7 @@ export default async function InventoryPage({ searchParams }: Props) {
     // Guard against ?page=abc / negative values reaching .range(NaN, NaN).
     const page = Math.max(1, Number.parseInt(resolvedParams.page ?? '1', 10) || 1);
 
-    const { data: cars, totalPages, totalCount } = await getCarsPaginated({
+    const { data: cars, totalPages, totalCount } = await readCatalogPage({
         page,
         limit: 15, // Slightly more per page
     });
@@ -59,7 +59,7 @@ export default async function InventoryPage({ searchParams }: Props) {
                 </div>
 
                 <div className={styles.content}>
-                    <CarsGridPaginated
+                    <InventoryGrid
                         cars={cars}
                         currentPage={page}
                         totalPages={totalPages}

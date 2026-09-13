@@ -1,15 +1,15 @@
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
-import { routing, localeAlternates, localeOpenGraph, localeTwitter } from '@/i18n/routing';
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
-import Preloader from '@/components/ui/Preloader';
-import WhatsAppFloat from '@/components/ui/WhatsAppFloat';
-import GoogleAnalytics from '@/components/analytics/GoogleAnalytics';
-import GTMScript, { GTMNoscript } from '@/components/analytics/GTMScript';
-import { ToastProvider } from '@/components/ui/Toast';
+import { routing, localeAlternates, localeOpenGraph, localeTwitter } from '@i18n/routing';
+import Header from '@app/_shell/Header';
+import Footer from '@app/_shell/Footer';
+import Preloader from '@shared/ui/Preloader';
+import WhatsAppFloat from '@shared/ui/WhatsAppFloat';
+import GoogleAnalytics from '@shared/analytics/GoogleAnalytics';
+import GTMScript, { GTMNoscript } from '@shared/analytics/GTMScript';
+import { ToastProvider } from '@shared/ui/Toast/ToastContext';
 import { MotionConfig } from 'framer-motion';
-import { getPublicSiteConfig } from '@/lib/settings';
+import { getPublicSiteConfig } from '@features/site-settings/server';
 import type { Metadata } from 'next';
 
 type Props = {

@@ -1,18 +1,12 @@
 import { notFound } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
-import ReviewForm from '@/components/admin/ReviewForm';
+import { findReviewForEditing } from '@features/reviews/server';
+import { ReviewForm } from '@features/reviews/admin';
 
 export default async function EditReviewPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const supabase = await createClient();
+    const review = await findReviewForEditing(id);
 
-    const { data: review, error } = await supabase
-        .from('reviews')
-        .select('*')
-        .eq('id', id)
-        .single();
-
-    if (error || !review) notFound();
+    if (!review) notFound();
 
     return (
         <div style={{ padding: '24px' }}>

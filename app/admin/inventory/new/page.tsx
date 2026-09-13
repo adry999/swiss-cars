@@ -1,5 +1,5 @@
-import CarEditForm from '@/components/admin/CarEditForm';
-import { getPublicSiteConfig } from '@/lib/settings';
+import { CarEditForm } from '@features/inventory/admin';
+import { getPublicSiteConfig } from '@features/site-settings/server';
 
 export default async function NewCarPage() {
     const settings = await getPublicSiteConfig();

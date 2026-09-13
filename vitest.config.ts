@@ -1,6 +1,21 @@
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
-import path from 'path';
+
+interface TsconfigWithPaths {
+    compilerOptions: { paths: Record<string, string[]> };
+}
+
+const tsconfig: TsconfigWithPaths = JSON.parse(
+    readFileSync(path.resolve(__dirname, 'tsconfig.json'), 'utf8'),
+);
+
+// tsconfig.json is the only place aliases are declared; Vitest does not read `paths` by itself.
+const tsconfigAliases = Object.entries(tsconfig.compilerOptions.paths).map(([alias, [target]]) => ({
+    find: alias.replace(/\/\*$/, ''),
+    replacement: path.resolve(__dirname, target.replace(/\/\*$/, '')),
+}));
 
 export default defineConfig({
     plugins: [react()],
@@ -20,8 +35,10 @@ export default defineConfig({
         },
     },
     resolve: {
-        alias: {
-            '@': path.resolve(__dirname, './'),
-        },
+        alias: [
+            // Next resolves `server-only` through the react-server export condition, which the test runner lacks.
+            { find: 'server-only', replacement: path.resolve(__dirname, 'node_modules/server-only/empty.js') },
+            ...tsconfigAliases,
+        ],
     },
 });

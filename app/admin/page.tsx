@@ -1,13 +1,14 @@
 import { Car, MessageSquare, Users, Inbox, CheckCircle, Clock, TrendingUp } from 'lucide-react';
-import { getDashboardStats, getRecentLeads } from '@/lib/supabase/queries';
-import type { Lead } from '@/lib/types';
+import { supabaseLeadsRepository } from '@features/leads/server';
+import type { Lead } from '@features/leads';
 import { formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';
+import { readDashboardStats } from './_dashboard/read-dashboard-stats';
 import styles from './page.module.css';
 
 export default async function AdminDashboard() {
-    const stats = await getDashboardStats();
-    const recentLeads = await getRecentLeads(5);
+    const stats = await readDashboardStats();
+    const recentLeads = await supabaseLeadsRepository.listRecentLeads(5);
 
     const statCards = [
         {

@@ -1,21 +1,17 @@
 import { getLocale } from 'next-intl/server';
-import HeroSlider from '@/components/home/HeroSlider';
-import CarsGrid from '@/components/home/CarsGrid';
-import AboutSection from '@/components/home/AboutSection';
-import StatsSection from '@/components/home/StatsSection';
-import ServicesSection from '@/components/home/ServicesSection';
-import ContactBanner from '@/components/home/ContactBanner';
-import WhyUsAccordion from '@/components/home/WhyUsAccordion';
+import { HeroSlider, DualCTABanner } from '@features/site-settings';
+import { FeaturedCarsGrid } from '@features/inventory';
+import { listFeaturedCars } from '@features/inventory/server';
+import { AboutSection, StatsSection, ServicesSection, ContactBanner, WhyUsAccordion, LeasingSection } from '@features/site-settings/server';
 import dynamic from 'next/dynamic';
-import DualCTABanner from '@/components/home/DualCTABanner';
-import LeasingSection from '@/components/home/LeasingSection';
-import { Reveal } from '@/components/ui/Reveal';
+import { Reveal } from '@shared/ui/Reveal';
 
-const ReviewsSlider = dynamic(() => import('@/components/home/ReviewsSlider'), { ssr: true });
-const PartnersSlider = dynamic(() => import('@/components/home/PartnersSlider'), { ssr: true });
+const ReviewsSlider = dynamic(() => import('@features/reviews').then((reviewsModule) => reviewsModule.ReviewsSlider), { ssr: true });
+const PartnersSlider = dynamic(() => import('@features/partners').then((partnersModule) => partnersModule.PartnersSlider), { ssr: true });
 
-import { getFeaturedCars, getReviews, getPartners } from '@/lib/supabase/queries';
-import { getHomepageContent, getPublicSiteConfig } from '@/lib/settings';
+import { listVisibleReviews } from '@features/reviews/server';
+import { listVisiblePartners } from '@features/partners/server';
+import { getHomepageContent, getPublicSiteConfig } from '@features/site-settings/server';
 import type { Metadata } from 'next';
 
 type Props = {
@@ -39,9 +35,9 @@ export default async function HomePage({ params }: Props) {
 
     // Fetch data from Supabase (server-side)
     const [cars, reviews, partners, homepageData, siteConfig] = await Promise.all([
-        getFeaturedCars(),
-        getReviews(),
-        getPartners(),
+        listFeaturedCars(),
+        listVisibleReviews(),
+        listVisiblePartners(),
         getHomepageContent(),
         getPublicSiteConfig()
     ]);
@@ -72,7 +68,7 @@ export default async function HomePage({ params }: Props) {
             <HeroSlider slides={homepageData?.hero_slides} />
 
             <Reveal>
-                <CarsGrid cars={cars} />
+                <FeaturedCarsGrid cars={cars} />
             </Reveal>
 
             <Reveal>

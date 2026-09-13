@@ -1,18 +1,12 @@
 import { notFound } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
-import PartnerForm from '@/components/admin/PartnerForm';
+import { findPartnerForEditing } from '@features/partners/server';
+import { PartnerForm } from '@features/partners/admin';
 
 export default async function EditPartnerPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const supabase = await createClient();
+    const partner = await findPartnerForEditing(id);
 
-    const { data: partner, error } = await supabase
-        .from('partners')
-        .select('*')
-        .eq('id', id)
-        .single();
-
-    if (error || !partner) notFound();
+    if (!partner) notFound();
 
     return (
         <div style={{ padding: '24px' }}>

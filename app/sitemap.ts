@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next';
-import { getCars } from '@/lib/supabase/queries';
-import { routing, localeUrl } from '@/i18n/routing';
+import { listAvailableCars } from '@features/inventory/server';
+import { routing, localeUrl } from '@i18n/routing';
 
 const STATIC_PATHS = ['', '/about', '/services', '/leasing', '/contact', '/inventory'];
 
@@ -19,7 +19,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         },
     }));
 
-    const cars = await getCars();
+    const cars = await listAvailableCars();
     const carEntries: MetadataRoute.Sitemap = cars
         .filter((car) => car.slug)
         .map((car) => {

@@ -1,10 +1,10 @@
 import Link from 'next/link';
-import { getPartners } from '@/lib/supabase/queries';
-import PartnersTable from './PartnersTable';
+import { listAllPartners } from '@features/partners/server';
+import { PartnersTable } from '@features/partners/admin';
 import styles from './page.module.css';
 
 export default async function AdminPartnersPage() {
-    const partners = await getPartners();
+    const partners = await listAllPartners();
 
     return (
         <div>

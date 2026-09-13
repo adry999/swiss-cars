@@ -19,7 +19,12 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@app/*": ["./app/*"],
+      "@i18n/*": ["./i18n/*"],
+      "@features/*": ["./features/*"],
+      "@shared/*": ["./shared/*"],
+      "@core/*": ["./core/*"],
+      "@config/*": ["./config/*"]
     }
   },
   "include": [

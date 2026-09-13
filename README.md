@@ -91,7 +91,7 @@ i18n/                 # next-intl routing and request config
 
 - `localePrefix: 'as-needed'` — Romanian is unprefixed (`/inventory`), Russian and English are prefixed (`/ru/inventory`, `/en/inventory`). Each language has its own indexable URL, with canonical and hreflang emitted from `i18n/routing.ts`
 - Content stored per-locale: `{ ro: "...", ru: "...", en: "..." }` in DB columns
-- Admin translations editor at `/admin/translations`
+- UI strings live in `messages/{locale}.json` and change through the repository and a deploy
 
 ### Notification credentials
 
