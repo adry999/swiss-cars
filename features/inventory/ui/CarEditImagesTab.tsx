@@ -1,18 +1,18 @@
 'use client';
 
 import type { UseFormSetValue, UseFormWatch } from 'react-hook-form';
-import type { Car } from '@/lib/types';
+import type { Car } from '../inventory.types';
 import ImageUploader from '@/components/admin/ImageUploader';
-import styles from '../CarEditForm.module.css';
+import styles from './CarEditForm.module.css';
 
-interface ImagesTabProps {
+interface CarEditImagesTabProps {
     watch: UseFormWatch<Car>;
     setValue: UseFormSetValue<Car>;
     maxImages: number;
     initialImages: Array<{ url: string; is_primary: boolean }>;
 }
 
-export default function ImagesTab({ watch, setValue, maxImages, initialImages }: ImagesTabProps) {
+export default function CarEditImagesTab({ watch, setValue, maxImages, initialImages }: CarEditImagesTabProps) {
     const carImages = watch('car_images') || initialImages || [];
     const images = carImages.map((img) => typeof img === 'string' ? img : img.url);
 

@@ -5,31 +5,27 @@ import { Heart, X, CarFront } from 'lucide-react';
 import Image from 'next/image';
 import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
-import { getFavorites } from '@/components/cars/FavoriteButton';
 import { formatPrice } from '@/lib/utils/format';
-import type { Car } from '@/lib/types';
+import type { Car } from '../inventory.types';
+import { readFavoriteCarIds, writeFavoriteCarIds, FAVORITES_CHANGED_EVENT } from '../model/favorite-car-ids';
 
-// This page fetches from localStorage on client, then loads cars client-side
-// We use a different approach: call an API route
-
-export default function FavoritesPageClient({ allCars }: { allCars: Car[] }) {
+export default function FavoriteCarsPage({ allCars }: { allCars: Car[] }) {
     const t = useTranslations('favorites');
     const [favIds, setFavIds] = useState<string[]>([]);
 
     useEffect(() => {
-        const load = () => setFavIds(getFavorites());
+        const load = () => setFavIds(readFavoriteCarIds());
         load();
-        window.addEventListener('favorites-changed', load);
-        return () => window.removeEventListener('favorites-changed', load);
+        window.addEventListener(FAVORITES_CHANGED_EVENT, load);
+        return () => window.removeEventListener(FAVORITES_CHANGED_EVENT, load);
     }, []);
 
     const favCars = allCars.filter(c => favIds.includes(c.id ?? ''));
 
     const remove = (id: string) => {
         const next = favIds.filter(f => f !== id);
-        localStorage.setItem('swisscars_favorites', JSON.stringify(next));
+        writeFavoriteCarIds(next);
         setFavIds(next);
-        window.dispatchEvent(new Event('favorites-changed'));
     };
 
     return (

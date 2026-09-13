@@ -5,7 +5,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import { Link, usePathname } from '@/i18n/navigation';
 import Image from 'next/image';
 import MobileMenu from './MobileMenu';
-import FavoritesIcon from './FavoritesIcon';
+import { FavoritesIcon } from '@features/inventory';
 import styles from './Header.module.css';
 
 export default function Header({ logoUrl, logoHeight = 50, phone }: { logoUrl?: string; logoHeight?: number; phone?: string }) {

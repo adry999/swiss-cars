@@ -1,8 +1,8 @@
 'use client';
 
 import type { UseFormRegister, FieldErrors, FieldPath } from 'react-hook-form';
-import type { Car } from '@/lib/types';
-import styles from '../CarEditForm.module.css';
+import type { Car } from '../inventory.types';
+import styles from './CarEditForm.module.css';
 
 // Car.description is a Zod z.record (dynamic locale keys), so react-hook-form's
 // Path<Car> can't statically enumerate 'description.ro' as a valid field path —
@@ -12,14 +12,14 @@ import styles from '../CarEditForm.module.css';
 const descriptionField = (lang: 'ro' | 'ru' | 'en') =>
     `description.${lang}` as unknown as FieldPath<Car>;
 
-interface GeneralInfoTabProps {
+interface CarEditGeneralTabProps {
     register: UseFormRegister<Car>;
     errors: FieldErrors<Car>;
     descLang: 'ro' | 'ru' | 'en';
     onDescLangChange: (lang: 'ro' | 'ru' | 'en') => void;
 }
 
-export default function GeneralInfoTab({ register, errors, descLang, onDescLangChange }: GeneralInfoTabProps) {
+export default function CarEditGeneralTab({ register, errors, descLang, onDescLangChange }: CarEditGeneralTabProps) {
     return (
         <div className={styles.grid}>
             <div className={styles.field}>

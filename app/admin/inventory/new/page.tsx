@@ -1,4 +1,4 @@
-import CarEditForm from '@/components/admin/CarEditForm';
+import { CarEditForm } from '@features/inventory/admin';
 import { getPublicSiteConfig } from '@/lib/settings';
 
 export default async function NewCarPage() {

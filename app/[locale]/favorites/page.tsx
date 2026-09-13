@@ -1,5 +1,5 @@
-import { getCars } from '@/lib/supabase/queries';
-import FavoritesPageClient from '@/components/cars/FavoritesPageClient';
+import { listAvailableCars } from '@features/inventory/server';
+import { FavoriteCarsPage } from '@features/inventory';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -11,6 +11,6 @@ export const metadata: Metadata = {
 };
 
 export default async function FavoritesPage() {
-    const allCars = await getCars();
-    return <FavoritesPageClient allCars={allCars} />;
+    const allCars = await listAvailableCars();
+    return <FavoriteCarsPage allCars={allCars} />;
 }

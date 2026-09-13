@@ -3,17 +3,17 @@
 import { useState, useEffect } from 'react';
 import { Heart } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
-import { getFavorites } from '@/components/cars/FavoriteButton';
+import { readFavoriteCarIds, FAVORITES_CHANGED_EVENT } from '../model/favorite-car-ids';
 import styles from './FavoritesIcon.module.css';
 
 export default function FavoritesIcon() {
     const [count, setCount] = useState(0);
 
     useEffect(() => {
-        const update = () => setCount(getFavorites().length);
+        const update = () => setCount(readFavoriteCarIds().length);
         update();
-        window.addEventListener('favorites-changed', update);
-        return () => window.removeEventListener('favorites-changed', update);
+        window.addEventListener(FAVORITES_CHANGED_EVENT, update);
+        return () => window.removeEventListener(FAVORITES_CHANGED_EVENT, update);
     }, []);
 
     return (

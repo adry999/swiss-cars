@@ -1,17 +1,13 @@
 import { getLocale, getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-import { getCarBySlug } from '@/lib/supabase/queries';
-import { createStaticSupabaseClient } from '@core/supabase/server-client';
+import { findCarBySlug, listCarSlugs, SimilarCars } from '@features/inventory/server';
 import { getPublicSiteConfig } from '@/lib/settings';
 import { routing, localeAlternates, localeUrl, localeOpenGraph, localeTwitter } from '@/i18n/routing';
 import { sanitizeHtml } from '@/lib/utils/sanitize';
 import { formatPrice } from '@/lib/utils/format';
 import { Link } from '@/i18n/navigation';
 import { FileCheck, Shield, BadgeCheck, HeadphonesIcon, Calculator } from 'lucide-react';
-import CarGallery from '@/components/cars/detail/CarGallery';
-import CarSpecsGrid from '@/components/cars/detail/CarSpecsGrid';
-import SimilarCars from '@/components/cars/detail/SimilarCars';
-import FavoriteButton from '@/components/cars/FavoriteButton';
+import { CarGallery, CarSpecsGrid, FavoriteButton } from '@features/inventory';
 import { CarInquiryForm } from '@features/leads';
 import { submitLeadInquiryAction } from '@/app/_composition/lead-inquiry-actions';
 import styles from './page.module.css';
@@ -25,19 +21,13 @@ type Props = {
 
 // Pre-render all car pages at build time for better SEO
 export async function generateStaticParams() {
-    // Use static client (no cookies) for build-time generation
-    const supabase = createStaticSupabaseClient();
-    const { data: cars } = await supabase
-        .from('cars')
-        .select('slug');
+    const slugs = await listCarSlugs();
 
     const params: { locale: string; slug: string }[] = [];
 
     for (const locale of routing.locales) {
-        for (const car of cars || []) {
-            if (car.slug) {
-                params.push({ locale, slug: car.slug });
-            }
+        for (const slug of slugs) {
+            params.push({ locale, slug });
         }
     }
 
@@ -46,7 +36,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props) {
     const { locale, slug } = await params;
-    const car = await getCarBySlug(slug);
+    const car = await findCarBySlug(slug);
     if (!car) return {};
     const primaryImage = car.car_images?.find((img) => img.is_primary) || car.car_images?.[0];
     const title = `${car.brand} ${car.model} ${car.year} ${!car.is_available ? '(Vândut)' : ''} | SwissCars.md`;
@@ -75,7 +65,7 @@ export async function generateMetadata({ params }: Props) {
 export default async function CarDetailPage({ params }: Props) {
     const { locale, slug } = await params;
     const [car, siteConfig] = await Promise.all([
-        getCarBySlug(slug),
+        findCarBySlug(slug),
         getPublicSiteConfig(),
     ]);
     const t = await getTranslations('car_detail');

@@ -5,12 +5,12 @@ import Link from 'next/link';
 import { Edit2, Trash2, Eye, Copy, Loader2 } from 'lucide-react';
 import DataTable from '@/components/admin/DataTable';
 import Pagination from '@/components/ui/Pagination';
-import styles from './page.module.css';
-import { type Car } from '@/lib/types';
-import { deleteCar, duplicateCar } from '@/lib/actions/cars';
 import { formatPrice } from '@/lib/utils/format';
 import { useState } from 'react';
 import Image from 'next/image';
+import type { Car } from '../inventory.types';
+import { deleteCar, duplicateCar } from '../actions';
+import styles from './InventoryTable.module.css';
 
 type Props = {
     cars: Car[];
@@ -18,7 +18,7 @@ type Props = {
     totalPages: number;
 };
 
-export default function CarsTable({ cars, currentPage, totalPages }: Props) {
+export default function InventoryTable({ cars, currentPage, totalPages }: Props) {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [isDuplicating, setIsDuplicating] = useState<string | null>(null);

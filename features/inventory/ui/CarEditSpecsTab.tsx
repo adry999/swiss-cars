@@ -1,14 +1,14 @@
 'use client';
 
 import type { UseFormRegister } from 'react-hook-form';
-import type { Car } from '@/lib/types';
-import styles from '../CarEditForm.module.css';
+import type { Car } from '../inventory.types';
+import styles from './CarEditForm.module.css';
 
-interface SpecsTabProps {
+interface CarEditSpecsTabProps {
     register: UseFormRegister<Car>;
 }
 
-export default function SpecsTab({ register }: SpecsTabProps) {
+export default function CarEditSpecsTab({ register }: CarEditSpecsTabProps) {
     return (
         <div className={styles.grid}>
             <div className={styles.field}>

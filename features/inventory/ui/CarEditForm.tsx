@@ -5,11 +5,12 @@ import { useRouter } from 'next/navigation';
 import { useForm, type FieldErrors, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Save, ArrowLeft, Loader2, Image as ImageIcon, FileText, Settings, AlertCircle, X } from 'lucide-react';
-import { CarSchema, type Car } from '@/lib/types';
-import { saveCar } from '@/lib/actions/cars';
-import GeneralInfoTab from './car-edit/GeneralInfoTab';
-import SpecsTab from './car-edit/SpecsTab';
-import ImagesTab from './car-edit/ImagesTab';
+import { CarSchema } from '../inventory.schema';
+import type { Car } from '../inventory.types';
+import { saveCar } from '../actions';
+import CarEditGeneralTab from './CarEditGeneralTab';
+import CarEditSpecsTab from './CarEditSpecsTab';
+import CarEditImagesTab from './CarEditImagesTab';
 import styles from './CarEditForm.module.css';
 
 type Props = {
@@ -120,16 +121,16 @@ export default function CarEditForm({ initialData, maxImages = 25 }: Props) {
                 )}
 
                 {activeTab === 'general' && (
-                    <GeneralInfoTab
+                    <CarEditGeneralTab
                         register={register}
                         errors={errors}
                         descLang={descLang}
                         onDescLangChange={setDescLang}
                     />
                 )}
-                {activeTab === 'specs' && <SpecsTab register={register} />}
+                {activeTab === 'specs' && <CarEditSpecsTab register={register} />}
                 {activeTab === 'images' && (
-                    <ImagesTab
+                    <CarEditImagesTab
                         watch={watch}
                         setValue={setValue}
                         maxImages={maxImages}

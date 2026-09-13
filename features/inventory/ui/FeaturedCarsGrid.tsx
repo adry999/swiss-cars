@@ -4,8 +4,8 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from '@/i18n/navigation';
-import CarCard from '@/components/cars/CarCard';
-import type { Car } from '@/lib/types';
+import type { Car } from '../inventory.types';
+import CarCard from './CarCard';
 import styles from './CarsGrid.module.css';
 
 const BRANDS = ['all', 'audi', 'mercedes', 'volvo', 'bmw', 'volkswagen'];
@@ -16,7 +16,7 @@ type Props = {
     hideHeader?: boolean;
 };
 
-export default function CarsGrid({ cars, showViewAll = true, hideHeader = false }: Props) {
+export default function FeaturedCarsGrid({ cars, showViewAll = true, hideHeader = false }: Props) {
     const t = useTranslations('offers');
     const [activeFilter, setActiveFilter] = useState('all');
 

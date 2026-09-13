@@ -11,7 +11,7 @@ import {
     Navigation,
     Scale
 } from 'lucide-react';
-import { type Car } from '@/lib/types';
+import type { Car } from '../inventory.types';
 import styles from './CarSpecsGrid.module.css';
 
 type Props = {

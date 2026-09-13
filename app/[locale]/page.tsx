@@ -1,6 +1,7 @@
 import { getLocale } from 'next-intl/server';
 import HeroSlider from '@/components/home/HeroSlider';
-import CarsGrid from '@/components/home/CarsGrid';
+import { FeaturedCarsGrid } from '@features/inventory';
+import { listFeaturedCars } from '@features/inventory/server';
 import AboutSection from '@/components/home/AboutSection';
 import StatsSection from '@/components/home/StatsSection';
 import ServicesSection from '@/components/home/ServicesSection';
@@ -14,7 +15,7 @@ import { Reveal } from '@/components/ui/Reveal';
 const ReviewsSlider = dynamic(() => import('@/components/home/ReviewsSlider'), { ssr: true });
 const PartnersSlider = dynamic(() => import('@/components/home/PartnersSlider'), { ssr: true });
 
-import { getFeaturedCars, getReviews, getPartners } from '@/lib/supabase/queries';
+import { getReviews, getPartners } from '@/lib/supabase/queries';
 import { getHomepageContent, getPublicSiteConfig } from '@/lib/settings';
 import type { Metadata } from 'next';
 
@@ -39,7 +40,7 @@ export default async function HomePage({ params }: Props) {
 
     // Fetch data from Supabase (server-side)
     const [cars, reviews, partners, homepageData, siteConfig] = await Promise.all([
-        getFeaturedCars(),
+        listFeaturedCars(),
         getReviews(),
         getPartners(),
         getHomepageContent(),
@@ -72,7 +73,7 @@ export default async function HomePage({ params }: Props) {
             <HeroSlider slides={homepageData?.hero_slides} />
 
             <Reveal>
-                <CarsGrid cars={cars} />
+                <FeaturedCarsGrid cars={cars} />
             </Reveal>
 
             <Reveal>

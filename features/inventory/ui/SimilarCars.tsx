@@ -1,6 +1,6 @@
 import { getTranslations } from 'next-intl/server';
-import { getSimilarCars } from '@/lib/supabase/queries';
-import CarCard from '@/components/cars/CarCard';
+import { findSimilarCars } from '../server/car-catalog-repository';
+import CarCard from './CarCard';
 
 type Props = {
     currentCarId: string;
@@ -13,7 +13,7 @@ export default async function SimilarCars({ currentCarId, brand, price }: Props)
 
     // Queried directly rather than loading the whole public inventory and
     // filtering three rows out of it in memory.
-    const similar = await getSimilarCars({ currentCarId, brand, price, limit: 3 });
+    const similar = await findSimilarCars({ currentCarId, brand, price, limit: 3 });
 
     if (similar.length === 0) return null;
 

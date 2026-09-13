@@ -3,10 +3,10 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
-import CarCard from '@/components/cars/CarCard';
 import Pagination from '@/components/ui/Pagination';
-import type { Car } from '@/lib/types';
-import styles from '@/components/home/CarsGrid.module.css';
+import type { Car } from '../inventory.types';
+import CarCard from './CarCard';
+import styles from './CarsGrid.module.css';
 
 type Props = {
     cars: Car[];
@@ -14,7 +14,7 @@ type Props = {
     totalPages: number;
 };
 
-export default function CarsGridPaginated({ cars, currentPage, totalPages }: Props) {
+export default function InventoryGrid({ cars, currentPage, totalPages }: Props) {
     const t = useTranslations('offers');
     const router = useRouter();
     const searchParams = useSearchParams();
