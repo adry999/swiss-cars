@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { readClientIp } from '@core/http/client-ip';
 import type { LeadSubmissionRejection } from '@features/leads';
-import { getSubmitLeadInquiry } from '@/app/_composition/lead-inquiry-submission';
+import { getSubmitLeadInquiry } from '@app/_composition/lead-inquiry-submission';
 
 const RESPONSE_BY_REJECTION: Record<LeadSubmissionRejection, { status: number; error: string }> = {
     'rate-limited': { status: 429, error: 'Too many requests. Please try again later.' },

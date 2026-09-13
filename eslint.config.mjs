@@ -5,9 +5,8 @@ import nextTs from "eslint-config-next/typescript";
 const featureIsolationMessage =
   "A feature never imports another feature. Share types through @shared/contracts, or let app/_composition wire ports and domain events.";
 const featurePublicEntryMessage =
-  "Import a feature only through its public entry: @features/<name>, @features/<name>/server, @features/<name>/actions or @features/<name>/admin.";
-const lowerLayerMessage =
-  "core, shared and config sit below features and must not depend on features, routes or UI.";
+  "Import a feature only through its public entry: @features/<name>, @features/<name>/admin, @features/<name>/server or @features/<name>/actions.";
+const routesOnlyMessage = "Only app/ may depend on routes, the composition root and the app shell.";
 
 const eslintConfig = defineConfig([
   ...nextVitals,
@@ -18,22 +17,47 @@ const eslintConfig = defineConfig([
       "no-restricted-imports": ["error", {
         patterns: [
           { group: ["@features/**"], message: featureIsolationMessage },
-          { group: ["@/app/**"], message: "Features do not depend on routes or on the composition root." },
+          { group: ["@app/**"], message: routesOnlyMessage },
           { group: ["../../*"], message: "Leave a feature through an alias, not a deep relative path." },
         ],
       }],
     },
   },
   {
-    files: ["core/**/*.ts", "shared/**/*.ts", "config/**/*.ts"],
+    files: ["shared/**/*.{ts,tsx}"],
     rules: {
       "no-restricted-imports": ["error", {
-        patterns: [{ group: ["@features/**", "@/app/**", "@/components/**"], message: lowerLayerMessage }],
+        patterns: [
+          { group: ["@features/**"], message: "shared/ serves every feature and must not depend on one." },
+          { group: ["@app/**"], message: routesOnlyMessage },
+        ],
       }],
     },
   },
   {
-    files: ["app/**/*.{ts,tsx}", "components/**/*.{ts,tsx}", "lib/**/*.{ts,tsx}"],
+    files: ["core/**/*.ts"],
+    rules: {
+      "no-restricted-imports": ["error", {
+        patterns: [
+          { group: ["@features/**", "@shared/**"], message: "core/ is domain-free infrastructure: it may only depend on @config." },
+          { group: ["@app/**"], message: routesOnlyMessage },
+        ],
+      }],
+    },
+  },
+  {
+    files: ["config/**/*.ts"],
+    rules: {
+      "no-restricted-imports": ["error", {
+        patterns: [{
+          group: ["@features/**", "@shared/**", "@core/**", "@app/**"],
+          message: "config/ only reads and validates environment variables; it depends on nothing in the project.",
+        }],
+      }],
+    },
+  },
+  {
+    files: ["app/**/*.{ts,tsx}", "proxy.ts", "i18n/**/*.ts"],
     rules: {
       "no-restricted-imports": ["error", {
         patterns: [{

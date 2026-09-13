@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Link } from '@/i18n/navigation';
+import { Link } from '@i18n/navigation';
 import styles from './LeasingCalculator.module.css';
 
 export default function LeasingCalculator() {

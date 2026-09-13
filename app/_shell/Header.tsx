@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
-import { Link, usePathname } from '@/i18n/navigation';
+import { Link, usePathname } from '@i18n/navigation';
 import Image from 'next/image';
 import MobileMenu from './MobileMenu';
 import { FavoritesIcon } from '@features/inventory';

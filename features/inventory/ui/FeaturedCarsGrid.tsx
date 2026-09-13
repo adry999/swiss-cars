@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from '@/i18n/navigation';
+import { Link } from '@i18n/navigation';
 import type { Car } from '../inventory.types';
 import CarCard from './CarCard';
 import styles from './CarsGrid.module.css';

@@ -1,5 +1,5 @@
 import { readCatalogPage } from '@features/inventory/server';
-import { localeAlternates, localeOpenGraph, localeTwitter } from '@/i18n/routing';
+import { localeAlternates, localeOpenGraph, localeTwitter } from '@i18n/routing';
 import { InventoryGrid } from '@features/inventory';
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';

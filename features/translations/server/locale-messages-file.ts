@@ -1,6 +1,6 @@
 import 'server-only';
 import path from 'node:path';
-import { routing } from '@/i18n/routing';
+import { routing } from '@i18n/routing';
 
 export type SupportedLocale = (typeof routing.locales)[number];
 

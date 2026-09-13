@@ -1,8 +1,8 @@
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
-import { routing, localeAlternates, localeOpenGraph, localeTwitter } from '@/i18n/routing';
-import Header from '@/app/_shell/Header';
-import Footer from '@/app/_shell/Footer';
+import { routing, localeAlternates, localeOpenGraph, localeTwitter } from '@i18n/routing';
+import Header from '@app/_shell/Header';
+import Footer from '@app/_shell/Footer';
 import Preloader from '@shared/ui/Preloader';
 import WhatsAppFloat from '@shared/ui/WhatsAppFloat';
 import GoogleAnalytics from '@shared/analytics/GoogleAnalytics';

@@ -2,7 +2,7 @@ import { getTranslations } from 'next-intl/server';
 import { listVisiblePartners } from '@features/partners/server';
 import Image from 'next/image';
 import { LeasingCalculator } from '@features/leasing';
-import { localeAlternates, localeOpenGraph, localeTwitter } from '@/i18n/routing';
+import { localeAlternates, localeOpenGraph, localeTwitter } from '@i18n/routing';
 import type { Metadata } from 'next';
 
 type Props = {

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Heart, X, CarFront } from 'lucide-react';
 import Image from 'next/image';
-import { Link } from '@/i18n/navigation';
+import { Link } from '@i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { formatPrice } from '@shared/formatting/format';
 import type { Car } from '../inventory.types';

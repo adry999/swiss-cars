@@ -1,9 +1,9 @@
 import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
-import { Link } from '@/i18n/navigation';
+import { Link } from '@i18n/navigation';
 import type { Metadata } from 'next';
 import { ShieldCheck, Zap, Globe, Search, ClipboardCheck, Truck, ChevronRight } from 'lucide-react';
-import { localeAlternates, localeOpenGraph, localeTwitter } from '@/i18n/routing';
+import { localeAlternates, localeOpenGraph, localeTwitter } from '@i18n/routing';
 import styles from './about.module.css';
 
 type Props = {

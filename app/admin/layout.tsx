@@ -5,7 +5,7 @@ import { getPublicSiteConfig } from '@features/site-settings/server';
 import { getCurrentUser } from '@shared/session/current-user';
 import { hasAdminRole } from '@shared/session/admin-role';
 import { ToastProvider } from '@shared/ui/Toast/ToastContext';
-import '@/app/globals.css';
+import '@app/globals.css';
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
     const [user, siteConfig] = await Promise.all([

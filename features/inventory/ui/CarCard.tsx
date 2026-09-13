@@ -3,7 +3,7 @@
 import { useTranslations, useLocale } from 'next-intl';
 import Image from 'next/image';
 import { CarFront } from 'lucide-react';
-import { Link } from '@/i18n/navigation';
+import { Link } from '@i18n/navigation';
 import type { Car } from '../inventory.types';
 import FavoriteButton from './FavoriteButton';
 import { formatPrice } from '@shared/formatting/format';

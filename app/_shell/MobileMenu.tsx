@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { Link } from '@/i18n/navigation';
+import { Link } from '@i18n/navigation';
 import styles from './MobileMenu.module.css';
 
 type NavLink = { href: string; label: string };

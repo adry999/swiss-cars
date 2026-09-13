@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Heart } from 'lucide-react';
-import { Link } from '@/i18n/navigation';
+import { Link } from '@i18n/navigation';
 import { readFavoriteCarIds, FAVORITES_CHANGED_EVENT } from '../model/favorite-car-ids';
 import styles from './FavoritesIcon.module.css';
 

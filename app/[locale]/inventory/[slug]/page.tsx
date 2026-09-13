@@ -2,14 +2,14 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { findCarBySlug, listCarSlugs, SimilarCars } from '@features/inventory/server';
 import { getPublicSiteConfig } from '@features/site-settings/server';
-import { routing, localeAlternates, localeUrl, localeOpenGraph, localeTwitter } from '@/i18n/routing';
+import { routing, localeAlternates, localeUrl, localeOpenGraph, localeTwitter } from '@i18n/routing';
 import { sanitizeHtml } from '@shared/formatting/sanitize';
 import { formatPrice } from '@shared/formatting/format';
-import { Link } from '@/i18n/navigation';
+import { Link } from '@i18n/navigation';
 import { FileCheck, Shield, BadgeCheck, HeadphonesIcon, Calculator } from 'lucide-react';
 import { CarGallery, CarSpecsGrid, FavoriteButton } from '@features/inventory';
 import { CarInquiryForm } from '@features/leads';
-import { submitLeadInquiryAction } from '@/app/_composition/lead-inquiry-actions';
+import { submitLeadInquiryAction } from '@app/_composition/lead-inquiry-actions';
 import styles from './page.module.css';
 
 type Props = {

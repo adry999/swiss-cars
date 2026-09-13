@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next';
 import { listAvailableCars } from '@features/inventory/server';
-import { routing, localeUrl } from '@/i18n/routing';
+import { routing, localeUrl } from '@i18n/routing';
 
 const STATIC_PATHS = ['', '/about', '/services', '/leasing', '/contact', '/inventory'];
 

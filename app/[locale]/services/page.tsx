@@ -1,7 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { PackageSearch, ShieldCheck, Truck, CarFront, Wrench, HeadphonesIcon } from 'lucide-react';
-import { localeAlternates, localeOpenGraph, localeTwitter } from '@/i18n/routing';
+import { localeAlternates, localeOpenGraph, localeTwitter } from '@i18n/routing';
 import styles from './page.module.css';
 
 type Props = {

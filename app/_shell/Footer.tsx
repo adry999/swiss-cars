@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import { Link } from '@/i18n/navigation';
+import { Link } from '@i18n/navigation';
 import { NewsletterSignupForm } from '@features/subscribers';
 import type { PublicSiteConfig } from '@features/site-settings';
 import styles from './Footer.module.css';

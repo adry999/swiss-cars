@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import ContactPageClient from './ContactPageClient';
 import { getPublicSiteConfig } from '@features/site-settings/server';
-import { localeAlternates, localeOpenGraph, localeTwitter } from '@/i18n/routing';
-import { submitLeadInquiryAction } from '@/app/_composition/lead-inquiry-actions';
+import { localeAlternates, localeOpenGraph, localeTwitter } from '@i18n/routing';
+import { submitLeadInquiryAction } from '@app/_composition/lead-inquiry-actions';
 
 type Props = {
     params: Promise<{ locale: string }>;

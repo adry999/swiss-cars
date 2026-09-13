@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next';
-import { BASE_URL } from '@/i18n/routing';
+import { BASE_URL } from '@i18n/routing';
 
 export default function robots(): MetadataRoute.Robots {
   return {
