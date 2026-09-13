@@ -22,22 +22,23 @@ export default function PartnerForm({ initialData }: { initialData?: Partner }) 
 
     const logoUrl = watch('logo_url');
 
-    const onSubmit = async (data: Partner) => {
+    const submitPartner = async (data: Partner) => {
         setIsSubmitting(true);
         setError(null);
-        try {
-            await savePartner(data);
+
+        const result = await savePartner(data);
+        if (result.status === 'succeeded') {
             router.push('/admin/partners');
             router.refresh();
-        } catch (e) {
+        } else {
             setError('Error saving partner. Please try again.');
-        } finally {
-            setIsSubmitting(false);
         }
+
+        setIsSubmitting(false);
     };
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} style={{ maxWidth: '600px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <form onSubmit={handleSubmit(submitPartner)} style={{ maxWidth: '600px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <h2>{initialData ? 'Edit Partner' : 'New Partner'}</h2>
                 <Link href="/admin/partners" className="btn btn-outline" style={{ borderColor: 'var(--color-gray-2)', color: '#333' }}><ArrowLeft size={16} /> Back</Link>

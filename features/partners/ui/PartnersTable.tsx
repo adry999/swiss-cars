@@ -11,15 +11,23 @@ import styles from './PartnersTable.module.css';
 export default function PartnersTable({ partners }: { partners: Partner[] }) {
     const router = useRouter();
 
-    const onDelete = async (id: string) => {
+    const removePartner = async (id: string) => {
         if (!confirm('Ești sigur că vrei să ștergi acest partener?')) return;
-        await deletePartner(id);
-        router.refresh();
+        const result = await deletePartner(id);
+        if (result.status === 'succeeded') {
+            router.refresh();
+        } else {
+            alert('Ștergerea a eșuat');
+        }
     };
 
-    const onToggleVisibility = async (p: Partner) => {
-        await savePartner({ ...p, is_visible: !p.is_visible });
-        router.refresh();
+    const togglePartnerVisibility = async (p: Partner) => {
+        const result = await savePartner({ ...p, is_visible: !p.is_visible });
+        if (result.status === 'succeeded') {
+            router.refresh();
+        } else {
+            alert('Actualizarea a eșuat');
+        }
     };
 
     const columns = [
@@ -63,7 +71,7 @@ export default function PartnersTable({ partners }: { partners: Partner[] }) {
                 <div className={styles.actions}>
                     <button
                         className={'action-btn'}
-                        onClick={() => onToggleVisibility(p)}
+                        onClick={() => togglePartnerVisibility(p)}
                     >
                         {p.is_visible ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
@@ -75,7 +83,7 @@ export default function PartnersTable({ partners }: { partners: Partner[] }) {
                     </button>
                     <button
                         className={`${'action-btn'} ${'action-btn-delete'}`}
-                        onClick={() => onDelete(p.id!)}
+                        onClick={() => removePartner(p.id!)}
                     >
                         <Trash2 size={16} />
                     </button>

@@ -16,14 +16,16 @@ Recenziile clienților afișate pe homepage și administrarea lor (CRUD, vizibil
 
 `@features/reviews/server` (server-only):
 - `listVisibleReviews`, `readReviewsAdminPage`, `findReviewForEditing` — citiri din tabela `reviews`.
+- `saveReviewRecord(review)`, `deleteReviewRecord(reviewId)` — scrieri; aruncă `Error` cu `cause`.
 
 `@features/reviews/actions` (Server Actions, protejate de `requireAuth`):
-- `saveReview(data)`, `deleteReview(id)`.
+- `saveReview(data): Promise<ReviewSaveResult>`, `deleteReview(reviewId): Promise<ReviewRemovalResult>`.
+  Intrare invalidă (Zod) → `invalid-input` cu `invalidFields`; eroare din repository → logată și întoarsă ca `unavailable`.
 
 ## Dependențe
 
 Poate importa `@core/*` și, tranzitoriu, `@/lib/*` și `@/components/ui`:
-- `@core/supabase/server-client` în `server/reviews-repository.ts` și `actions.ts`.
+- `@core/supabase/server-client` în `server/reviews-repository.ts`.
 - `@/lib/utils/requireAuth`.
 - `@/components/admin/ImageUploader`, `@/components/admin/DataTable`, `@/components/ui/Pagination`.
 
@@ -33,15 +35,16 @@ Nu importă alt feature.
 
 ```
 reviews.schema.ts / .test.ts   — ReviewSchema
-reviews.types.ts               — Review, PaginatedReviews
+reviews.types.ts               — Review, ReviewRecord, PaginatedReviews, ReviewSaveResult, ReviewRemovalResult
 index.ts / admin.ts / server.ts / actions.ts
 server/
-  reviews-repository.ts         — listVisibleReviews, readReviewsAdminPage, findReviewForEditing
+  reviews-repository.ts         — listVisibleReviews, readReviewsAdminPage, findReviewForEditing, saveReviewRecord, deleteReviewRecord
 ui/
   ReviewsSlider (+ css), ReviewForm (+ css), ReviewsTable (+ css)
 ```
 
 ## Testare
 
-Citirea publică (`listVisibleReviews`) logează eroarea și întoarce listă goală; citirile de admin și
-`actions.ts` aruncă. Testele stau lângă sursă. Rulare izolată: `npx vitest run features/reviews`
+Citirea publică (`listVisibleReviews`) logează eroarea și întoarce listă goală; citirile de admin
+aruncă. Scrierile din `server/reviews-repository.ts` aruncă `Error` cu `cause`; `actions.ts` le prinde
+și le întoarce ca `ActionResult`. Testele stau lângă sursă. Rulare izolată: `npx vitest run features/reviews`

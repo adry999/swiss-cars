@@ -1,5 +1,6 @@
+import 'server-only';
 import { createServerSupabaseClient, createStaticSupabaseClient } from '@core/supabase/server-client';
-import type { PaginatedReviews, Review } from '../reviews.types';
+import type { PaginatedReviews, Review, ReviewRecord } from '../reviews.types';
 
 export async function listVisibleReviews(): Promise<Review[]> {
     const supabase = createStaticSupabaseClient();
@@ -61,4 +62,26 @@ export async function findReviewForEditing(reviewId: string): Promise<Review | n
 
     if (error || !data) return null;
     return data as Review;
+}
+
+export async function saveReviewRecord(review: ReviewRecord): Promise<void> {
+    const supabase = await createServerSupabaseClient();
+    const { id, ...reviewData } = review;
+
+    const { error } = id
+        ? await supabase.from('reviews').update(reviewData).eq('id', id)
+        : await supabase.from('reviews').insert(reviewData);
+
+    if (error) {
+        throw new Error(`Reviews repository: save review failed: ${error.message}`, { cause: error });
+    }
+}
+
+export async function deleteReviewRecord(reviewId: string): Promise<void> {
+    const supabase = await createServerSupabaseClient();
+    const { error } = await supabase.from('reviews').delete().eq('id', reviewId);
+
+    if (error) {
+        throw new Error(`Reviews repository: delete review failed: ${error.message}`, { cause: error });
+    }
 }

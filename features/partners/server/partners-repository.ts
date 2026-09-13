@@ -1,3 +1,4 @@
+import 'server-only';
 import { createServerSupabaseClient, createStaticSupabaseClient } from '@core/supabase/server-client';
 import type { Partner } from '../partners.types';
 
@@ -37,4 +38,26 @@ export async function findPartnerForEditing(partnerId: string): Promise<Partner 
 
     if (error || !data) return null;
     return data as Partner;
+}
+
+export async function savePartnerRecord(partner: Partner): Promise<void> {
+    const supabase = await createServerSupabaseClient();
+    const { id, ...partnerData } = partner;
+
+    const { error } = id
+        ? await supabase.from('partners').update(partnerData).eq('id', id)
+        : await supabase.from('partners').insert(partnerData);
+
+    if (error) {
+        throw new Error(`Partners repository: save partner failed: ${error.message}`, { cause: error });
+    }
+}
+
+export async function deletePartnerRecord(partnerId: string): Promise<void> {
+    const supabase = await createServerSupabaseClient();
+    const { error } = await supabase.from('partners').delete().eq('id', partnerId);
+
+    if (error) {
+        throw new Error(`Partners repository: delete partner failed: ${error.message}`, { cause: error });
+    }
 }

@@ -1,38 +1,55 @@
 'use server';
 
-import { createServerSupabaseClient } from '@core/supabase/server-client';
+import { revalidatePath } from 'next/cache';
+import { z } from 'zod';
 import { requireAuth } from '@/lib/utils/requireAuth';
 import { PartnerSchema } from './partners.schema';
-import { revalidatePath } from 'next/cache';
+import type { PartnerRemovalResult, PartnerSaveResult } from './partners.types';
+import { deletePartnerRecord, savePartnerRecord } from './server/partners-repository';
 
-export async function savePartner(data: unknown) {
-    await requireAuth();
-    const supabase = await createServerSupabaseClient();
+const PartnerIdSchema = z.uuid();
 
-    const parsed = PartnerSchema.safeParse(data);
-    if (!parsed.success) throw new Error('Invalid partner data');
-
-    const { id, ...partnerData } = parsed.data;
-
-    if (id) {
-        const { error } = await supabase.from('partners').update(partnerData).eq('id', id);
-        if (error) throw error;
-    } else {
-        const { error } = await supabase.from('partners').insert(partnerData);
-        if (error) throw error;
-    }
-
+function revalidatePartners() {
     revalidatePath('/', 'layout');
     revalidatePath('/admin/partners');
-    return { success: true };
 }
 
-export async function deletePartner(id: string) {
+export async function savePartner(partnerData: unknown): Promise<PartnerSaveResult> {
     await requireAuth();
-    const supabase = await createServerSupabaseClient();
-    const { error } = await supabase.from('partners').delete().eq('id', id);
-    if (error) throw error;
-    revalidatePath('/', 'layout');
-    revalidatePath('/admin/partners');
-    return { success: true };
+
+    const parsed = PartnerSchema.safeParse(partnerData);
+    if (!parsed.success) {
+        return {
+            status: 'rejected',
+            reason: 'invalid-input',
+            invalidFields: [...new Set(parsed.error.issues.map((issue) => String(issue.path[0] ?? 'partner')))],
+        };
+    }
+
+    try {
+        await savePartnerRecord(parsed.data);
+    } catch (error) {
+        console.error('Save partner failed:', error);
+        return { status: 'rejected', reason: 'unavailable' };
+    }
+
+    revalidatePartners();
+    return { status: 'succeeded' };
+}
+
+export async function deletePartner(partnerId: string): Promise<PartnerRemovalResult> {
+    await requireAuth();
+    if (!PartnerIdSchema.safeParse(partnerId).success) {
+        return { status: 'rejected', reason: 'invalid-input' };
+    }
+
+    try {
+        await deletePartnerRecord(partnerId);
+    } catch (error) {
+        console.error('Delete partner failed:', error);
+        return { status: 'rejected', reason: 'unavailable' };
+    }
+
+    revalidatePartners();
+    return { status: 'succeeded' };
 }

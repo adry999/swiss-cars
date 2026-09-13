@@ -24,22 +24,23 @@ export default function ReviewForm({ initialData }: { initialData?: Review }) {
         }
     });
 
-    const onSubmit = async (data: Review) => {
+    const submitReview = async (data: Review) => {
         setIsSubmitting(true);
         setError(null);
-        try {
-            await saveReview({ ...data, avatar_url: avatarUrl || null });
+
+        const result = await saveReview({ ...data, avatar_url: avatarUrl || null });
+        if (result.status === 'succeeded') {
             router.push('/admin/reviews');
             router.refresh();
-        } catch (e) {
+        } else {
             setError('Eroare la salvarea review-ului. Încearcă din nou.');
-        } finally {
-            setIsSubmitting(false);
         }
+
+        setIsSubmitting(false);
     };
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} style={{ maxWidth: '600px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <form onSubmit={handleSubmit(submitReview)} style={{ maxWidth: '600px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <h2>{initialData ? 'Editează Review' : 'Review Nou'}</h2>
                 <Link href="/admin/reviews" className="btn btn-outline" style={{ borderColor: 'var(--color-gray-2)', color: '#333' }}><ArrowLeft size={16} /> Înapoi</Link>

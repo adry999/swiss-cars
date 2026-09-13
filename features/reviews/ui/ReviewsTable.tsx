@@ -24,15 +24,23 @@ export default function ReviewsTable({ reviews, currentPage, totalPages }: Props
         router.push(`?${params.toString()}`);
     };
 
-    const onDelete = async (id: string) => {
+    const removeReview = async (id: string) => {
         if (!confirm('Ești sigur că vrei să ștergi această recenzie?')) return;
-        await deleteReview(id);
-        router.refresh();
+        const result = await deleteReview(id);
+        if (result.status === 'succeeded') {
+            router.refresh();
+        } else {
+            alert('Ștergerea a eșuat');
+        }
     };
 
-    const onToggleVisibility = async (review: Review) => {
-        await saveReview({ ...review, is_visible: !review.is_visible });
-        router.refresh();
+    const toggleReviewVisibility = async (review: Review) => {
+        const result = await saveReview({ ...review, is_visible: !review.is_visible });
+        if (result.status === 'succeeded') {
+            router.refresh();
+        } else {
+            alert('Actualizarea a eșuat');
+        }
     };
 
     const columns = [
@@ -104,7 +112,7 @@ export default function ReviewsTable({ reviews, currentPage, totalPages }: Props
                     <div className={styles.actions}>
                         <button
                             className={'action-btn'}
-                            onClick={() => onToggleVisibility(r)}
+                            onClick={() => toggleReviewVisibility(r)}
                             title={r.is_visible ? 'Hide' : 'Show'}
                         >
                             {r.is_visible ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -118,7 +126,7 @@ export default function ReviewsTable({ reviews, currentPage, totalPages }: Props
                         </button>
                         <button
                             className={`${'action-btn'} ${'action-btn-delete'}`}
-                            onClick={() => onDelete(r.id!)}
+                            onClick={() => removeReview(r.id!)}
                         >
                             <Trash2 size={16} />
                         </button>
