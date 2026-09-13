@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Save, Loader2 } from "lucide-react"
-import { saveSettings } from "../actions"
+import { saveSiteConfig } from "../actions"
 import type { SiteConfig } from "../site-settings.types"
 import SiteConfigGeneralSection from "./SiteConfigGeneralSection"
 import SiteConfigLogoSection from "./SiteConfigLogoSection"
@@ -24,13 +24,15 @@ export default function SiteConfigForm({
     e.preventDefault()
     setIsSaving(true)
     try {
-      const res = await saveSettings("site_config", settings)
-      if (res.success) {
+      const result = await saveSiteConfig(settings)
+      if (result.status === "succeeded") {
         alert("Setările au fost salvate cu succes!")
+      } else if (result.reason === "invalid-input") {
+        alert(`Câmpuri invalide: ${result.invalidFields?.join(", ")}`)
       } else {
         alert("Eroare la salvarea setărilor.")
       }
-    } catch (e) {
+    } catch {
       alert("Eroare la salvarea setărilor.")
     } finally {
       setIsSaving(false)

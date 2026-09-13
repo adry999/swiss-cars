@@ -1,6 +1,6 @@
 import { cache } from 'react';
 import { getServerEnvironment } from '@config/server-environment';
-import { createStaticSupabaseClient } from '@core/supabase/server-client';
+import { createServerSupabaseClient, createStaticSupabaseClient } from '@core/supabase/server-client';
 import type { HomepageContent, NotificationConfig, PublicSiteConfig, SiteConfig } from '../site-settings.types';
 
 const PUBLIC_KEYS = [
@@ -72,6 +72,18 @@ export async function getPublicSiteConfig(): Promise<PublicSiteConfig> {
 // makes that the compiler's problem instead of `any`'s.
 export async function getHomepageContent(): Promise<Partial<HomepageContent>> {
     return ((await getSettingRow('homepage_content')) ?? {}) as Partial<HomepageContent>;
+}
+
+export type SettingKey = 'site_config' | 'homepage_content';
+
+/** Replaces the whole row value; callers pass an already validated object. */
+export async function writeSettingRow(key: SettingKey, value: Record<string, unknown>): Promise<void> {
+    const supabase = await createServerSupabaseClient();
+    const { error } = await supabase.from('site_settings').upsert({ key, value }, { onConflict: 'key' });
+
+    if (error) {
+        throw new Error(`Site settings repository: save "${key}" failed: ${error.message}`, { cause: error });
+    }
 }
 
 /**

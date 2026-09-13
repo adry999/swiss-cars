@@ -24,7 +24,9 @@ care le citesc.
 - `HomepageContentForm` — formularul `homepage_content`.
 
 `@features/site-settings/actions` (Server Actions, protejate de `requireAdmin`):
-- `saveSettings(key, value)`.
+- `saveSiteConfig(settings)` — validează cu `SiteConfigSchema`; cheile din afara schemei (inclusiv credențialele de notificare) nu ajung în rând.
+- `saveHomepageContent(content)` — validează cu `HomepageContentSchema`.
+- Ambele întorc `SiteSettingsSaveResult` (`invalid-input` cu `invalidFields` ca drumuri `a.b.0.c`, sau `unavailable`).
 
 ## Dependențe
 
@@ -40,10 +42,11 @@ Nu importă alt feature.
 ## Structură
 
 ```
-site-settings.types.ts — SiteConfig, PublicSiteConfig, HomepageContent, HeroSlide, NotificationConfig
+site-settings.schema.ts — SiteConfigSchema, HomepageContentSchema (+ .test.ts)
+site-settings.types.ts — SiteConfig, PublicSiteConfig, HomepageContent și HeroSlide (derivate din schemă), NotificationConfig, SiteSettingsSaveResult
 index.ts / admin.ts / server.ts / actions.ts
 server/
-  site-settings-repository.ts — getSiteConfig, getPublicSiteConfig, getHomepageContent, getNotificationConfig (cache pe request cu React.cache)
+  site-settings-repository.ts — getSiteConfig, getPublicSiteConfig, getHomepageContent, getNotificationConfig (cache pe request cu React.cache), writeSettingRow
 ui/
   SiteConfigForm (+ .module.css), SiteConfigGeneralSection, SiteConfigLogoSection,
   SiteConfigContactSection, SiteConfigSocialSection, SiteConfigTagManagerSection, SiteConfigNotificationsSection
@@ -56,11 +59,11 @@ ui/
 
 ## De urmat
 
-- `saveSettings(key, value)` acceptă orice cheie și valoare nevalidată — de despărțit în
-  `saveSiteConfig` / `saveHomepageContent`, fiecare cu schema Zod proprie.
 - `getNotificationConfig()` mai citește `telegram_bot_token`/`telegram_chat_id`/`notification_email` din `site_config` când mediul nu are perechea Telegram completă — fallback-ul rămâne până când rândul din bază e confirmat curat de credențiale, apoi se elimină.
 
 ## Testare
 
-Fără teste proprii încă — formularele nu au logică netrivială, iar `site-settings-repository.ts` e
-o înfășurare subțire peste Supabase. Rulare izolată: `npx vitest run features/site-settings`
+`site-settings.schema.test.ts` acoperă schemele de scriere: credențialele sunt eliminate din
+`site_config`, valorile `null` deja salvate trec, contorul lăsat gol în editor e raportat cu drumul
+lui. Formularele și `site-settings-repository.ts` (înfășurare subțire peste Supabase) nu au teste
+proprii. Rulare izolată: `npx vitest run features/site-settings`

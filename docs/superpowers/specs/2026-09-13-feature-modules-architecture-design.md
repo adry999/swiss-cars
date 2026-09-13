@@ -406,7 +406,7 @@ Fiecare pas se termină cu `npm run verify`, `npm run build`, lista rutelor din 
 2. **Rate limiter-ul nu e atomic** (citire, apoi scriere). Rafalele pot depăși puțin limita. Înlocuirea cu `@upstash/ratelimit` e un pas separat, pentru că adaugă o dependență. Fallback-ul în memorie crește fără limită pe instanțele Fluid Compute cu viață lungă.
 3. **CSP-ul** permite `unsafe-eval` și `unsafe-inline`. Nu ține de arhitectură, dar e în registrul de riscuri.
 4. **`subscribe` (newsletter) nu are rate limit** — spre deosebire de `submitLeadInquiryAction`, nu refolosește încă `core/rate-limit`.
-5. **`saveSettings(key, value)` acceptă orice cheie și orice valoare nevalidată** — nu are schema Zod proprie; de despărțit în `saveSiteConfig` / `saveHomepageContent`.
+5. ~~**`saveSettings(key, value)` acceptă orice cheie și orice valoare nevalidată**~~ — rezolvat: înlocuit de `saveSiteConfig` / `saveHomepageContent`, fiecare cu schema din `features/site-settings/site-settings.schema.ts`; cheile din afara `SiteConfigSchema` nu mai sunt scrise în rând.
 6. **Editorul de traduceri scrie pe sistemul de fișiere** (`features/translations`), care e read-only și nepersistent pe Vercel — funcționează doar în dezvoltare locală.
 7. **Tipurile `Lead` și `Car`** rămân scrise manual, nu generate cu `supabase gen types`.
 8. **Fallback-ul de credențiale din `site_config`** rămâne în `getNotificationConfig()` până când rândul e confirmat curat de credențiale.

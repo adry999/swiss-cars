@@ -57,7 +57,7 @@ Protected actions (feature — action):
 - `features/partners` — `savePartner`, `deletePartner`
 - `features/subscribers` — `deleteSubscriber`, `toggleSubscriberStatus`
 - `features/leads` — `markLeadRead`, `markLeadImportant`, `deleteLead`, `markAllLeadsRead`
-- `features/site-settings` — `saveSettings`
+- `features/site-settings` — `saveSiteConfig`, `saveHomepageContent` (each validated by its own Zod schema in `site-settings.schema.ts`)
 - `features/translations` — `saveLocaleMessages`
 
 Public actions (no auth): `submitLeadInquiryAction` (`app/_composition/lead-inquiry-actions.ts` — rate-limited, Zod-validated), `subscribe` (`features/subscribers`, Zod-validated), `signIn` (`features/auth` — validates the credentials with Zod on the server before calling Supabase Auth).

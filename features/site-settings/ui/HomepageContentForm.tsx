@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Save, Loader2 } from 'lucide-react';
-import { saveSettings } from '../actions';
+import { saveHomepageContent } from '../actions';
 import { useForm } from 'react-hook-form';
 import { useToast } from '@shared/ui/Toast/ToastContext';
 import type { HomepageContent } from '../site-settings.types';
@@ -95,9 +95,11 @@ export default function HomepageContentForm({ initialData }: { initialData?: Hom
     const onSubmit = async (data: HomepageContent) => {
         setIsSaving(true);
         try {
-            const res = await saveSettings('homepage_content', data);
-            if (res.success) {
+            const result = await saveHomepageContent(data);
+            if (result.status === 'succeeded') {
                 toast.success('Homepage content saved successfully!');
+            } else if (result.reason === 'invalid-input') {
+                toast.error(`Invalid fields: ${result.invalidFields?.join(', ')}`);
             } else {
                 toast.error('Failed to save homepage content.');
             }
