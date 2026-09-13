@@ -1,0 +1,60 @@
+# features/subscribers
+
+## Scop
+
+Gestionează abonații la newsletter: formularul public de abonare din footer și lista de admin
+(activare/dezactivare, ștergere).
+
+## Public API
+
+`@features/subscribers` (client-safe):
+- `NewsletterSignupForm` — formularul de abonare din `Footer`; nu primește nimic ca prop, apelează
+  direct Server Action-ul public `subscribe`.
+
+`@features/subscribers/admin` (client-safe, doar UI de admin):
+- `SubscribersTable` — tabelul de admin; primește `subscribers` ca prop.
+- Tip: `Subscriber`.
+
+`@features/subscribers/server` (server-only):
+- `listSubscribers()` — citește toți abonații; cere `requireAuth()`. Nu e un Server Action: un
+  export dintr-un fișier `'use server'` e un endpoint POST public, ceea ce ar fi expus lista
+  completă de email-uri oricui o cerea, protejată doar de `requireAuth()` la momentul apelului.
+
+`@features/subscribers/actions` (Server Actions):
+- `subscribe(email)` — public, fără `requireAuth()`; validează email-ul cu Zod pe server.
+- `deleteSubscriber(subscriberId)` — admin.
+- `toggleSubscriberStatus(subscriberId, isActive)` — admin.
+
+## Dependențe
+
+Poate importa `@core/*`, `@shared/contracts/*` și, tranzitoriu, `@/lib/*`:
+- `@core/supabase/server-client` (`createServerSupabaseClient`) în `server/supabase-subscribers-repository.ts`.
+- `@/lib/utils/requireAuth` în `server.ts` și `actions.ts`.
+- `@/components/ui/Toast` (`useOptionalToast`, `useToast`) în `ui/NewsletterSignupForm.tsx` și `ui/SubscribersTable.tsx`.
+- `@/components/admin/DataTable` în `ui/SubscribersTable.tsx`.
+
+Inserturile anonime trec doar prin RPC-ul `subscribe_email()`
+(`database/2026-08-26_lead_subscriber_rpc.sql`), care face și verificarea de duplicat — anon nu are
+SELECT pe tabelă, așa că un `.insert()` direct nu poate distinge un abonat existent de unul nou.
+
+Nu importă alt feature.
+
+## Structură
+
+```text
+subscribers.types.ts                   — Subscriber, SubscribersRepository, rezultate de acțiune
+subscribers.schema.ts                  — SubscriberEmailSchema
+subscribers.schema.test.ts             — teste ale schemei
+index.ts / admin.ts / server.ts / actions.ts — punctele de intrare
+server/
+  supabase-subscribers-repository.ts   — SubscribersRepository peste tabela subscribers
+ui/
+  NewsletterSignupForm.tsx (+ .module.css) — formularul din footer
+  subscribe-failure-message.ts (+ .test.ts) — mapare motiv → cheie de mesaj
+  SubscribersTable.tsx                 — tabelul de admin
+```
+
+## De urmat
+
+`subscribe` (public) nu are încă rate limit — ar trebui să refolosească `core/rate-limit`, ca
+`features/leads`.

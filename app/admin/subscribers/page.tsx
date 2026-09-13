@@ -1,8 +1,8 @@
-import { getSubscribers } from '@/lib/actions/subscribers';
-import SubscribersTable from './SubscribersTable';
+import { listSubscribers } from '@features/subscribers/server';
+import { SubscribersTable } from '@features/subscribers/admin';
 
 export default async function SubscribersPage() {
-    const subscribers = await getSubscribers();
+    const subscribers = await listSubscribers();
 
     return (
         <div>

@@ -3,10 +3,11 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Trash2, ToggleLeft, ToggleRight, Mail } from 'lucide-react';
-import { deleteSubscriber, toggleSubscriberStatus, type Subscriber } from '@/lib/actions/subscribers';
-import { useToast } from '@/components/ui/Toast';
 import { formatDistanceToNow } from 'date-fns';
 import DataTable from '@/components/admin/DataTable';
+import { useToast } from '@/components/ui/Toast';
+import { deleteSubscriber, toggleSubscriberStatus } from '../actions';
+import type { Subscriber } from '../subscribers.types';
 
 type Props = {
     subscribers: Subscriber[];
@@ -24,7 +25,7 @@ export default function SubscribersTable({ subscribers }: Props) {
         const result = await deleteSubscriber(id);
         setLoading(null);
 
-        if (result.success) {
+        if (result.status === 'succeeded') {
             toast.success('Abonat șters cu succes');
             router.refresh();
         } else {
@@ -37,7 +38,7 @@ export default function SubscribersTable({ subscribers }: Props) {
         const result = await toggleSubscriberStatus(id, !currentStatus);
         setLoading(null);
 
-        if (result.success) {
+        if (result.status === 'succeeded') {
             toast.success(currentStatus ? 'Abonat dezactivat' : 'Abonat activat');
             router.refresh();
         } else {

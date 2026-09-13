@@ -1,47 +1,20 @@
 'use client';
 
-import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { Link } from '@/i18n/navigation';
-import { useOptionalToast } from '@/components/ui/Toast';
-import { subscribe } from '@/lib/actions/subscribers';
+import { NewsletterSignupForm } from '@features/subscribers';
 import type { PublicSiteConfig } from '@/lib/settings';
 import styles from './Footer.module.css';
 
 export default function Footer({ settings = {} }: { settings?: PublicSiteConfig }) {
     const t = useTranslations('footer');
     const year = new Date().getFullYear();
-    const [email, setEmail] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const phone = settings.phone;
     const whatsapp = settings.whatsapp;
     const emailAddress = settings.email;
     const address = settings.address;
-
-    // Toast might not be available if Footer is outside ToastProvider
-    const toast = useOptionalToast();
-
-    const handleSubscribe = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!email.trim()) return;
-
-        setIsSubmitting(true);
-        const result = await subscribe(email);
-        setIsSubmitting(false);
-
-        if (result.success) {
-            setEmail('');
-            if (toast) {
-                toast.success(t('subscribe_success'));
-            }
-        } else {
-            if (toast) {
-                toast.error(result.error || 'Subscription failed');
-            }
-        }
-    };
 
     return (
         <footer className={styles.footer}>
@@ -126,19 +99,7 @@ export default function Footer({ settings = {} }: { settings?: PublicSiteConfig 
                     <h3 className={styles.colTitle}>{t('subscribe_title')}</h3>
                     <div className={styles.divider} />
                     <p className={styles.subscribeText}>{t('subscribe_text')}</p>
-                    <form className={styles.subscribeForm} onSubmit={handleSubscribe}>
-                        <input
-                            type="email"
-                            placeholder={t('subscribe_placeholder')}
-                            className={styles.input}
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
-                        <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
-                            {isSubmitting ? '...' : t('subscribe_btn')}
-                        </button>
-                    </form>
+                    <NewsletterSignupForm />
                 </div>
             </div>
 
