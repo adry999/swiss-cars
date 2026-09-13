@@ -1,4 +1,5 @@
 import { cache } from 'react';
+import { getServerEnvironment } from '@config/server-environment';
 import { createStaticClient } from '@/lib/supabase/server';
 import type { HomepageContent } from '@/lib/types';
 
@@ -121,20 +122,20 @@ export interface NotificationConfig {
  * secrets are migrated out of `site_config`; remove it once the row is cleaned.
  */
 export async function getNotificationConfig(): Promise<NotificationConfig> {
-    const fromEnv: NotificationConfig = {
-        telegramBotToken: process.env.TELEGRAM_BOT_TOKEN,
-        telegramChatId: process.env.TELEGRAM_CHAT_ID,
-        notificationEmail: process.env.NOTIFICATION_EMAIL,
-    };
+    const { telegram, notificationEmail } = getServerEnvironment();
 
-    if (fromEnv.telegramBotToken && fromEnv.telegramChatId) {
-        return fromEnv;
+    if (telegram) {
+        return {
+            telegramBotToken: telegram.botToken,
+            telegramChatId: telegram.chatId,
+            notificationEmail: notificationEmail ?? undefined,
+        };
     }
 
     const config = await getSiteConfig();
     return {
-        telegramBotToken: fromEnv.telegramBotToken || config.telegram_bot_token,
-        telegramChatId: fromEnv.telegramChatId || config.telegram_chat_id,
-        notificationEmail: fromEnv.notificationEmail || config.notification_email,
+        telegramBotToken: config.telegram_bot_token,
+        telegramChatId: config.telegram_chat_id,
+        notificationEmail: notificationEmail ?? config.notification_email,
     };
 }
