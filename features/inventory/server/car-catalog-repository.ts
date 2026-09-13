@@ -1,5 +1,7 @@
+import 'server-only';
 import { createServerSupabaseClient, createStaticSupabaseClient } from '@core/supabase/server-client';
 import type { Car, CarCatalogFilters, PaginatedCars } from '../inventory.types';
+import { pickSimilarCars } from '../model/similar-cars';
 
 export async function listAvailableCars(options?: CarCatalogFilters): Promise<Car[]> {
     const supabase = createStaticSupabaseClient();
@@ -30,29 +32,25 @@ export async function readCatalogPage(options?: CarCatalogFilters): Promise<Pagi
     const page = options?.page || 1;
     const limit = options?.limit || 12;
     const offset = (page - 1) * limit;
-    const availableOnly = options?.availableOnly !== false; // default true
+    const availableOnly = options?.availableOnly !== false;
 
     const supabase = createStaticSupabaseClient();
 
-    // Build base query for count
     let countQuery = supabase
         .from('cars')
         .select('*', { count: 'exact', head: true });
 
-    // Build data query
     let dataQuery = supabase
         .from('cars')
         .select('*, car_images(*)')
         .order('created_at', { ascending: false })
         .range(offset, offset + limit - 1);
 
-    // Filter by availability if requested
     if (availableOnly) {
         countQuery = countQuery.eq('is_available', true);
         dataQuery = dataQuery.eq('is_available', true);
     }
 
-    // Apply filters to both queries
     if (options?.brand && options.brand !== 'all') {
         countQuery = countQuery.ilike('brand', options.brand);
         dataQuery = dataQuery.ilike('brand', options.brand);
@@ -134,34 +132,23 @@ export async function findSimilarCars(options: {
             .order('created_at', { ascending: false })
             .limit(limit);
 
-    const collected: Car[] = [];
-    const seen = new Set<string>([currentCarId]);
-
-    const push = (rows: Car[] | null) => {
-        for (const car of rows ?? []) {
-            if (collected.length >= limit) return;
-            const id = car.id ?? '';
-            if (seen.has(id)) continue;
-            seen.add(id);
-            collected.push(car);
-        }
-    };
-
+    let sameBrandCars: Car[] = [];
     if (brand) {
         const { data, error } = await base().ilike('brand', brand);
         if (error) console.error('Error fetching similar cars by brand:', error);
-        push(data as Car[] | null);
+        sameBrandCars = (data as Car[] | null) ?? [];
     }
 
-    if (collected.length < limit && price > 0) {
+    let similarPriceCars: Car[] = [];
+    if (sameBrandCars.length < limit && price > 0) {
         const { data, error } = await base()
             .gte('price', price * 0.7)
             .lte('price', price * 1.3);
         if (error) console.error('Error fetching similar cars by price:', error);
-        push(data as Car[] | null);
+        similarPriceCars = (data as Car[] | null) ?? [];
     }
 
-    return collected;
+    return pickSimilarCars({ currentCarId, limit, sameBrandCars, similarPriceCars });
 }
 
 export async function listFeaturedCars(): Promise<Car[]> {

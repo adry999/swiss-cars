@@ -23,36 +23,32 @@ export default function InventoryTable({ cars, currentPage, totalPages }: Props)
     const searchParams = useSearchParams();
     const [isDuplicating, setIsDuplicating] = useState<string | null>(null);
 
-    const handlePageChange = (page: number) => {
+    const changePage = (page: number) => {
         const params = new URLSearchParams(searchParams.toString());
         params.set('page', page.toString());
         router.push(`?${params.toString()}`);
     };
 
-    const onDelete = async (id: string) => {
+    const removeCar = async (id: string) => {
         if (!confirm('Ești sigur că vrei să ștergi această mașină?')) return;
-        try {
-            await deleteCar(id);
+        const result = await deleteCar(id);
+        if (result.status === 'succeeded') {
             router.refresh();
-        } catch (error) {
+        } else {
             alert('Ștergerea a eșuat');
         }
     };
 
-    const onDuplicate = async (id: string) => {
+    const duplicateCarRow = async (id: string) => {
         if (!confirm('Vrei să creezi o copie a acestei mașini?')) return;
         setIsDuplicating(id);
-        try {
-            const res = await duplicateCar(id);
-            if (res.success) {
-                router.refresh();
-            }
-        } catch (error) {
-            console.error(error);
+        const result = await duplicateCar(id);
+        if (result.status === 'succeeded') {
+            router.refresh();
+        } else {
             alert('Duplicarea a eșuat');
-        } finally {
-            setIsDuplicating(null);
         }
+        setIsDuplicating(null);
     };
 
     const columns = [
@@ -120,7 +116,7 @@ export default function InventoryTable({ cars, currentPage, totalPages }: Props)
                         </Link>
                         <button
                             className="action-btn"
-                            onClick={() => onDuplicate(car.id!)}
+                            onClick={() => duplicateCarRow(car.id!)}
                             disabled={!!isDuplicating}
                             title="Duplică (Creează o copie)"
                         >
@@ -132,7 +128,7 @@ export default function InventoryTable({ cars, currentPage, totalPages }: Props)
                         </button>
                         <button
                             className="action-btn action-btn-delete"
-                            onClick={() => onDelete(car.id!)}
+                            onClick={() => removeCar(car.id!)}
                             title="Șterge"
                         >
                             <Trash2 size={16} />
@@ -143,7 +139,7 @@ export default function InventoryTable({ cars, currentPage, totalPages }: Props)
             <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
-                onPageChange={handlePageChange}
+                onPageChange={changePage}
             />
         </>
     );

@@ -51,20 +51,26 @@ export default function CarEditForm({ initialData, maxImages = 25 }: Props) {
         },
     });
 
-    const onInvalid = (errs: FieldErrors<Car>) => {
+    const reportInvalidFields = (errs: FieldErrors<Car>) => {
         console.error('Validation Errors:', errs);
         setFormError('Please check the form for errors. Some required fields might be missing or invalid.');
     };
 
-    const onSubmit = async (data: Car) => {
+    const submitCar = async (data: Car) => {
         setIsSubmitting(true);
         setFormError(null);
         try {
             const result = await saveCar(data);
-            if (result.success) {
+            if (result.status === 'succeeded') {
                 router.push('/admin/inventory');
                 router.refresh();
+                return;
             }
+            if (result.reason === 'invalid-input') {
+                setFormError('Please check the form for errors. Some required fields might be missing or invalid.');
+                return;
+            }
+            setFormError('Failed to save car. Please try again.');
         } catch (error) {
             console.error('Save failed:', error);
             setFormError('Failed to save car. Please try again.');
@@ -74,7 +80,7 @@ export default function CarEditForm({ initialData, maxImages = 25 }: Props) {
     };
 
     return (
-        <form onSubmit={handleSubmit(onSubmit, onInvalid)} className={styles.form}>
+        <form onSubmit={handleSubmit(submitCar, reportInvalidFields)} className={styles.form}>
             <header className={styles.header}>
                 <div className={styles.headerLeft}>
                     <button type="button" onClick={() => router.back()} className={styles.backBtn}>
