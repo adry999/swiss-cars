@@ -3,11 +3,9 @@
 import { useState, useTransition } from 'react';
 import { format } from 'date-fns';
 import { CheckCheck, Eye, EyeOff, Star, StarOff, Trash2, Phone, Mail, Car, Link as LinkIcon, CalendarCheck } from 'lucide-react';
-import { markLeadRead, markLeadImportant, deleteLead, markAllLeadsRead } from '@/lib/actions/leads';
-import type { Lead } from '@/lib/types';
+import { markLeadRead, markLeadImportant, deleteLead, markAllLeadsRead } from '@features/leads/actions';
+import type { Lead } from '@features/leads';
 import styles from './LeadsTable.module.css';
-
-export type { Lead };
 
 type Props = {
     initialLeads: Lead[];

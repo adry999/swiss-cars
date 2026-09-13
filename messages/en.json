@@ -259,6 +259,8 @@
   "errors": {
     "required_fields": "Please fill in Name and Phone.",
     "submit_error": "Submission failed. Please try again or contact us directly.",
+    "rate_limited": "Too many attempts. Please wait a minute.",
+    "invalid_input": "Please check your details and try again.",
     "max_images": "You can upload up to {max} images.",
     "generic_error": "An error occurred. Please try again.",
     "delete_failed": "Delete failed.",

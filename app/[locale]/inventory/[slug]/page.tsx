@@ -10,9 +10,10 @@ import { Link } from '@/i18n/navigation';
 import { FileCheck, Shield, BadgeCheck, HeadphonesIcon, Calculator } from 'lucide-react';
 import CarGallery from '@/components/cars/detail/CarGallery';
 import CarSpecsGrid from '@/components/cars/detail/CarSpecsGrid';
-import CarLeadForm from '@/components/cars/detail/CarLeadForm';
 import SimilarCars from '@/components/cars/detail/SimilarCars';
 import FavoriteButton from '@/components/cars/FavoriteButton';
+import { CarInquiryForm } from '@features/leads';
+import { submitLeadInquiryAction } from '@/app/_composition/lead-inquiry-actions';
 import styles from './page.module.css';
 
 type Props = {
@@ -209,12 +210,13 @@ export default async function CarDetailPage({ params }: Props) {
                                 <div className={styles.card}>
                                     <h3 className={styles.contactTitle}>{t('contact_sidebar_title')}</h3>
                                     <p className={styles.contactSubtitle}>{t('contact_sidebar_subtitle')}</p>
-                                    <CarLeadForm
+                                    <CarInquiryForm
                                         carId={car.id ?? ''}
-                                        carName={`${car.brand} ${car.model} ${car.year}`}
+                                        carTitle={`${car.brand} ${car.model} ${car.year}`}
                                         carPrice={car.price}
                                         phoneNumber={config.phone}
                                         whatsappNumber={config.whatsapp}
+                                        submitLeadInquiry={submitLeadInquiryAction}
                                     />
                                 </div>
                             </div>
@@ -318,12 +320,13 @@ export default async function CarDetailPage({ params }: Props) {
                                 <div className={styles.card}>
                                     <h3 className={styles.contactTitle}>{t('contact_sidebar_title')}</h3>
                                     <p className={styles.contactSubtitle}>{t('contact_sidebar_subtitle')}</p>
-                                    <CarLeadForm
+                                    <CarInquiryForm
                                         carId={car.id ?? ''}
-                                        carName={`${car.brand} ${car.model} ${car.year}`}
+                                        carTitle={`${car.brand} ${car.model} ${car.year}`}
                                         carPrice={car.price}
                                         phoneNumber={config.phone}
                                         whatsappNumber={config.whatsapp}
+                                        submitLeadInquiry={submitLeadInquiryAction}
                                     />
                                 </div>
                             </div>
@@ -342,12 +345,13 @@ export default async function CarDetailPage({ params }: Props) {
                             <div className={styles.bottomContactForm}>
                                 <h3>{t('contact_form_title')}</h3>
                                 <p className={styles.bottomContactSubtitle}>{t('contact_form_subtitle')}</p>
-                                <CarLeadForm
+                                <CarInquiryForm
                                     carId={car.id ?? ''}
-                                    carName={`${car.brand} ${car.model} ${car.year}`}
+                                    carTitle={`${car.brand} ${car.model} ${car.year}`}
                                     carPrice={car.price}
                                     phoneNumber={config.phone}
                                     whatsappNumber={config.whatsapp}
+                                    submitLeadInquiry={submitLeadInquiryAction}
                                 />
                             </div>
                         </div>

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import ContactPageClient from '@/components/contact/ContactPageClient';
 import { getPublicSiteConfig } from '@/lib/settings';
 import { localeAlternates, localeOpenGraph, localeTwitter } from '@/i18n/routing';
+import { submitLeadInquiryAction } from '@/app/_composition/lead-inquiry-actions';
 
 type Props = {
     params: Promise<{ locale: string }>;
@@ -34,6 +35,7 @@ export default async function ContactPage() {
             workingHours={siteConfig.working_hours}
             workingDaysClosed={siteConfig.working_days_closed}
             googleMapsEmbed={siteConfig.google_maps_embed}
+            submitLeadInquiry={submitLeadInquiryAction}
         />
     );
 }

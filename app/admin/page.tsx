@@ -1,6 +1,6 @@
 import { Car, MessageSquare, Users, Inbox, CheckCircle, Clock, TrendingUp } from 'lucide-react';
 import { getDashboardStats, getRecentLeads } from '@/lib/supabase/queries';
-import type { Lead } from '@/lib/types';
+import type { Lead } from '@features/leads';
 import { formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';
 import styles from './page.module.css';

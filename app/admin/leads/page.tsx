@@ -1,46 +1,10 @@
-import { createClient } from '@/lib/supabase/server';
 import { Suspense } from 'react';
 import LeadsTable from './LeadsTable';
-import type { Lead } from '@/lib/types';
 import LeadsPagination from './LeadsPagination';
+import { supabaseLeadsRepository } from '@features/leads/server';
 import styles from './page.module.css';
 
-const ITEMS_PER_PAGE = 20;
-
-async function getLeadsPaginated(page: number) {
-    const supabase = await createClient();
-    const offset = (page - 1) * ITEMS_PER_PAGE;
-
-    const [countResult, dataResult] = await Promise.all([
-        supabase.from('leads_inquiries').select('*', { count: 'exact', head: true }),
-        supabase
-            .from('leads_inquiries')
-            .select('*')
-            .order('is_important', { ascending: false })
-            .order('created_at', { ascending: false })
-            .range(offset, offset + ITEMS_PER_PAGE - 1),
-    ]);
-
-    const totalCount = countResult.count || 0;
-    const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
-
-    return {
-        // The Supabase client here isn't wired to generated Database types,
-        // so .select() returns an untyped row.
-        data: (dataResult.data || []) as Lead[],
-        totalCount,
-        totalPages,
-    };
-}
-
-async function getUnreadCount() {
-    const supabase = await createClient();
-    const { count } = await supabase
-        .from('leads_inquiries')
-        .select('*', { count: 'exact', head: true })
-        .eq('is_read', false);
-    return count || 0;
-}
+const LEADS_PER_PAGE = 20;
 
 type Props = {
     searchParams: Promise<{ page?: string }>;
@@ -51,9 +15,9 @@ export default async function LeadsPage({ searchParams }: Props) {
     // Guard against ?page=abc / negative values reaching .range(NaN, NaN).
     const page = Math.max(1, Number.parseInt(resolvedParams.page ?? '1', 10) || 1);
 
-    const [{ data: leads, totalCount, totalPages }, unread] = await Promise.all([
-        getLeadsPaginated(page),
-        getUnreadCount(),
+    const [{ leads, totalPages }, unread] = await Promise.all([
+        supabaseLeadsRepository.readInboxPage(page, LEADS_PER_PAGE),
+        supabaseLeadsRepository.countUnread(),
     ]);
 
     return (

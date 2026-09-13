@@ -1,5 +1,6 @@
 import { createClient, createStaticClient } from './server';
-import { type Car, type Review, type Partner, type Lead } from '../types';
+import { type Car, type Review, type Partner } from '../types';
+import type { Lead } from '@features/leads';
 
 const isSupabaseConfigured = !!(
     process.env.NEXT_PUBLIC_SUPABASE_URL &&

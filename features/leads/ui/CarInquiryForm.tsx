@@ -3,59 +3,53 @@
 import { useState } from 'react';
 import { Phone, MessageCircle, Send, CheckCircle, Loader2, User, PhoneCall, Mail } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { submitLeadInquiry } from '@/lib/actions/leads';
 import { formatPrice } from '@/lib/utils/format';
-import styles from './CarLeadForm.module.css';
+import { leadInquiryFailureMessageKey, useLeadInquirySubmission, type LeadInquiryAction } from './use-lead-inquiry-submission';
+import styles from './CarInquiryForm.module.css';
 
 type Props = {
     carId: string;
-    carName: string;
+    carTitle: string;
     carPrice: number;
     phoneNumber?: string;
     whatsappNumber?: string;
+    submitLeadInquiry: LeadInquiryAction;
 };
 
-export default function CarLeadForm({ carId, carName, carPrice, phoneNumber, whatsappNumber }: Props) {
+export default function CarInquiryForm({ carId, carTitle, carPrice, phoneNumber, whatsappNumber, submitLeadInquiry }: Props) {
     const t = useTranslations('errors');
     const tc = useTranslations('car_detail');
+    const { state, submit } = useLeadInquirySubmission(submitLeadInquiry);
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [email, setEmail] = useState('');
     const [message, setMessage] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [success, setSuccess] = useState(false);
-    const [error, setError] = useState('');
+    const [requiredFieldsMessage, setRequiredFieldsMessage] = useState('');
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const submitCarInquiry = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!name.trim() || !phone.trim()) {
-            setError(t('required_fields'));
+            setRequiredFieldsMessage(t('required_fields'));
             return;
         }
-        setLoading(true);
-        setError('');
+        setRequiredFieldsMessage('');
 
-        const result = await submitLeadInquiry({
-            car_id: carId,
-            car_name: carName,
-            name,
-            phone,
-            email,
+        await submit({
+            formType: 'inquiry',
+            carId,
+            carTitle,
+            customerName: name,
+            customerPhone: phone,
+            customerEmail: email,
             message,
-            source_url: typeof window !== 'undefined' ? window.location.href : undefined
+            sourceUrl: window.location.href,
         });
-
-        setLoading(false);
-        if (result.success) {
-            setSuccess(true);
-        } else {
-            setError(result.error || t('submit_error'));
-        }
     };
+
+    const errorMessage = requiredFieldsMessage || (state.status === 'failed' ? t(leadInquiryFailureMessageKey(state.failure)) : '');
 
     return (
         <div className={styles.wrapper}>
-            {/* Quick Actions */}
             {(phoneNumber || whatsappNumber) && (
                 <div className={styles.quickActions}>
                     {phoneNumber && (
@@ -66,7 +60,7 @@ export default function CarLeadForm({ carId, carName, carPrice, phoneNumber, wha
                     )}
                     {whatsappNumber && (
                         <a
-                            href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`${tc('whatsapp_message', { carName })} (${formatPrice(carPrice)} €)`)}`}
+                            href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`${tc('whatsapp_message', { carName: carTitle })} (${formatPrice(carPrice)} €)`)}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className={styles.waBtn}
@@ -78,19 +72,18 @@ export default function CarLeadForm({ carId, carName, carPrice, phoneNumber, wha
                 </div>
             )}
 
-            {/* Lead Form */}
             <div className={styles.formSeparator}>
                 <span>{tc('form_separator')}</span>
             </div>
 
-            {success ? (
+            {state.status === 'succeeded' ? (
                 <div className={styles.successState}>
                     <CheckCircle size={40} color="var(--color-primary)" />
                     <h4>{tc('form_success_title')}</h4>
                     <p>{tc('form_success_text')}</p>
                 </div>
             ) : (
-                <form className={styles.form} onSubmit={handleSubmit}>
+                <form className={styles.form} onSubmit={submitCarInquiry}>
                     <div className={styles.inputGroup}>
                         <User size={16} className={styles.inputIcon} />
                         <input
@@ -124,17 +117,17 @@ export default function CarLeadForm({ carId, carName, carPrice, phoneNumber, wha
                         />
                     </div>
                     <textarea
-                        placeholder={tc('form_message_placeholder', { carName })}
+                        placeholder={tc('form_message_placeholder', { carName: carTitle })}
                         value={message}
                         onChange={e => setMessage(e.target.value)}
                         className={styles.textarea}
                         rows={3}
                     />
 
-                    {error && <p className={styles.errorMsg}>{error}</p>}
+                    {errorMessage && <p className={styles.errorMsg}>{errorMessage}</p>}
 
-                    <button type="submit" className={styles.submitBtn} disabled={loading}>
-                        {loading ? (
+                    <button type="submit" className={styles.submitBtn} disabled={state.status === 'submitting'}>
+                        {state.status === 'submitting' ? (
                             <><Loader2 size={18} className={styles.spinner} /> {tc('form_loading')}</>
                         ) : (
                             <><Send size={18} /> {tc('form_submit')}</>

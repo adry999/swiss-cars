@@ -1,101 +1,46 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
-import { createClient } from '@/lib/supabase/server';
-import { checkRateLimit, getClientIp, LEAD_RATE_LIMIT } from '@/lib/utils/rateLimit';
+import { readClientIp } from '@core/http/client-ip';
+import type { LeadSubmissionRejection } from '@features/leads';
+import { getSubmitLeadInquiry } from '@/app/_composition/lead-inquiry-submission';
 
-const ContactSchema = z.object({
-    name: z.string().min(2, 'Name must be at least 2 characters').max(100, 'Name too long').trim(),
-    phone: z.string().min(7, 'Numărul de telefon trebuie să aibă minim 7 caractere').max(35, 'Numărul de telefon este prea lung'),
-    email: z.string().email('Invalid email format').max(255).optional().or(z.literal('')),
-    // Must match submit_lead()'s p_message cap (database/2026-08-26_lead_subscriber_rpc.sql)
-    // and LeadInquirySchema.message (lib/types/index.ts) — both routes write
-    // through the same RPC. A higher limit here let 2001-5000 char messages
-    // pass validation and then fail as a 500 when the RPC rejected them.
-    message: z.string().max(2000, 'Message too long').optional(),
-    preferredDate: z.string().max(50).optional(),
-    formType: z.enum(['contact', 'inquiry', 'callback', 'testdrive']).optional().default('contact'),
-    sourceUrl: z.string().url().optional(),
-});
+const RESPONSE_BY_REJECTION: Record<LeadSubmissionRejection, { status: number; error: string }> = {
+    'rate-limited': { status: 429, error: 'Too many requests. Please try again later.' },
+    'invalid-input': { status: 400, error: 'Invalid contact request.' },
+    unavailable: { status: 500, error: 'Could not save your request. Please try again.' },
+};
 
-export async function POST(req: NextRequest) {
+// Public request body, kept stable for existing callers: { name, phone, email, message, preferredDate, formType, sourceUrl }.
+function toLeadInquiryDraft(body: unknown): unknown {
+    if (typeof body !== 'object' || body === null) return body;
+
+    const contactRequest = body as Record<string, unknown>;
+    return {
+        formType: contactRequest.formType ?? 'contact',
+        customerName: contactRequest.name,
+        customerPhone: contactRequest.phone,
+        customerEmail: contactRequest.email,
+        message: contactRequest.message,
+        preferredDate: contactRequest.preferredDate,
+        sourceUrl: contactRequest.sourceUrl,
+    };
+}
+
+export async function POST(request: NextRequest) {
+    let body: unknown;
     try {
-        const clientIp = getClientIp(req);
-        const rateLimit = await checkRateLimit(`contact:${clientIp}`, LEAD_RATE_LIMIT);
-
-        if (!rateLimit.success) {
-            return NextResponse.json(
-                { error: 'Too many requests. Please try again later.' },
-                { status: 429 }
-            );
-        }
-
-        const body = await req.json();
-
-        // Validate input with Zod. Never log the body — it carries names,
-        // phone numbers, emails and free-text messages.
-        const validation = ContactSchema.safeParse(body);
-        if (!validation.success) {
-            const errors = validation.error.issues.map(e => e.message).join(', ');
-            console.error('Contact validation error:', errors);
-            return NextResponse.json({ error: `Validation: ${errors}` }, { status: 400 });
-        }
-
-        const { name, phone, email, message, preferredDate, formType, sourceUrl } = validation.data;
-
-        const supabase = await createClient();
-
-        // Routed through the submit_lead() RPC — see
-        // database/2026-08-26_lead_subscriber_rpc.sql — rather than a direct
-        // .insert(), which anon could otherwise call directly with no
-        // validation via the Supabase REST API.
-        const { error } = await supabase.rpc('submit_lead', {
-            p_car_id: null,
-            p_car_name: formType === 'testdrive' ? 'Programare Vizionare' : 'Contact General',
-            p_name: name,
-            p_phone: phone,
-            p_email: email || null,
-            p_message: message || null,
-            p_preferred_date: preferredDate || null,
-            p_form_type: formType || 'contact',
-            p_source_url: sourceUrl || null,
-        });
-
-        if (error) {
-            console.error('Contact form DB error details:', error);
-            return NextResponse.json({ error: 'Could not save your request. Please try again.' }, { status: 500 });
-        }
-
-        // Awaited, not fire-and-forget: the function may terminate before a
-        // floating promise resolves, dropping the alert.
-        try {
-            const { getNotificationConfig } = await import('@/lib/settings');
-            const { sendTelegramNotification, sendEmailNotification } = await import('@/lib/utils/notifications');
-
-            const notify = await getNotificationConfig();
-            const leadData = {
-                name,
-                phone,
-                email,
-                car_name: formType === 'testdrive' ? '📅 Programare Vizionare' : '📩 Contact General',
-                message: `${message ? `"${message}"` : ''}${preferredDate ? `\n📅 Data preferată: ${preferredDate}` : ''}${formType ? `\n(Tip: ${formType})` : ''}`,
-                source_url: sourceUrl,
-            };
-
-            await Promise.allSettled([
-                notify.telegramBotToken && notify.telegramChatId
-                    ? sendTelegramNotification(notify.telegramBotToken, notify.telegramChatId, leadData)
-                    : Promise.resolve(),
-                notify.notificationEmail
-                    ? sendEmailNotification(notify.notificationEmail, leadData)
-                    : Promise.resolve(),
-            ]);
-        } catch (notifyError) {
-            console.error('Contact notification trigger error:', notifyError);
-        }
-
-        return NextResponse.json({ success: true });
-    } catch (err) {
-        console.error('Contact API error:', err);
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+        body = await request.json();
+    } catch {
+        return NextResponse.json({ error: 'Request body must be JSON.' }, { status: 400 });
     }
+
+    const result = await getSubmitLeadInquiry()(toLeadInquiryDraft(body), {
+        clientIp: readClientIp(request.headers),
+    });
+
+    if (result.status === 'succeeded') {
+        return NextResponse.json({ success: true });
+    }
+
+    const { status, error } = RESPONSE_BY_REJECTION[result.reason];
+    return NextResponse.json({ error, invalidFields: result.invalidFields }, { status });
 }

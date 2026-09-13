@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Phone, MapPin, Clock, Mail, Send, CheckCircle, Loader2, User, PhoneCall, CalendarCheck } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { leadInquiryFailureMessageKey, useLeadInquirySubmission, type LeadInquiryAction } from '@features/leads';
 import styles from './ContactPageClient.module.css';
 
 type FormType = 'contact' | 'testdrive';
@@ -20,6 +21,7 @@ type Props = {
     workingHours?: string;
     workingDaysClosed?: string;
     googleMapsEmbed?: string;
+    submitLeadInquiry: LeadInquiryAction;
 };
 
 export default function ContactPageClient({
@@ -30,47 +32,49 @@ export default function ContactPageClient({
     workingHours,
     workingDaysClosed,
     googleMapsEmbed,
+    submitLeadInquiry,
 }: Props) {
     const t = useTranslations('contact_page');
     const tError = useTranslations('errors');
+    const { state, submit, reset: resetSubmission } = useLeadInquirySubmission(submitLeadInquiry);
     const [formType, setFormType] = useState<FormType>('contact');
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [email, setEmail] = useState('');
     const [message, setMessage] = useState('');
     const [preferredDate, setPreferredDate] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [success, setSuccess] = useState(false);
-    const [error, setError] = useState('');
+    const [requiredFieldsMessage, setRequiredFieldsMessage] = useState('');
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const submitContactRequest = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!name.trim() || !phone.trim()) {
-            setError(tError('required_fields'));
+            setRequiredFieldsMessage(tError('required_fields'));
             return;
         }
-        setLoading(true);
-        setError('');
+        setRequiredFieldsMessage('');
 
-        try {
-            const res = await fetch('/api/contact', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, phone, email, message, preferredDate, formType, sourceUrl: typeof window !== 'undefined' ? window.location.href : undefined }),
-            });
-            const data = await res.json();
-
-            if (res.ok) {
-                setSuccess(true);
-            } else {
-                setError(data.error || tError('submit_error'));
-            }
-        } catch (err) {
-            console.error('Submission error:', err);
-            setError(tError('submit_error'));
-        }
-        setLoading(false);
+        await submit({
+            formType,
+            customerName: name,
+            customerPhone: phone,
+            customerEmail: email,
+            message,
+            preferredDate,
+            sourceUrl: window.location.href,
+        });
     };
+
+    const sendAnotherMessage = () => {
+        resetSubmission();
+        setName('');
+        setPhone('');
+        setEmail('');
+        setMessage('');
+        setPreferredDate('');
+    };
+
+    const showSuccess = state.status === 'succeeded';
+    const errorMessage = requiredFieldsMessage || (state.status === 'failed' ? tError(leadInquiryFailureMessageKey(state.failure)) : '');
 
     return (
         <main className={styles.main}>
@@ -135,17 +139,17 @@ export default function ContactPageClient({
                             </button>
                         </div>
 
-                        {success ? (
+                        {showSuccess ? (
                             <div className={styles.success}>
                                 <CheckCircle size={50} color="var(--color-primary)" />
                                 <h3>{t('success_title')}</h3>
                                 <p>{t('success_text')}</p>
-                                <button className="btn btn-primary" onClick={() => { setSuccess(false); setName(''); setPhone(''); setEmail(''); setMessage(''); setPreferredDate(''); }}>
+                                <button className="btn btn-primary" onClick={sendAnotherMessage}>
                                     {t('send_another')}
                                 </button>
                             </div>
                         ) : (
-                            <form className={styles.form} onSubmit={handleSubmit}>
+                            <form className={styles.form} onSubmit={submitContactRequest}>
                                 {formType === 'testdrive' && (
                                     <div className={styles.alertInfo}>
                                         <CalendarCheck size={18} />
@@ -184,10 +188,10 @@ export default function ContactPageClient({
                                     rows={4}
                                 />
 
-                                {error && <p className={styles.err}>{error}</p>}
+                                {errorMessage && <p className={styles.err}>{errorMessage}</p>}
 
-                                <button type="submit" className={`btn btn-primary ${styles.submitBtn}`} disabled={loading}>
-                                    {loading ? <><Loader2 size={18} className={styles.spin} /> {t('submit_sending')}</> : <><Send size={18} /> {formType === 'testdrive' ? t('submit_testdrive') : t('submit_message')}</>}
+                                <button type="submit" className={`btn btn-primary ${styles.submitBtn}`} disabled={state.status === 'submitting'}>
+                                    {state.status === 'submitting' ? <><Loader2 size={18} className={styles.spin} /> {t('submit_sending')}</> : <><Send size={18} /> {formType === 'testdrive' ? t('submit_testdrive') : t('submit_message')}</>}
                                 </button>
                             </form>
                         )}

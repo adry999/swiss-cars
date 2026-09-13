@@ -125,37 +125,3 @@ export interface HomepageContent {
         }>;
     };
 }
-
-// LeadInquiry — used by submitLeadInquiry server action
-export const LeadInquirySchema = z.object({
-    car_id: z.string().min(1, 'Eroare internă (ID mașină lipsă)'),
-    car_name: z.string().min(1, 'Numele mașinii este obligatoriu').max(200),
-    name: z.string().min(2, 'Numele trebuie să aibă minim 2 caractere').max(100),
-    phone: z.string().min(7, 'Numărul de telefon trebuie să aibă minim 7 caractere').max(35, 'Numărul de telefon este prea lung'),
-    email: z.string().email('Format email invalid').optional().or(z.literal('')),
-    message: z.string().max(2000, 'Mesajul este prea lung').optional(),
-    preferred_date: z.string().max(100).optional(),
-    form_type: z.string().max(50).optional(),
-    source_url: z.string().url().optional(),
-});
-
-export type LeadInquiry = z.infer<typeof LeadInquirySchema>;
-
-// A stored leads_inquiries row, as read back for the admin panel. Distinct
-// from LeadInquiry (the shape submitted by the public forms) — this one is
-// never validated by Zod, it's just what the database returns.
-export type Lead = {
-    id: string;
-    car_id: string | null;
-    car_name: string | null;
-    name: string;
-    phone: string;
-    email: string | null;
-    message: string | null;
-    preferred_date: string | null;
-    form_type: string | null;
-    source_url: string | null;
-    is_read: boolean;
-    is_important: boolean;
-    created_at: string;
-};

@@ -259,6 +259,8 @@
   "errors": {
     "required_fields": "Completează Numele și Telefonul.",
     "submit_error": "Eroare la trimitere. Încearcă din nou sau contactează-ne direct.",
+    "rate_limited": "Prea multe încercări. Te rugăm să aștepți un minut.",
+    "invalid_input": "Verifică datele introduse și încearcă din nou.",
     "max_images": "Poți încărca maximum {max} imagini.",
     "generic_error": "A apărut o eroare. Te rugăm să încerci din nou.",
     "delete_failed": "Ștergerea a eșuat.",
