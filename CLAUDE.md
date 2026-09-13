@@ -58,11 +58,10 @@ Protected actions (feature — action):
 - `features/subscribers` — `deleteSubscriber`, `toggleSubscriberStatus`
 - `features/leads` — `markLeadRead`, `markLeadImportant`, `deleteLead`, `markAllLeadsRead`
 - `features/site-settings` — `saveSiteConfig`, `saveHomepageContent` (each validated by its own Zod schema in `site-settings.schema.ts`)
-- `features/translations` — `saveLocaleMessages`
 
 Public actions (no auth): `submitLeadInquiryAction` (`app/_composition/lead-inquiry-actions.ts` — rate-limited, Zod-validated), `subscribe` (`features/subscribers` — rate-limited, Zod-validated), `signIn` (`features/auth` — validates the credentials with Zod on the server before calling Supabase Auth).
 
-`getCurrentUser`, `listSubscribers` and `readLocaleMessages` are **not** Server Actions — every export of a `'use server'` file is a public POST endpoint, so a reader that returns the full subscriber list or a settings row must live in a plain server-only module (`server.ts`) and call `requireAdmin()` itself instead. This is also why the old `getSubscribers`/`getI18nMessages` actions were replaced by `listSubscribers()` (`features/subscribers/server`) and `readLocaleMessages()` (`features/translations/server`).
+`getCurrentUser` and `listSubscribers` are **not** Server Actions — every export of a `'use server'` file is a public POST endpoint, so a reader that returns the full subscriber list or a settings row must live in a plain server-only module (`server.ts`) and call `requireAdmin()` itself instead. This is also why the old `getSubscribers` action was replaced by `listSubscribers()` (`features/subscribers/server`).
 
 ### Internationalization
 
@@ -100,7 +99,7 @@ app/
 │   └── <section>/     # thin admin pages per feature
 ├── login/, auth/callback/, api/
 features/<name>/       # index.ts (client-safe), admin.ts (admin UI, optional), server.ts (server-only), actions.ts ('use server')
-  auth, inventory, leads, leasing, notifications, partners, reviews, site-settings, subscribers, translations
+  auth, inventory, leads, leasing, notifications, partners, reviews, site-settings, subscribers
 shared/
 ├── contracts/        # cross-feature types: domain events, ActionResult, translated-field
 ├── session/          # current-user, admin-role, require-admin — read by every admin feature
@@ -157,7 +156,7 @@ Each feature defines its own Zod schemas and types next to its code: `inventory.
 - **Setup**: `test-setup.ts` (mocks for next-intl, next/navigation, next/image, framer-motion — framework only)
 - **Tests**: Located alongside source files (`*.test.ts`, `*.test.tsx`); server-side tests start with `// @vitest-environment node`; feature fixtures live in `<feature>/test-support/`; ports are replaced by injected fakes instead of `vi.mock`
 - E2E (Playwright, not run in CI) lives in `tests/e2e/` (`playwright.config.ts` → `testDir: './tests/e2e'`)
-- Current coverage: sanitize, admin-role, Pagination, i18n routing, message parity, core (event bus, rate limiter, client IP), config, auth, inventory (favorites, similar cars, image storage), leads, notifications, partners, subscribers, translations, admin dashboard-stats composition
+- Current coverage: sanitize, admin-role, Pagination, i18n routing, message parity, core (event bus, rate limiter, client IP), config, auth, inventory (favorites, similar cars, image storage), leads, notifications, partners, site-settings schemas, subscribers, admin dashboard-stats composition
 
 ### Environment Variables
 
@@ -211,7 +210,6 @@ Admin sections:
 - **Partners** — Partner logo management
 - **Homepage** — Homepage content and slider settings
 - **Settings** — Site config, social links, contact info, Telegram/email notifications
-- **Translations** — In-app i18n file editor
 
 ## One-Time Setup
 

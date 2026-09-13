@@ -12,7 +12,6 @@ import {
     Image as ImageIcon,
     Inbox,
     Mail,
-    Languages,
     X,
 } from 'lucide-react';
 import Image from 'next/image';
@@ -27,7 +26,6 @@ const MENU_ITEMS = [
     { href: '/admin/reviews', label: 'Reviews', icon: MessageSquare },
     { href: '/admin/partners', label: 'Partners', icon: Users },
     { href: '/admin/homepage', label: 'Homepage', icon: ImageIcon },
-    { href: '/admin/translations', label: 'Translations', icon: Languages },
     { href: '/admin/settings', label: 'Settings', icon: Settings },
 ];
 

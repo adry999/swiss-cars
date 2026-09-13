@@ -114,7 +114,7 @@ swiss-cars/
 │   ├── reviews/
 │   ├── site-settings/                    # site_config, homepage_content, formulare admin
 │   ├── subscribers/                      # newsletter (formular footer + admin)
-│   └── translations/                     # editorul de mesaje i18n
+│   └── translations/                     # editorul de mesaje i18n (eliminat ulterior, vezi §11 punctul 6)
 ├── shared/
 │   ├── contracts/                        # domain-events.ts, action-result.ts, translated-field.ts
 │   ├── session/                          # adminul curent, requireAdmin (shared kernel)
@@ -407,7 +407,7 @@ Fiecare pas se termină cu `npm run verify`, `npm run build`, lista rutelor din 
 3. **CSP-ul** permite `unsafe-eval` și `unsafe-inline`. Nu ține de arhitectură, dar e în registrul de riscuri.
 4. ~~**`subscribe` (newsletter) nu are rate limit**~~ — rezolvat: `createSubscribeToNewsletter` (`features/subscribers/server/subscribe-to-newsletter.ts`) consumă 5 abonări la 10 minute per IP din limiterul comun `getRateLimiter()` (`core/rate-limit/shared-rate-limiter.ts`), folosit și de lead-uri.
 5. ~~**`saveSettings(key, value)` acceptă orice cheie și orice valoare nevalidată**~~ — rezolvat: înlocuit de `saveSiteConfig` / `saveHomepageContent`, fiecare cu schema din `features/site-settings/site-settings.schema.ts`; cheile din afara `SiteConfigSchema` nu mai sunt scrise în rând.
-6. **Editorul de traduceri scrie pe sistemul de fișiere** (`features/translations`), care e read-only și nepersistent pe Vercel — funcționează doar în dezvoltare locală.
+6. ~~**Editorul de traduceri scrie pe sistemul de fișiere**~~ — rezolvat prin eliminare: `features/translations` și `/admin/translations` au fost șterse, pentru că pe Vercel sistemul de fișiere e read-only și nepersistent. Mesajele din `messages/*.json` se schimbă prin repository și deploy.
 7. **Tipurile `Lead` și `Car`** rămân scrise manual, nu generate cu `supabase gen types`.
 8. **Fallback-ul de credențiale din `site_config`** rămâne în `getNotificationConfig()` până când rândul e confirmat curat de credențiale.
 
