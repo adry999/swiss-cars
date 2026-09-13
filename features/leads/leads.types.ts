@@ -48,9 +48,16 @@ export interface LeadInboxPage {
 export interface LeadsRepository {
     insertInquiry(inquiry: StoredLeadInquiry): Promise<string>;
     readInboxPage(page: number, pageSize: number): Promise<LeadInboxPage>;
-    countUnread(): Promise<number>;
     setRead(leadId: string, isRead: boolean): Promise<void>;
     setImportant(leadId: string, isImportant: boolean): Promise<void>;
     markAllRead(): Promise<void>;
     remove(leadId: string): Promise<void>;
+}
+
+/** Server Actions the admin inbox calls; each mutation resolves rather than throwing on a server-side refusal. */
+export interface LeadInboxActions {
+    markLeadRead(leadId: string, isRead: boolean): Promise<LeadInboxChangeResult>;
+    markLeadImportant(leadId: string, isImportant: boolean): Promise<LeadInboxChangeResult>;
+    deleteLead(leadId: string): Promise<LeadInboxChangeResult>;
+    markAllLeadsRead(): Promise<LeadInboxChangeResult>;
 }

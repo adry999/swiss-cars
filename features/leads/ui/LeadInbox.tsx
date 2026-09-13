@@ -1,60 +1,54 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 import { format } from 'date-fns';
-import { CheckCheck, Eye, EyeOff, Star, StarOff, Trash2, Phone, Mail, Car, Link as LinkIcon, CalendarCheck } from 'lucide-react';
-import { markLeadRead, markLeadImportant, deleteLead, markAllLeadsRead } from '../actions';
-import type { Lead } from '../leads.types';
+import { CheckCheck, Eye, EyeOff, Star, StarOff, Trash2, Phone, Mail, Car, CalendarCheck } from 'lucide-react';
+import { useOptionalToast } from '@/components/ui/Toast';
+import type { Lead, LeadInboxActions } from '../leads.types';
+import { useLeadInbox } from './use-lead-inbox';
 import styles from './LeadInbox.module.css';
 
 type Props = {
     initialLeads: Lead[];
-    unreadCount: number;
+    inboxActions: LeadInboxActions;
 };
 
-export default function LeadInbox({ initialLeads, unreadCount }: Props) {
-    const [leads, setLeads] = useState<Lead[]>(initialLeads);
-    const [isPending, startTransition] = useTransition();
+export default function LeadInbox({ initialLeads, inboxActions }: Props) {
+    const toast = useOptionalToast();
+    const { leads, isPending, setReadState, setImportance, removeLead, markAllRead } = useLeadInbox(
+        initialLeads,
+        inboxActions,
+        () => toast?.error('The change could not be saved. Refresh the page and try again.'),
+    );
     const [filter, setFilter] = useState<'all' | 'unread' | 'important'>('all');
     const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
-    const currentUnread = leads.filter(l => !l.is_read).length;
+    const currentUnread = leads.filter(lead => !lead.is_read).length;
 
-    const filtered = leads.filter(l => {
-        if (filter === 'unread') return !l.is_read;
-        if (filter === 'important') return l.is_important;
+    const filtered = leads.filter(lead => {
+        if (filter === 'unread') return !lead.is_read;
+        if (filter === 'important') return lead.is_important;
         return true;
     });
 
-    const handleMarkRead = (id: string, is_read: boolean) => {
-        setLeads(prev => prev.map(l => l.id === id ? { ...l, is_read } : l));
-        startTransition(() => void markLeadRead(id, is_read));
-    };
+    const toggleReadState = (id: string, is_read: boolean) => setReadState(id, is_read);
 
-    const handleMarkImportant = (id: string, is_important: boolean) => {
-        setLeads(prev => prev.map(l => l.id === id ? { ...l, is_important } : l));
-        startTransition(() => void markLeadImportant(id, is_important));
-    };
+    const toggleImportance = (id: string, is_important: boolean) => setImportance(id, is_important);
 
-    const handleDelete = (id: string) => {
+    const confirmAndRemoveLead = (id: string) => {
         if (confirmDelete !== id) {
             setConfirmDelete(id);
             setTimeout(() => setConfirmDelete(null), 3000);
             return;
         }
-        setLeads(prev => prev.filter(l => l.id !== id));
         setConfirmDelete(null);
-        startTransition(() => void deleteLead(id));
+        removeLead(id);
     };
 
-    const handleMarkAllRead = () => {
-        setLeads(prev => prev.map(l => ({ ...l, is_read: true })));
-        startTransition(() => void markAllLeadsRead());
-    };
+    const markEveryLeadRead = () => markAllRead();
 
     return (
         <div className={styles.wrapper}>
-            {/* Header */}
             <div className={styles.header}>
                 <div>
                     <h1 className={styles.title}>Leads</h1>
@@ -66,7 +60,7 @@ export default function LeadInbox({ initialLeads, unreadCount }: Props) {
                     {currentUnread > 0 && (
                         <button
                             className={styles.markAllBtn}
-                            onClick={handleMarkAllRead}
+                            onClick={markEveryLeadRead}
                             disabled={isPending}
                         >
                             <CheckCheck size={15} />
@@ -76,7 +70,6 @@ export default function LeadInbox({ initialLeads, unreadCount }: Props) {
                 </div>
             </div>
 
-            {/* Filter Tabs */}
             <div className={styles.filters}>
                 <button
                     className={`${styles.filterBtn} ${filter === 'all' ? styles.filterActive : ''}`}
@@ -96,7 +89,7 @@ export default function LeadInbox({ initialLeads, unreadCount }: Props) {
                     onClick={() => setFilter('important')}
                 >
                     <Star size={12} />
-                    Flagged<code style={{ marginLeft: '4px' }}>({leads.filter(l => l.is_important).length})</code>
+                    Flagged<code style={{ marginLeft: '4px' }}>({leads.filter(lead => lead.is_important).length})</code>
                 </button>
             </div>
 
@@ -111,13 +104,11 @@ export default function LeadInbox({ initialLeads, unreadCount }: Props) {
                             key={lead.id}
                             className={`${styles.card} ${!lead.is_read ? styles.cardUnread : ''} ${lead.is_important ? styles.cardImportant : ''}`}
                         >
-                            {/* Left: Status indicators */}
                             <div className={styles.indicators}>
                                 {!lead.is_read && <span className={styles.unreadDot} title="Necitit" />}
                                 {lead.is_important && <Star size={12} className={styles.importantStar} />}
                             </div>
 
-                            {/* Main content */}
                             <div className={styles.content}>
                                 <div className={styles.row1}>
                                     <div className={styles.nameBlock}>
@@ -174,25 +165,24 @@ export default function LeadInbox({ initialLeads, unreadCount }: Props) {
                                 )}
                             </div>
 
-                            {/* Actions */}
                             <div className={styles.actions}>
                                 <button
                                     className="action-btn"
-                                    onClick={() => handleMarkRead(lead.id, !lead.is_read)}
+                                    onClick={() => toggleReadState(lead.id, !lead.is_read)}
                                     title={lead.is_read ? 'Mark unread' : 'Mark read'}
                                 >
                                     {lead.is_read ? <EyeOff size={14} /> : <Eye size={14} />}
                                 </button>
                                 <button
                                     className={lead.is_important ? 'action-btn action-btn-warning' : 'action-btn'}
-                                    onClick={() => handleMarkImportant(lead.id, !lead.is_important)}
+                                    onClick={() => toggleImportance(lead.id, !lead.is_important)}
                                     title={lead.is_important ? 'Unflag' : 'Flag'}
                                 >
                                     {lead.is_important ? <StarOff size={14} /> : <Star size={14} />}
                                 </button>
                                 <button
                                     className={confirmDelete === lead.id ? 'action-btn action-btn-delete' : 'action-btn action-btn-delete'}
-                                    onClick={() => handleDelete(lead.id)}
+                                    onClick={() => confirmAndRemoveLead(lead.id)}
                                     title={confirmDelete === lead.id ? 'Click again to confirm' : 'Delete'}
                                 >
                                     <Trash2 size={14} />

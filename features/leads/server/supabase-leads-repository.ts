@@ -56,17 +56,6 @@ export const supabaseLeadsRepository: LeadsRepository = {
         };
     },
 
-    async countUnread() {
-        const supabase = await createServerSupabaseClient();
-        const unreadResult = await supabase
-            .from(LEADS_TABLE)
-            .select('*', { count: 'exact', head: true })
-            .eq('is_read', false);
-
-        throwOnDatabaseError('count unread leads', unreadResult);
-        return unreadResult.count ?? 0;
-    },
-
     async setRead(leadId, isRead) {
         const supabase = await createServerSupabaseClient();
         throwOnDatabaseError(

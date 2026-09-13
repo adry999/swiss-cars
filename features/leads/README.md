@@ -13,23 +13,34 @@ pentru admin (citire, marcare citit/important, ștergere).
 - `leadInquiryFailureMessageKey(failure)` — mapează eșecul la o cheie din namespace-ul de mesaje `errors`.
 - Tipuri: `Lead`, `LeadInboxPage`, `LeadInboxChangeResult`, `LeadInquiryDraft`, `LeadSubmissionRejection`, `LeadSubmissionResult`.
 
+`@features/leads/admin` (client-safe, doar UI de admin — ține componentele de admin în afara grafului de bundling al paginilor publice):
+- `LeadInbox` — inbox-ul de admin; primește leadurile paginii curente și acțiunile ca props (`initialLeads`, `inboxActions`).
+- Tip: `LeadInboxActions`.
+
 `@features/leads/server` (server-only):
 - `createSubmitLeadInquiry(deps)` — construiește use-case-ul de trimitere a unui lead (validare, rate limit, salvare, publicare eveniment).
 - `supabaseLeadsRepository` — implementarea `LeadsRepository` peste Supabase.
 - Tipuri: `LeadInquiryRequester`, `SubmitLeadInquiry`.
 
-`@features/leads/actions` (Server Actions pentru inbox-ul din admin, toate protejate de `requireAuth`):
+`@features/leads/actions` (Server Actions pentru inbox-ul din admin, toate protejate de `requireAuth`; formează `LeadInboxActions`):
 - `markLeadRead(leadId, isRead)`
 - `markLeadImportant(leadId, isImportant)`
 - `deleteLead(leadId)`
 - `markAllLeadsRead()`
 
+`LeadInbox` aplică fiecare schimbare optimist prin `useLeadInbox` (`ui/use-lead-inbox.ts`), apoi trimite
+acțiunea corespunzătoare. Dacă serverul refuză schimbarea sau acțiunea aruncă, se anulează *doar acea*
+schimbare (starea anterioară a leadului, sau poziția lui originală la ștergere) — o schimbare respinsă
+pe un lead nu afectează o schimbare reușită pe alt lead făcută în același timp — și se cheamă
+`onChangeRejected`, care arată un toast de eroare.
+
 ## Dependențe
 
 Poate importa `@core/*`, `@shared/contracts/*` și, tranzitoriu, `@/lib/*`:
-- `@/lib/supabase/server` (client Supabase) în `server/supabase-leads-repository.ts`.
+- `@core/supabase/server-client` (`createServerSupabaseClient`) în `server/supabase-leads-repository.ts`.
 - `@/lib/utils/requireAuth` în `actions.ts`.
 - `@/lib/utils/format` (`formatPrice`) în `ui/CarInquiryForm.tsx`.
+- `@/components/ui/Toast` (`useOptionalToast`) în `ui/LeadInbox.tsx`, pentru mesajul de eroare la o schimbare respinsă.
 
 Server Action-ul public de trimitere nu stă în feature: îl compune `app/_composition/lead-inquiry-actions.ts`, pentru că leagă și rate limiter-ul, și notificările.
 
@@ -47,8 +58,9 @@ deține el însuși un bus de evenimente. `features/notifications` nu se aboneaz
 
 ```
 leads.schema.ts                        — LeadInquiryDraftSchema (validare Zod a formularului)
-leads.types.ts                         — tipuri publice: Lead, LeadsRepository, rezultate de acțiune
-index.ts                               — punct de intrare client-safe
+leads.types.ts                         — tipuri publice: Lead, LeadsRepository, LeadInboxActions, rezultate de acțiune
+index.ts                               — punct de intrare client-safe (public)
+admin.ts                               — punct de intrare client-safe, doar UI de admin
 server.ts                              — punct de intrare server-only ('server-only')
 actions.ts                             — Server Actions ale inbox-ului admin ('use server')
 server/
@@ -60,6 +72,9 @@ ui/
   use-lead-inquiry-submission.test.ts  — teste ale hook-ului
   CarInquiryForm.tsx (+ .module.css)   — formularul de pe pagina mașinii
   CarInquiryForm.test.tsx              — validare locală, draft trimis, succes, mesaj de eroare
+  use-lead-inbox.ts                    — hook de stare client pentru inbox: schimbări optimiste cu rollback per-lead
+  use-lead-inbox.test.ts               — teste ale hook-ului (rollback pe eșec, izolare între leaduri)
+  LeadInbox.tsx (+ .module.css)        — inbox-ul de admin (filtre, marcare citit/important, ștergere)
 test-support/
   lead-inquiry-drafts.ts               — draft-uri de test (inquiry, testdrive)
 ```
