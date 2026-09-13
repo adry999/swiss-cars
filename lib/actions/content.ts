@@ -1,13 +1,13 @@
 'use server';
 
-import { createClient } from '@/lib/supabase/server';
+import { createServerSupabaseClient } from '@core/supabase/server-client';
 import { requireAuth } from '@/lib/utils/requireAuth';
 import { ReviewSchema, PartnerSchema } from '@/lib/types';
 import { revalidatePath } from 'next/cache';
 
 export async function saveReview(data: unknown) {
     await requireAuth();
-    const supabase = await createClient();
+    const supabase = await createServerSupabaseClient();
 
     const parsed = ReviewSchema.safeParse(data);
     if (!parsed.success) throw new Error('Invalid review data');
@@ -29,7 +29,7 @@ export async function saveReview(data: unknown) {
 
 export async function savePartner(data: unknown) {
     await requireAuth();
-    const supabase = await createClient();
+    const supabase = await createServerSupabaseClient();
 
     const parsed = PartnerSchema.safeParse(data);
     if (!parsed.success) throw new Error('Invalid partner data');
@@ -51,7 +51,7 @@ export async function savePartner(data: unknown) {
 
 export async function deleteReview(id: string) {
     await requireAuth();
-    const supabase = await createClient();
+    const supabase = await createServerSupabaseClient();
     const { error } = await supabase.from('reviews').delete().eq('id', id);
     if (error) throw error;
     revalidatePath('/', 'layout');
@@ -61,7 +61,7 @@ export async function deleteReview(id: string) {
 
 export async function deletePartner(id: string) {
     await requireAuth();
-    const supabase = await createClient();
+    const supabase = await createServerSupabaseClient();
     const { error } = await supabase.from('partners').delete().eq('id', id);
     if (error) throw error;
     revalidatePath('/', 'layout');

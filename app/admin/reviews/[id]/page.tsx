@@ -1,10 +1,10 @@
 import { notFound } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
+import { createServerSupabaseClient } from '@core/supabase/server-client';
 import ReviewForm from '@/components/admin/ReviewForm';
 
 export default async function EditReviewPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const supabase = await createClient();
+    const supabase = await createServerSupabaseClient();
 
     const { data: review, error } = await supabase
         .from('reviews')

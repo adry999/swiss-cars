@@ -1,4 +1,4 @@
-import { createClient, createStaticClient } from './server';
+import { createServerSupabaseClient, createStaticSupabaseClient } from '@core/supabase/server-client';
 import { type Car, type Review, type Partner } from '../types';
 import type { Lead } from '@features/leads';
 
@@ -24,7 +24,7 @@ export async function getCars(options?: {
     maxYear?: number;
 }): Promise<Car[]> {
     if (!isSupabaseConfigured) return [];
-    const supabase = createStaticClient();
+    const supabase = createStaticSupabaseClient();
 
     let query = supabase
         .from('cars')
@@ -67,7 +67,7 @@ export async function getCarsPaginated(options?: {
         return { data: [], totalCount: 0, page, totalPages: 0 };
     }
 
-    const supabase = createStaticClient();
+    const supabase = createStaticSupabaseClient();
 
     // Build base query for count
     let countQuery = supabase
@@ -129,7 +129,7 @@ export async function getCarsPaginated(options?: {
 
 export async function getCarBySlug(slug: string): Promise<Car | null> {
     if (!isSupabaseConfigured) return null;
-    const supabase = createStaticClient();
+    const supabase = createStaticSupabaseClient();
     const { data, error } = await supabase
         .from('cars')
         .select('*, car_images(*)')
@@ -145,7 +145,7 @@ export async function getCarBySlug(slug: string): Promise<Car | null> {
 
 export async function getReviews(): Promise<Review[]> {
     if (!isSupabaseConfigured) return [];
-    const supabase = createStaticClient();
+    const supabase = createStaticSupabaseClient();
     const { data, error } = await supabase
         .from('reviews')
         .select('*')
@@ -171,7 +171,7 @@ export async function getAllReviewsPaginated(options?: {
         return { data: [], totalCount: 0, page, totalPages: 0 };
     }
 
-    const supabase = await createClient();
+    const supabase = await createServerSupabaseClient();
 
     const [countResult, dataResult] = await Promise.all([
         supabase.from('reviews').select('*', { count: 'exact', head: true }),
@@ -200,7 +200,7 @@ export async function getAllReviewsPaginated(options?: {
 
 export async function getPartners(): Promise<Partner[]> {
     if (!isSupabaseConfigured) return [];
-    const supabase = createStaticClient();
+    const supabase = createStaticSupabaseClient();
     const { data, error } = await supabase
         .from('partners')
         .select('*')
@@ -252,7 +252,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
         };
     }
 
-    const supabase = await createClient();
+    const supabase = await createServerSupabaseClient();
 
     // Counted in the database. This previously fetched every car row and every
     // lead row and counted them in JS, which grows with the table.
@@ -293,7 +293,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
 export async function getRecentLeads(limit: number = 5): Promise<Lead[]> {
     if (!isSupabaseConfigured) return [];
 
-    const supabase = await createClient();
+    const supabase = await createServerSupabaseClient();
     const { data, error } = await supabase
         .from('leads_inquiries')
         .select('*')
@@ -326,7 +326,7 @@ export async function getSimilarCars(options: {
     const { currentCarId, brand, price } = options;
     const limit = options.limit ?? 3;
 
-    const supabase = createStaticClient();
+    const supabase = createStaticSupabaseClient();
 
     const base = () =>
         supabase
@@ -369,7 +369,7 @@ export async function getSimilarCars(options: {
 
 export async function getFeaturedCars(): Promise<Car[]> {
     if (!isSupabaseConfigured) return [];
-    const supabase = createStaticClient();
+    const supabase = createStaticSupabaseClient();
     const { data, error } = await supabase
         .from('cars')
         .select('*, car_images(*)')

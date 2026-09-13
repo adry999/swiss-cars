@@ -1,6 +1,6 @@
 'use server';
 
-import { createClient } from '@/lib/supabase/server';
+import { createServerSupabaseClient } from '@core/supabase/server-client';
 import { requireAuth } from '@/lib/utils/requireAuth';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
@@ -21,7 +21,7 @@ export async function subscribe(email: string): Promise<{ success: boolean; erro
         return { success: false, error: 'Invalid email address' };
     }
 
-    const supabase = await createClient();
+    const supabase = await createServerSupabaseClient();
 
     // subscribe_email() (database/2026-08-26_lead_subscriber_rpc.sql) does the
     // existing-row lookup and insert-or-reactivate as one SECURITY DEFINER
@@ -46,7 +46,7 @@ export async function subscribe(email: string): Promise<{ success: boolean; erro
 
 export async function getSubscribers(): Promise<Subscriber[]> {
     await requireAuth();
-    const supabase = await createClient();
+    const supabase = await createServerSupabaseClient();
 
     const { data, error } = await supabase
         .from('subscribers')
@@ -63,7 +63,7 @@ export async function getSubscribers(): Promise<Subscriber[]> {
 
 export async function deleteSubscriber(id: string): Promise<{ success: boolean }> {
     await requireAuth();
-    const supabase = await createClient();
+    const supabase = await createServerSupabaseClient();
 
     const { error } = await supabase
         .from('subscribers')
@@ -81,7 +81,7 @@ export async function deleteSubscriber(id: string): Promise<{ success: boolean }
 
 export async function toggleSubscriberStatus(id: string, isActive: boolean): Promise<{ success: boolean }> {
     await requireAuth();
-    const supabase = await createClient();
+    const supabase = await createServerSupabaseClient();
 
     const { error } = await supabase
         .from('subscribers')

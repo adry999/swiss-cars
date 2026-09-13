@@ -1,6 +1,6 @@
 'use server';
 
-import { createClient } from '@/lib/supabase/server';
+import { createServerSupabaseClient } from '@core/supabase/server-client';
 import { requireAuth } from '@/lib/utils/requireAuth';
 import { revalidatePath } from 'next/cache';
 
@@ -11,7 +11,7 @@ import { revalidatePath } from 'next/cache';
 
 export async function saveSettings(key: string, value: unknown) {
     await requireAuth();
-    const supabase = await createClient();
+    const supabase = await createServerSupabaseClient();
     const { error } = await supabase
         .from('site_settings')
         .upsert({ key, value }, { onConflict: 'key' });

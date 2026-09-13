@@ -1,6 +1,6 @@
 import { cache } from 'react';
 import { getServerEnvironment } from '@config/server-environment';
-import { createStaticClient } from '@/lib/supabase/server';
+import { createStaticSupabaseClient } from '@core/supabase/server-client';
 import type { HomepageContent } from '@/lib/types';
 
 /**
@@ -65,7 +65,7 @@ const PUBLIC_KEYS = [
  * database once. The homepage alone used to issue ~12 identical queries.
  */
 const getSettingRow = cache(async (key: string): Promise<Record<string, unknown> | null> => {
-    const supabase = createStaticClient();
+    const supabase = createStaticSupabaseClient();
     const { data, error } = await supabase
         .from('site_settings')
         .select('value')

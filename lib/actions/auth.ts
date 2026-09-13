@@ -1,11 +1,11 @@
 'use server';
 
-import { createClient } from '@/lib/supabase/server';
+import { createServerSupabaseClient } from '@core/supabase/server-client';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 
 export async function signIn(email: string, password: string) {
-    const supabase = await createClient();
+    const supabase = await createServerSupabaseClient();
 
     const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -21,14 +21,14 @@ export async function signIn(email: string, password: string) {
 }
 
 export async function signOut() {
-    const supabase = await createClient();
+    const supabase = await createServerSupabaseClient();
     await supabase.auth.signOut();
     revalidatePath('/admin', 'layout');
     redirect('/login');
 }
 
 export async function getUser() {
-    const supabase = await createClient();
+    const supabase = await createServerSupabaseClient();
     const { data: { user } } = await supabase.auth.getUser();
     return user;
 }

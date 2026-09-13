@@ -1,5 +1,5 @@
 import 'server-only';
-import { createClient } from '@/lib/supabase/server';
+import { createServerSupabaseClient } from '@core/supabase/server-client';
 import type { Lead, LeadsRepository } from '../leads.types';
 
 const LEADS_TABLE = 'leads_inquiries';
@@ -12,7 +12,7 @@ function throwOnDatabaseError(operation: string, { error }: { error: { message: 
 
 export const supabaseLeadsRepository: LeadsRepository = {
     async insertInquiry(inquiry) {
-        const supabase = await createClient();
+        const supabase = await createServerSupabaseClient();
         // anon may only write leads through submit_lead(), which re-validates every field for direct RPC callers.
         const insertResult = await supabase.rpc('submit_lead', {
             p_car_id: inquiry.carId,
@@ -31,7 +31,7 @@ export const supabaseLeadsRepository: LeadsRepository = {
     },
 
     async readInboxPage(page, pageSize) {
-        const supabase = await createClient();
+        const supabase = await createServerSupabaseClient();
         const offset = (page - 1) * pageSize;
 
         const [countResult, pageResult] = await Promise.all([
@@ -57,7 +57,7 @@ export const supabaseLeadsRepository: LeadsRepository = {
     },
 
     async countUnread() {
-        const supabase = await createClient();
+        const supabase = await createServerSupabaseClient();
         const unreadResult = await supabase
             .from(LEADS_TABLE)
             .select('*', { count: 'exact', head: true })
@@ -68,7 +68,7 @@ export const supabaseLeadsRepository: LeadsRepository = {
     },
 
     async setRead(leadId, isRead) {
-        const supabase = await createClient();
+        const supabase = await createServerSupabaseClient();
         throwOnDatabaseError(
             'set read state',
             await supabase.from(LEADS_TABLE).update({ is_read: isRead }).eq('id', leadId),
@@ -76,7 +76,7 @@ export const supabaseLeadsRepository: LeadsRepository = {
     },
 
     async setImportant(leadId, isImportant) {
-        const supabase = await createClient();
+        const supabase = await createServerSupabaseClient();
         throwOnDatabaseError(
             'set importance',
             await supabase.from(LEADS_TABLE).update({ is_important: isImportant }).eq('id', leadId),
@@ -84,7 +84,7 @@ export const supabaseLeadsRepository: LeadsRepository = {
     },
 
     async markAllRead() {
-        const supabase = await createClient();
+        const supabase = await createServerSupabaseClient();
         throwOnDatabaseError(
             'mark all read',
             await supabase.from(LEADS_TABLE).update({ is_read: true }).eq('is_read', false),
@@ -92,7 +92,7 @@ export const supabaseLeadsRepository: LeadsRepository = {
     },
 
     async remove(leadId) {
-        const supabase = await createClient();
+        const supabase = await createServerSupabaseClient();
         throwOnDatabaseError('delete lead', await supabase.from(LEADS_TABLE).delete().eq('id', leadId));
     },
 };

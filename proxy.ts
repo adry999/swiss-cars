@@ -1,7 +1,8 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import createMiddleware from 'next-intl/middleware';
 import { routing } from './i18n/routing';
-import { updateSession } from './lib/supabase/middleware';
+import { refreshSupabaseSession } from '@core/supabase/proxy-session';
+import { hasAdminRole } from '@shared/session/admin-role';
 
 const intlMiddleware = createMiddleware(routing);
 
@@ -22,7 +23,14 @@ export default async function proxy(request: NextRequest) {
 
     // Admin routes: verify auth session, redirect to /login if not authenticated
     if (pathname.startsWith('/admin')) {
-        return await updateSession(request);
+        const { response, user } = await refreshSupabaseSession(request);
+        if (hasAdminRole(user)) {
+            return response;
+        }
+
+        const loginUrl = request.nextUrl.clone();
+        loginUrl.pathname = '/login';
+        return NextResponse.redirect(loginUrl);
     }
 
     // API/login/auth routes: skip intl and auth

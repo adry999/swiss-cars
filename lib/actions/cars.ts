@@ -1,6 +1,6 @@
 'use server';
 
-import { createClient } from '@/lib/supabase/server';
+import { createServerSupabaseClient } from '@core/supabase/server-client';
 import { requireAuth } from '@/lib/utils/requireAuth';
 import { revalidatePath } from 'next/cache';
 import { CarSchema, type Car } from '@/lib/types';
@@ -18,7 +18,7 @@ function storagePathFromUrl(url: string): string | null {
 }
 
 async function deleteStorageObjects(
-    supabase: Awaited<ReturnType<typeof createClient>>,
+    supabase: Awaited<ReturnType<typeof createServerSupabaseClient>>,
     urls: string[]
 ): Promise<void> {
     const candidates = [...new Set(urls)].filter(url => storagePathFromUrl(url) !== null);
@@ -48,7 +48,7 @@ async function deleteStorageObjects(
 
 export async function saveCar(carData: CarWithImages) {
     await requireAuth();
-    const supabase = await createClient();
+    const supabase = await createServerSupabaseClient();
 
     const parsed = CarSchema.safeParse(carData);
     if (!parsed.success) throw new Error('Invalid car data');
@@ -117,7 +117,7 @@ export async function saveCar(carData: CarWithImages) {
 
 export async function deleteCar(id: string) {
     await requireAuth();
-    const supabase = await createClient();
+    const supabase = await createServerSupabaseClient();
 
     const { data: images } = await supabase
         .from('car_images')
@@ -136,7 +136,7 @@ export async function deleteCar(id: string) {
 
 export async function duplicateCar(id: string) {
     await requireAuth();
-    const supabase = await createClient();
+    const supabase = await createServerSupabaseClient();
 
     const { data: car, error: carError } = await supabase
         .from('cars')

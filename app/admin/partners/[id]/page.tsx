@@ -1,10 +1,10 @@
 import { notFound } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
+import { createServerSupabaseClient } from '@core/supabase/server-client';
 import PartnerForm from '@/components/admin/PartnerForm';
 
 export default async function EditPartnerPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const supabase = await createClient();
+    const supabase = await createServerSupabaseClient();
 
     const { data: partner, error } = await supabase
         .from('partners')

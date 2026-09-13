@@ -1,7 +1,7 @@
 import { getLocale, getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { getCarBySlug } from '@/lib/supabase/queries';
-import { createStaticClient } from '@/lib/supabase/server';
+import { createStaticSupabaseClient } from '@core/supabase/server-client';
 import { getPublicSiteConfig } from '@/lib/settings';
 import { routing, localeAlternates, localeUrl, localeOpenGraph, localeTwitter } from '@/i18n/routing';
 import { sanitizeHtml } from '@/lib/utils/sanitize';
@@ -26,7 +26,7 @@ type Props = {
 // Pre-render all car pages at build time for better SEO
 export async function generateStaticParams() {
     // Use static client (no cookies) for build-time generation
-    const supabase = createStaticClient();
+    const supabase = createStaticSupabaseClient();
     const { data: cars } = await supabase
         .from('cars')
         .select('slug');

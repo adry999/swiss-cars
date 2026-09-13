@@ -5,7 +5,7 @@ import { useDropzone } from 'react-dropzone';
 import { Image as ImageIcon, X, UploadCloud, Loader2, AlertCircle } from 'lucide-react';
 import Image from 'next/image';
 import { v4 as uuidv4 } from 'uuid';
-import { createClient } from '@/lib/supabase/client';
+import { createBrowserSupabaseClient } from '@core/supabase/browser-client';
 import styles from './ImageUploader.module.css';
 
 interface Props {
@@ -17,7 +17,7 @@ interface Props {
 export default function ImageUploader({ value, onChange, maxFiles = 10 }: Props) {
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const supabase = createClient();
+    const supabase = createBrowserSupabaseClient();
 
     const onDrop = useCallback(async (acceptedFiles: File[]) => {
         setError(null);

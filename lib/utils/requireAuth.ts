@@ -1,5 +1,6 @@
 import 'server-only';
-import { createClient } from '@/lib/supabase/server';
+import { createServerSupabaseClient } from '@core/supabase/server-client';
+import { hasAdminRole } from '@shared/session/admin-role';
 import type { User } from '@supabase/supabase-js';
 
 /**
@@ -17,21 +18,22 @@ import type { User } from '@supabase/supabase-js';
  *
  * `app_metadata` is signed into the JWT and cannot be modified by the user,
  * unlike `user_metadata`. The matching RLS policies live in
- * database/2026-08-26_security_hardening.sql. The same role check is also
- * applied at the edge (lib/supabase/middleware.ts) and in the admin layout
- * (app/admin/layout.tsx) — this function only gates mutations.
+ * database/2026-08-26_security_hardening.sql.
  */
 export async function requireAuth(): Promise<User> {
-    const supabase = await createClient();
+    const supabase = await createServerSupabaseClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    if (!user) throw new Error('Unauthorized');
-
-    const role = (user.app_metadata as { role?: string } | undefined)?.role;
-    if (role !== 'admin') {
-        console.warn(`Forbidden: user ${user.id} has no admin role`);
-        throw new Error('Forbidden');
+    if (hasAdminRole(user)) {
+        return user;
     }
 
-    return user;
+    if (!user) {
+        throw new Error('Unauthorized');
+    }
+
+    // At this point, user is narrowed to User (by the negative type guard)
+    const authenticatedUser = user as User;
+    console.warn(`Forbidden: user ${authenticatedUser.id} has no admin role`);
+    throw new Error('Forbidden');
 }

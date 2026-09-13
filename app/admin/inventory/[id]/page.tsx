@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
+import { createServerSupabaseClient } from '@core/supabase/server-client';
 import CarEditForm from '@/components/admin/CarEditForm';
 import { getPublicSiteConfig } from '@/lib/settings';
 import type { Car } from '@/lib/types';
@@ -10,7 +10,7 @@ type Props = {
 
 export default async function EditCarPage({ params }: Props) {
     const { id } = await params;
-    const supabase = await createClient();
+    const supabase = await createServerSupabaseClient();
 
     const [carResponse, settings] = await Promise.all([
         supabase.from('cars').select('*, car_images(*)').eq('id', id).single(),
