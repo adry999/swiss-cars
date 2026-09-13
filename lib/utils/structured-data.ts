@@ -1,4 +1,4 @@
-export type StructuredData = Record<string, any>;
+export type StructuredData = Record<string, unknown>;
 
 /**
  * Organization schema for homepage
