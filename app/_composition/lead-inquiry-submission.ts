@@ -13,7 +13,7 @@ import {
     createTelegramLeadAlertChannel,
     type LeadAlertChannel,
 } from '@features/notifications';
-import { getNotificationConfig } from '@/lib/settings';
+import { getNotificationConfig } from '@features/site-settings/server';
 
 async function resolveLeadAlertChannels(): Promise<LeadAlertChannel[]> {
     const { telegramBotToken, telegramChatId, notificationEmail } = await getNotificationConfig();

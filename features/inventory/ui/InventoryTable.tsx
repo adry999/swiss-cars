@@ -3,9 +3,9 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Edit2, Trash2, Eye, Copy, Loader2 } from 'lucide-react';
-import DataTable from '@/components/admin/DataTable';
-import Pagination from '@/components/ui/Pagination';
-import { formatPrice } from '@/lib/utils/format';
+import DataTable from '@shared/ui/admin/DataTable';
+import Pagination from '@shared/ui/Pagination';
+import { formatPrice } from '@shared/formatting/format';
 import { useState } from 'react';
 import Image from 'next/image';
 import type { Car } from '../inventory.types';

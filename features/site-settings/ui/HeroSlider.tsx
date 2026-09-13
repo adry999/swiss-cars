@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useLocale } from 'next-intl';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Pause, Play } from 'lucide-react';
-import type { HeroSlide } from '@/lib/types';
+import type { HeroSlide } from '../site-settings.types';
 import styles from './HeroSlider.module.css';
 
 interface Props {

@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
-import Pagination from '@/components/ui/Pagination';
+import Pagination from '@shared/ui/Pagination';
 import type { Car } from '../inventory.types';
 import CarCard from './CarCard';
 import styles from './CarsGrid.module.css';

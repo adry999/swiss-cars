@@ -1,6 +1,6 @@
 import { getTranslations, getLocale } from 'next-intl/server';
-import { getHomepageContent } from '@/lib/settings';
-import type { TranslatedField } from '@/lib/types';
+import { getHomepageContent } from '../server/site-settings-repository';
+import type { TranslatedField } from '@shared/contracts/translated-field';
 import ServicesSectionClient from './ServicesSectionClient';
 
 type ServiceEntry = {

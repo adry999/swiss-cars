@@ -6,7 +6,7 @@ import { Save, Loader2, ArrowLeft, AlertCircle, X, User } from 'lucide-react';
 import { saveReview } from '../actions';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
-import ImageUploader from '@/components/admin/ImageUploader';
+import ImageUploader from '@shared/ui/admin/ImageUploader';
 import type { Review } from '../reviews.types';
 
 import styles from './ReviewForm.module.css';

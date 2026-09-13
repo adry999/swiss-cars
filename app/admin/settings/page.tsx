@@ -1,4 +1,4 @@
-import { getSiteConfig } from '@/lib/settings';
+import { getSiteConfig } from '@features/site-settings/server';
 import { SiteConfigForm } from '@features/site-settings/admin';
 
 export default async function SettingsPage() {

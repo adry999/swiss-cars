@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { requireAuth } from '@/lib/utils/requireAuth';
+import { requireAdmin } from '@shared/session/require-admin';
 import type { LeadInboxChangeResult } from './leads.types';
 import { supabaseLeadsRepository } from './server/supabase-leads-repository';
 
@@ -23,28 +23,28 @@ async function changeInbox(change: () => Promise<void>): Promise<LeadInboxChange
 }
 
 export async function markLeadRead(leadId: string, isRead: boolean): Promise<LeadInboxChangeResult> {
-    await requireAuth();
+    await requireAdmin();
     if (!LeadIdSchema.safeParse(leadId).success || typeof isRead !== 'boolean') return invalidInput;
 
     return changeInbox(() => supabaseLeadsRepository.setRead(leadId, isRead));
 }
 
 export async function markLeadImportant(leadId: string, isImportant: boolean): Promise<LeadInboxChangeResult> {
-    await requireAuth();
+    await requireAdmin();
     if (!LeadIdSchema.safeParse(leadId).success || typeof isImportant !== 'boolean') return invalidInput;
 
     return changeInbox(() => supabaseLeadsRepository.setImportant(leadId, isImportant));
 }
 
 export async function deleteLead(leadId: string): Promise<LeadInboxChangeResult> {
-    await requireAuth();
+    await requireAdmin();
     if (!LeadIdSchema.safeParse(leadId).success) return invalidInput;
 
     return changeInbox(() => supabaseLeadsRepository.remove(leadId));
 }
 
 export async function markAllLeadsRead(): Promise<LeadInboxChangeResult> {
-    await requireAuth();
+    await requireAdmin();
 
     return changeInbox(() => supabaseLeadsRepository.markAllRead());
 }

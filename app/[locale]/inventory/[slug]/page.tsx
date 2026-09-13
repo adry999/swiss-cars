@@ -1,10 +1,10 @@
 import { getLocale, getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { findCarBySlug, listCarSlugs, SimilarCars } from '@features/inventory/server';
-import { getPublicSiteConfig } from '@/lib/settings';
+import { getPublicSiteConfig } from '@features/site-settings/server';
 import { routing, localeAlternates, localeUrl, localeOpenGraph, localeTwitter } from '@/i18n/routing';
-import { sanitizeHtml } from '@/lib/utils/sanitize';
-import { formatPrice } from '@/lib/utils/format';
+import { sanitizeHtml } from '@shared/formatting/sanitize';
+import { formatPrice } from '@shared/formatting/format';
 import { Link } from '@/i18n/navigation';
 import { FileCheck, Shield, BadgeCheck, HeadphonesIcon, Calculator } from 'lucide-react';
 import { CarGallery, CarSpecsGrid, FavoriteButton } from '@features/inventory';

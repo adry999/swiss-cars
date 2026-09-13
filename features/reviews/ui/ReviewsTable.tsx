@@ -2,8 +2,8 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Trash2, Star, Eye, EyeOff, Edit } from 'lucide-react';
-import DataTable from '@/components/admin/DataTable';
-import Pagination from '@/components/ui/Pagination';
+import DataTable from '@shared/ui/admin/DataTable';
+import Pagination from '@shared/ui/Pagination';
 import { deleteReview, saveReview } from '../actions';
 import { type Review } from '../reviews.types';
 import styles from './ReviewsTable.module.css';

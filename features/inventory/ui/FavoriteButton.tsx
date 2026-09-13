@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Heart } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useToast } from '@/components/ui/Toast';
+import { useToast } from '@shared/ui/Toast/ToastContext';
 import { readFavoriteCarIds, writeFavoriteCarIds } from '../model/favorite-car-ids';
 import styles from './FavoriteButton.module.css';
 

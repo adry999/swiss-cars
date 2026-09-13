@@ -4,7 +4,7 @@ import { promises as fs } from 'node:fs';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import type { ActionResult } from '@shared/contracts/action-result';
-import { requireAuth } from '@/lib/utils/requireAuth';
+import { requireAdmin } from '@shared/session/require-admin';
 import { isSupportedLocale, localeMessagesFilePath } from './server/locale-messages-file';
 
 const MessagesTreeSchema = z.record(z.string(), z.unknown());
@@ -13,7 +13,7 @@ export async function saveLocaleMessages(
     locale: string,
     messages: unknown,
 ): Promise<ActionResult<'invalid-locale' | 'invalid-input' | 'unavailable'>> {
-    await requireAuth();
+    await requireAdmin();
 
     if (!isSupportedLocale(locale)) {
         return { status: 'rejected', reason: 'invalid-locale' };

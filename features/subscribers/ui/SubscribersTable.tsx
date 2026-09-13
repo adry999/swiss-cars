@@ -4,8 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Trash2, ToggleLeft, ToggleRight, Mail } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
-import DataTable from '@/components/admin/DataTable';
-import { useToast } from '@/components/ui/Toast';
+import DataTable from '@shared/ui/admin/DataTable';
+import { useToast } from '@shared/ui/Toast/ToastContext';
 import { deleteSubscriber, toggleSubscriberStatus } from '../actions';
 import type { Subscriber } from '../subscribers.types';
 

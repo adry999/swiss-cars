@@ -5,7 +5,7 @@ import { Heart, X, CarFront } from 'lucide-react';
 import Image from 'next/image';
 import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
-import { formatPrice } from '@/lib/utils/format';
+import { formatPrice } from '@shared/formatting/format';
 import type { Car } from '../inventory.types';
 import { readFavoriteCarIds, writeFavoriteCarIds, FAVORITES_CHANGED_EVENT } from '../model/favorite-car-ids';
 

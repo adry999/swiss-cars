@@ -1,5 +1,5 @@
 import { Phone, Mail, MapPin, MessageCircle, Clock, Map } from "lucide-react"
-import type { SiteConfig } from "@/lib/settings"
+import type { SiteConfig } from "../site-settings.types"
 import styles from "./SiteConfigForm.module.css"
 
 interface SiteConfigSectionProps {

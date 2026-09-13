@@ -6,7 +6,7 @@ import { Save, Loader2, ArrowLeft, AlertCircle, X } from 'lucide-react';
 import { savePartner } from '../actions';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
-import ImageUploader from '@/components/admin/ImageUploader';
+import ImageUploader from '@shared/ui/admin/ImageUploader';
 import type { Partner } from '../partners.types';
 
 export default function PartnerForm({ initialData }: { initialData?: Partner }) {

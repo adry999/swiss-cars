@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import ContactPageClient from '@/components/contact/ContactPageClient';
-import { getPublicSiteConfig } from '@/lib/settings';
+import ContactPageClient from './ContactPageClient';
+import { getPublicSiteConfig } from '@features/site-settings/server';
 import { localeAlternates, localeOpenGraph, localeTwitter } from '@/i18n/routing';
 import { submitLeadInquiryAction } from '@/app/_composition/lead-inquiry-actions';
 

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { requireAuth } from '@/lib/utils/requireAuth';
+import { requireAdmin } from '@shared/session/require-admin';
 import { SubscriberEmailSchema } from './subscribers.schema';
 import type { SubscriberChangeResult, SubscriptionResult } from './subscribers.types';
 import { supabaseSubscribersRepository } from './server/supabase-subscribers-repository';
@@ -38,14 +38,14 @@ async function changeSubscriber(change: () => Promise<void>): Promise<Subscriber
 }
 
 export async function deleteSubscriber(subscriberId: string): Promise<SubscriberChangeResult> {
-    await requireAuth();
+    await requireAdmin();
     if (!SubscriberIdSchema.safeParse(subscriberId).success) return invalidInput;
 
     return changeSubscriber(() => supabaseSubscribersRepository.remove(subscriberId));
 }
 
 export async function toggleSubscriberStatus(subscriberId: string, isActive: boolean): Promise<SubscriberChangeResult> {
-    await requireAuth();
+    await requireAdmin();
     if (!SubscriberIdSchema.safeParse(subscriberId).success || typeof isActive !== 'boolean') return invalidInput;
 
     return changeSubscriber(() => supabaseSubscribersRepository.setActive(subscriberId, isActive));

@@ -1,6 +1,6 @@
 import { Image as ImageIcon } from "lucide-react"
-import ImageUploader from "@/components/admin/ImageUploader"
-import type { SiteConfig } from "@/lib/settings"
+import ImageUploader from "@shared/ui/admin/ImageUploader"
+import type { SiteConfig } from "../site-settings.types"
 import styles from "./SiteConfigForm.module.css"
 
 interface SiteConfigSectionProps {

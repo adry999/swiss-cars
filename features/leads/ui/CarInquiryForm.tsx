@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Phone, MessageCircle, Send, CheckCircle, Loader2, User, PhoneCall, Mail } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { formatPrice } from '@/lib/utils/format';
+import { formatPrice } from '@shared/formatting/format';
 import { leadInquiryFailureMessageKey, useLeadInquirySubmission, type LeadInquiryAction } from './use-lead-inquiry-submission';
 import styles from './CarInquiryForm.module.css';
 

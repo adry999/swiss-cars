@@ -1,5 +1,5 @@
 import { Tag, CheckCircle, AlertTriangle } from "lucide-react"
-import type { SiteConfig } from "@/lib/settings"
+import type { SiteConfig } from "../site-settings.types"
 import styles from "./SiteConfigForm.module.css"
 
 interface SiteConfigSectionProps {

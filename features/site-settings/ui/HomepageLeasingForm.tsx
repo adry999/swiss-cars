@@ -1,7 +1,7 @@
 'use client';
 
 import type { UseFormRegister } from 'react-hook-form';
-import type { HomepageContent } from '@/lib/types';
+import type { HomepageContent } from '../site-settings.types';
 
 interface LeasingFormProps {
     register: UseFormRegister<HomepageContent>;

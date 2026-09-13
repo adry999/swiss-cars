@@ -6,7 +6,7 @@ import { CarFront } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import type { Car } from '../inventory.types';
 import FavoriteButton from './FavoriteButton';
-import { formatPrice } from '@/lib/utils/format';
+import { formatPrice } from '@shared/formatting/format';
 import styles from './CarCard.module.css';
 
 type Props = { car: Car };

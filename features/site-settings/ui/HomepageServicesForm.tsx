@@ -1,8 +1,8 @@
 'use client';
 
 import { Controller, type Control, type UseFormRegister } from 'react-hook-form';
-import ImageUploader from '@/components/admin/ImageUploader';
-import type { HomepageContent } from '@/lib/types';
+import ImageUploader from '@shared/ui/admin/ImageUploader';
+import type { HomepageContent } from '../site-settings.types';
 
 interface ServicesFormProps {
     control: Control<HomepageContent>;

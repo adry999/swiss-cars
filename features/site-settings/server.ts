@@ -1,5 +1,7 @@
 import 'server-only';
 
+export { getSiteConfig, getPublicSiteConfig, getHomepageContent, getNotificationConfig } from './server/site-settings-repository';
+
 export { default as AboutSection } from './ui/AboutSection';
 export { default as StatsSection } from './ui/StatsSection';
 export { default as ServicesSection } from './ui/ServicesSection';

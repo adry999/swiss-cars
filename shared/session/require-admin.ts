@@ -20,7 +20,7 @@ import type { User } from '@supabase/supabase-js';
  * unlike `user_metadata`. The matching RLS policies live in
  * database/2026-08-26_security_hardening.sql.
  */
-export async function requireAuth(): Promise<User> {
+export async function requireAdmin(): Promise<User> {
     const supabase = await createServerSupabaseClient();
     const { data: { user } } = await supabase.auth.getUser();
 

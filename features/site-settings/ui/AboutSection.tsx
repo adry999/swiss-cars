@@ -1,5 +1,5 @@
 import { getTranslations, getLocale } from 'next-intl/server';
-import { getHomepageContent } from '@/lib/settings';
+import { getHomepageContent } from '../server/site-settings-repository';
 import styles from './AboutSection.module.css';
 
 export default async function AboutSection() {

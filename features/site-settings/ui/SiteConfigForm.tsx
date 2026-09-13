@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Save, Loader2 } from "lucide-react"
 import { saveSettings } from "../actions"
-import type { SiteConfig } from "@/lib/settings"
+import type { SiteConfig } from "../site-settings.types"
 import SiteConfigGeneralSection from "./SiteConfigGeneralSection"
 import SiteConfigLogoSection from "./SiteConfigLogoSection"
 import SiteConfigContactSection from "./SiteConfigContactSection"

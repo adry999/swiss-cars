@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { requireAuth } from '@/lib/utils/requireAuth';
+import { requireAdmin } from '@shared/session/require-admin';
 import { ReviewSchema } from './reviews.schema';
 import type { ReviewRemovalResult, ReviewSaveResult } from './reviews.types';
 import { deleteReviewRecord, saveReviewRecord } from './server/reviews-repository';
@@ -15,7 +15,7 @@ function revalidateReviews() {
 }
 
 export async function saveReview(reviewData: unknown): Promise<ReviewSaveResult> {
-    await requireAuth();
+    await requireAdmin();
 
     const parsed = ReviewSchema.safeParse(reviewData);
     if (!parsed.success) {
@@ -40,7 +40,7 @@ export async function saveReview(reviewData: unknown): Promise<ReviewSaveResult>
 }
 
 export async function deleteReview(reviewId: string): Promise<ReviewRemovalResult> {
-    await requireAuth();
+    await requireAdmin();
     if (!ReviewIdSchema.safeParse(reviewId).success) {
         return { status: 'rejected', reason: 'invalid-input' };
     }

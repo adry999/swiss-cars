@@ -1,4 +1,4 @@
-import type { StructuredData } from '@/lib/utils/structured-data';
+import type { StructuredData } from './structured-data';
 
 interface Props {
   data: StructuredData | StructuredData[];

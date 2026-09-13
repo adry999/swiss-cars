@@ -1,7 +1,7 @@
 'use server';
 
 import { createServerSupabaseClient } from '@core/supabase/server-client';
-import { requireAuth } from '@/lib/utils/requireAuth';
+import { requireAdmin } from '@shared/session/require-admin';
 import { revalidatePath } from 'next/cache';
 
 // NOTE: reads live in `lib/settings` — a plain module, not a Server Action.
@@ -10,7 +10,7 @@ import { revalidatePath } from 'next/cache';
 // Telegram bot token) fetchable by anyone.
 
 export async function saveSettings(key: string, value: unknown) {
-    await requireAuth();
+    await requireAdmin();
     const supabase = await createServerSupabaseClient();
     const { error } = await supabase
         .from('site_settings')

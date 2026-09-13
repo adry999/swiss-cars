@@ -1,10 +1,10 @@
 import { ReactNode } from 'react';
 import { redirect } from 'next/navigation';
-import AdminLayoutClient from '@/components/admin/AdminLayoutClient';
-import { getPublicSiteConfig } from '@/lib/settings';
+import AdminLayoutClient from './_shell/AdminLayoutClient';
+import { getPublicSiteConfig } from '@features/site-settings/server';
 import { getCurrentUser } from '@shared/session/current-user';
 import { hasAdminRole } from '@shared/session/admin-role';
-import { ToastProvider } from '@/components/ui/Toast';
+import { ToastProvider } from '@shared/ui/Toast/ToastContext';
 import '@/app/globals.css';
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {

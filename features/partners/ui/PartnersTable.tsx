@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Trash2, Eye, EyeOff, ExternalLink, Edit } from 'lucide-react';
-import DataTable from '@/components/admin/DataTable';
+import DataTable from '@shared/ui/admin/DataTable';
 import { deletePartner, savePartner } from '../actions';
 import { type Partner } from '../partners.types';
 import styles from './PartnersTable.module.css';

@@ -2,7 +2,7 @@
 
 import type { UseFormSetValue, UseFormWatch } from 'react-hook-form';
 import type { Car } from '../inventory.types';
-import ImageUploader from '@/components/admin/ImageUploader';
+import ImageUploader from '@shared/ui/admin/ImageUploader';
 import styles from './CarEditForm.module.css';
 
 interface CarEditImagesTabProps {

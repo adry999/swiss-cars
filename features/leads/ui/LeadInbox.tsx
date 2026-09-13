@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
 import { CheckCheck, Eye, EyeOff, Star, StarOff, Trash2, Phone, Mail, Car, CalendarCheck } from 'lucide-react';
-import { useOptionalToast } from '@/components/ui/Toast';
+import { useOptionalToast } from '@shared/ui/Toast/ToastContext';
 import type { Lead, LeadInboxActions } from '../leads.types';
 import { useLeadInbox } from './use-lead-inbox';
 import styles from './LeadInbox.module.css';

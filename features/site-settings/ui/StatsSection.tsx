@@ -1,5 +1,5 @@
 import { getTranslations, getLocale } from 'next-intl/server';
-import { getHomepageContent, getPublicSiteConfig } from '@/lib/settings';
+import { getHomepageContent, getPublicSiteConfig } from '../server/site-settings-repository';
 import StatsSectionClient from './StatsSectionClient';
 
 export default async function StatsSection() {

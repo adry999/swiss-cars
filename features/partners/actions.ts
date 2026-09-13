@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { requireAuth } from '@/lib/utils/requireAuth';
+import { requireAdmin } from '@shared/session/require-admin';
 import { PartnerSchema } from './partners.schema';
 import type { PartnerRemovalResult, PartnerSaveResult } from './partners.types';
 import { deletePartnerRecord, savePartnerRecord } from './server/partners-repository';
@@ -15,7 +15,7 @@ function revalidatePartners() {
 }
 
 export async function savePartner(partnerData: unknown): Promise<PartnerSaveResult> {
-    await requireAuth();
+    await requireAdmin();
 
     const parsed = PartnerSchema.safeParse(partnerData);
     if (!parsed.success) {
@@ -38,7 +38,7 @@ export async function savePartner(partnerData: unknown): Promise<PartnerSaveResu
 }
 
 export async function deletePartner(partnerId: string): Promise<PartnerRemovalResult> {
-    await requireAuth();
+    await requireAdmin();
     if (!PartnerIdSchema.safeParse(partnerId).success) {
         return { status: 'rejected', reason: 'invalid-input' };
     }

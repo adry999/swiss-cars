@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { findCarForEditing } from '@features/inventory/server';
 import { CarEditForm } from '@features/inventory/admin';
-import { getPublicSiteConfig } from '@/lib/settings';
+import { getPublicSiteConfig } from '@features/site-settings/server';
 
 type Props = {
     params: Promise<{ id: string }>;

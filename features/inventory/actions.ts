@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { requireAuth } from '@/lib/utils/requireAuth';
+import { requireAdmin } from '@shared/session/require-admin';
 import { CarSchema } from './inventory.schema';
 import type { CarDuplicationResult, CarRemovalResult, CarSaveResult } from './inventory.types';
 import { deleteCarWithImages, duplicateCarWithImages, saveCarWithImages } from './server/car-admin-repository';
@@ -16,7 +16,7 @@ function revalidateCatalog() {
 }
 
 export async function saveCar(carData: unknown): Promise<CarSaveResult> {
-    await requireAuth();
+    await requireAdmin();
 
     const parsed = CarSchema.safeParse(carData);
     if (!parsed.success) {
@@ -41,7 +41,7 @@ export async function saveCar(carData: unknown): Promise<CarSaveResult> {
 }
 
 export async function deleteCar(carId: string): Promise<CarRemovalResult> {
-    await requireAuth();
+    await requireAdmin();
     if (!CarIdSchema.safeParse(carId).success) {
         return { status: 'rejected', reason: 'invalid-input' };
     }
@@ -59,7 +59,7 @@ export async function deleteCar(carId: string): Promise<CarRemovalResult> {
 }
 
 export async function duplicateCar(carId: string): Promise<CarDuplicationResult> {
-    await requireAuth();
+    await requireAdmin();
     if (!CarIdSchema.safeParse(carId).success) {
         return { status: 'rejected', reason: 'invalid-input' };
     }

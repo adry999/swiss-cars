@@ -2,8 +2,8 @@
 
 import { useFieldArray, Controller, type Control, type UseFormRegister } from 'react-hook-form';
 import { Plus, Trash2 } from 'lucide-react';
-import ImageUploader from '@/components/admin/ImageUploader';
-import type { HomepageContent } from '@/lib/types';
+import ImageUploader from '@shared/ui/admin/ImageUploader';
+import type { HomepageContent } from '../site-settings.types';
 
 interface HeroFormProps {
     control: Control<HomepageContent>;

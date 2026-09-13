@@ -1,5 +1,5 @@
 import { getTranslations, getLocale } from 'next-intl/server';
-import { getHomepageContent } from '@/lib/settings';
+import { getHomepageContent } from '../server/site-settings-repository';
 import WhyUsAccordionClient from './WhyUsAccordionClient';
 
 export default async function WhyUsAccordion() {

@@ -4,14 +4,14 @@ import { FeaturedCarsGrid } from '@features/inventory';
 import { listFeaturedCars } from '@features/inventory/server';
 import { AboutSection, StatsSection, ServicesSection, ContactBanner, WhyUsAccordion, LeasingSection } from '@features/site-settings/server';
 import dynamic from 'next/dynamic';
-import { Reveal } from '@/components/ui/Reveal';
+import { Reveal } from '@shared/ui/Reveal';
 
 const ReviewsSlider = dynamic(() => import('@features/reviews').then((reviewsModule) => reviewsModule.ReviewsSlider), { ssr: true });
 const PartnersSlider = dynamic(() => import('@features/partners').then((partnersModule) => partnersModule.PartnersSlider), { ssr: true });
 
 import { listVisibleReviews } from '@features/reviews/server';
 import { listVisiblePartners } from '@features/partners/server';
-import { getHomepageContent, getPublicSiteConfig } from '@/lib/settings';
+import { getHomepageContent, getPublicSiteConfig } from '@features/site-settings/server';
 import type { Metadata } from 'next';
 
 type Props = {

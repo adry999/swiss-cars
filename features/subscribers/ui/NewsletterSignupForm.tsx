@@ -2,7 +2,7 @@
 
 import { useCallback, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { useOptionalToast } from '@/components/ui/Toast';
+import { useOptionalToast } from '@shared/ui/Toast/ToastContext';
 import { subscribe } from '../actions';
 import { subscribeFailureMessageKey } from './subscribe-failure-message';
 import styles from './NewsletterSignupForm.module.css';

@@ -4,8 +4,8 @@ import { ReactNode, useState } from 'react';
 import { Menu, ExternalLink } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import AdminSidebar from '@/components/admin/AdminSidebar';
-import styles from '@/app/admin/layout.module.css';
+import AdminSidebar from './AdminSidebar';
+import styles from '../layout.module.css';
 
 import Image from 'next/image';
 
