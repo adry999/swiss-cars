@@ -84,4 +84,31 @@ export const supabaseLeadsRepository: LeadsRepository = {
         const supabase = await createServerSupabaseClient();
         throwOnDatabaseError('delete lead', await supabase.from(LEADS_TABLE).delete().eq('id', leadId));
     },
+
+    async countLeads() {
+        const supabase = await createServerSupabaseClient();
+        const [totalResult, unreadResult] = await Promise.all([
+            supabase.from(LEADS_TABLE).select('*', { count: 'exact', head: true }),
+            supabase.from(LEADS_TABLE).select('*', { count: 'exact', head: true }).eq('is_read', false),
+        ]);
+
+        throwOnDatabaseError('count leads', totalResult);
+        throwOnDatabaseError('count unread leads', unreadResult);
+
+        return { total: totalResult.count ?? 0, unread: unreadResult.count ?? 0 };
+    },
+
+    async listRecentLeads(limit) {
+        const supabase = await createServerSupabaseClient();
+        const result = await supabase
+            .from(LEADS_TABLE)
+            .select('*')
+            .order('created_at', { ascending: false })
+            .limit(limit);
+
+        throwOnDatabaseError('list recent leads', result);
+
+        // No generated Database types yet, so rows arrive untyped.
+        return (result.data ?? []) as Lead[];
+    },
 };

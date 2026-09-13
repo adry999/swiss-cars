@@ -16,7 +16,10 @@ Recenziile clienților afișate pe homepage și administrarea lor (CRUD, vizibil
 
 `@features/reviews/server` (server-only):
 - `listVisibleReviews`, `readReviewsAdminPage`, `findReviewForEditing` — citiri din tabela `reviews`.
-- `saveReviewRecord(review)`, `deleteReviewRecord(reviewId)` — scrieri; aruncă `Error` cu `cause`.
+- `countReviews(): Promise<number>` — folosit de dashboard-ul de admin (aruncă la eroare).
+
+Scrierile (`saveReviewRecord`, `deleteReviewRecord`) stau doar în `server/reviews-repository.ts`, fără
+export din `server.ts` — sunt accesibile doar prin `actions.ts`, care aplică `requireAuth()`.
 
 `@features/reviews/actions` (Server Actions, protejate de `requireAuth`):
 - `saveReview(data): Promise<ReviewSaveResult>`, `deleteReview(reviewId): Promise<ReviewRemovalResult>`.
@@ -38,7 +41,7 @@ reviews.schema.ts / .test.ts   — ReviewSchema
 reviews.types.ts               — Review, ReviewRecord, PaginatedReviews, ReviewSaveResult, ReviewRemovalResult
 index.ts / admin.ts / server.ts / actions.ts
 server/
-  reviews-repository.ts         — listVisibleReviews, readReviewsAdminPage, findReviewForEditing, saveReviewRecord, deleteReviewRecord
+  reviews-repository.ts         — listVisibleReviews, readReviewsAdminPage, findReviewForEditing, countReviews, saveReviewRecord, deleteReviewRecord
 ui/
   ReviewsSlider (+ css), ReviewForm (+ css), ReviewsTable (+ css)
 ```

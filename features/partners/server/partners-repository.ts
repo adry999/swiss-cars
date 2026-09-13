@@ -61,3 +61,13 @@ export async function deletePartnerRecord(partnerId: string): Promise<void> {
         throw new Error(`Partners repository: delete partner failed: ${error.message}`, { cause: error });
     }
 }
+
+export async function countPartners(): Promise<number> {
+    const supabase = await createServerSupabaseClient();
+    const { count, error } = await supabase.from('partners').select('*', { count: 'exact', head: true });
+
+    if (error) {
+        throw new Error(`Partners repository: count partners failed: ${error.message}`, { cause: error });
+    }
+    return count ?? 0;
+}

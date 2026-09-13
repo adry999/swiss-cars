@@ -19,6 +19,7 @@ Catalogul public de mașini (listare, pagină de detaliu, favorite) și administ
 `@features/inventory/server` (server-only):
 - `listAvailableCars`, `readCatalogPage`, `findCarBySlug`, `findSimilarCars`, `listFeaturedCars`,
   `listCarSlugs`, `findCarForEditing` — citiri din catalog.
+- `countCars(): Promise<{ total, available }>` — folosit de dashboard-ul de admin (aruncă la eroare).
 - `SimilarCars` — Server Component, randează mașini similare; nu e exportat din `index.ts`.
 
 `@features/inventory/actions` (Server Actions, protejate de `requireAuth`):
@@ -50,7 +51,7 @@ model/
 server/
   car-catalog-repository.ts      — citiri publice și de admin din tabela cars
   car-image-storage.ts / .test.ts — storagePathFromUrl, deleteStorageObjects
-  car-admin-repository.ts        — saveCarWithImages, deleteCarWithImages, duplicateCarWithImages; aruncă Error cu cause
+  car-admin-repository.ts        — saveCarWithImages, deleteCarWithImages, duplicateCarWithImages, countCars; aruncă Error cu cause
 ui/
   CarCard, InventoryGrid, FeaturedCarsGrid, CarGallery, CarSpecsGrid, SimilarCars
   FavoriteButton, FavoritesIcon, FavoriteCarsPage

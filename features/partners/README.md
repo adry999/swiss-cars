@@ -18,7 +18,10 @@ Partenerii afișați pe homepage și pe pagina de leasing, plus administrarea lo
 - `listVisiblePartners` — partenerii vizibili, pentru paginile publice (la eroare logează și întoarce listă goală).
 - `listAllPartners` — toți partenerii, inclusiv cei ascunși, pentru `/admin/partners` (aruncă la eroare).
 - `findPartnerForEditing` — un partener după id, pentru formularul de editare.
-- `savePartnerRecord(partner)`, `deletePartnerRecord(partnerId)` — scrieri; aruncă `Error` cu `cause`.
+- `countPartners(): Promise<number>` — folosit de dashboard-ul de admin (aruncă la eroare).
+
+Scrierile (`savePartnerRecord`, `deletePartnerRecord`) stau doar în `server/partners-repository.ts`, fără
+export din `server.ts` — sunt accesibile doar prin `actions.ts`, care aplică `requireAuth()`.
 
 `@features/partners/actions` (Server Actions, protejate de `requireAuth`):
 - `savePartner(data): Promise<PartnerSaveResult>`, `deletePartner(partnerId): Promise<PartnerRemovalResult>`.
@@ -40,7 +43,7 @@ partners.schema.ts / .test.ts  — PartnerSchema
 partners.types.ts              — Partner, PartnerSaveResult, PartnerRemovalResult
 index.ts / admin.ts / server.ts / actions.ts
 server/
-  partners-repository.ts        — listVisiblePartners, listAllPartners, findPartnerForEditing, savePartnerRecord, deletePartnerRecord
+  partners-repository.ts        — listVisiblePartners, listAllPartners, findPartnerForEditing, countPartners, savePartnerRecord, deletePartnerRecord
 ui/
   PartnersSlider (+ css), PartnerForm, PartnersTable (+ css)
 ```

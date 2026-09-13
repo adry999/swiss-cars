@@ -19,7 +19,8 @@ pentru admin (citire, marcare citit/important, ștergere).
 
 `@features/leads/server` (server-only):
 - `createSubmitLeadInquiry(deps)` — construiește use-case-ul de trimitere a unui lead (validare, rate limit, salvare, publicare eveniment).
-- `supabaseLeadsRepository` — implementarea `LeadsRepository` peste Supabase.
+- `supabaseLeadsRepository` — implementarea `LeadsRepository` peste Supabase, inclusiv `countLeads()`
+  (total + necitite) și `listRecentLeads(limit)`, folosite de dashboard-ul de admin (aruncă la eroare).
 - Tipuri: `LeadInquiryRequester`, `SubmitLeadInquiry`.
 
 `@features/leads/actions` (Server Actions pentru inbox-ul din admin, toate protejate de `requireAuth`; formează `LeadInboxActions`):
@@ -66,7 +67,8 @@ actions.ts                             — Server Actions ale inbox-ului admin (
 server/
   submit-lead-inquiry.ts               — use-case: rate limit + validare + salvare + eveniment
   submit-lead-inquiry.test.ts          — teste ale use-case-ului (repository, rate limiter și publisher falși)
-  supabase-leads-repository.ts         — LeadsRepository peste tabela leads_inquiries (RPC submit_lead)
+  supabase-leads-repository.ts         — LeadsRepository peste tabela leads_inquiries (RPC submit_lead),
+                                          plus countLeads/listRecentLeads pentru dashboard-ul de admin
 ui/
   use-lead-inquiry-submission.ts       — hook de stare client pentru formular
   use-lead-inquiry-submission.test.ts  — teste ale hook-ului

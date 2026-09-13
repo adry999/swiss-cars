@@ -52,6 +52,8 @@ export interface LeadsRepository {
     setImportant(leadId: string, isImportant: boolean): Promise<void>;
     markAllRead(): Promise<void>;
     remove(leadId: string): Promise<void>;
+    countLeads(): Promise<{ total: number; unread: number }>;
+    listRecentLeads(limit: number): Promise<Lead[]>;
 }
 
 /** Server Actions the admin inbox calls; each mutation resolves rather than throwing on a server-side refusal. */

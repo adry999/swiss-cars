@@ -85,3 +85,13 @@ export async function deleteReviewRecord(reviewId: string): Promise<void> {
         throw new Error(`Reviews repository: delete review failed: ${error.message}`, { cause: error });
     }
 }
+
+export async function countReviews(): Promise<number> {
+    const supabase = await createServerSupabaseClient();
+    const { count, error } = await supabase.from('reviews').select('*', { count: 'exact', head: true });
+
+    if (error) {
+        throw new Error(`Reviews repository: count reviews failed: ${error.message}`, { cause: error });
+    }
+    return count ?? 0;
+}

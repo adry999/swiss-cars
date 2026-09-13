@@ -1,3 +1,3 @@
 import 'server-only';
 
-export { listVisiblePartners, listAllPartners, findPartnerForEditing } from './server/partners-repository';
+export { listVisiblePartners, listAllPartners, findPartnerForEditing, countPartners } from './server/partners-repository';

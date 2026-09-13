@@ -105,3 +105,16 @@ export async function duplicateCarWithImages(carId: string): Promise<string | nu
 
     return newCarId;
 }
+
+export async function countCars(): Promise<{ total: number; available: number }> {
+    const supabase = await createServerSupabaseClient();
+    const [totalResult, availableResult] = await Promise.all([
+        supabase.from('cars').select('*', { count: 'exact', head: true }),
+        supabase.from('cars').select('*', { count: 'exact', head: true }).eq('is_available', true),
+    ]);
+
+    throwOnDatabaseError('count cars', totalResult);
+    throwOnDatabaseError('count available cars', availableResult);
+
+    return { total: totalResult.count ?? 0, available: availableResult.count ?? 0 };
+}
