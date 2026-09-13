@@ -5,7 +5,7 @@ import nextTs from "eslint-config-next/typescript";
 const featureIsolationMessage =
   "A feature never imports another feature. Share types through @shared/contracts, or let app/_composition wire ports and domain events.";
 const featurePublicEntryMessage =
-  "Import a feature only through its public entry: @features/<name>, @features/<name>/server or @features/<name>/actions.";
+  "Import a feature only through its public entry: @features/<name>, @features/<name>/server, @features/<name>/actions or @features/<name>/admin.";
 const lowerLayerMessage =
   "core, shared and config sit below features and must not depend on features, routes or UI.";
 
@@ -37,7 +37,7 @@ const eslintConfig = defineConfig([
     rules: {
       "no-restricted-imports": ["error", {
         patterns: [{
-          group: ["@features/*/**", "!@features/*/server", "!@features/*/actions"],
+          group: ["@features/*/**", "!@features/*/server", "!@features/*/actions", "!@features/*/admin"],
           message: featurePublicEntryMessage,
         }],
       }],

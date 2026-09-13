@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import LeadsTable from './LeadsTable';
+import { LeadInbox } from '@features/leads/admin';
 import LeadsPagination from './LeadsPagination';
 import { supabaseLeadsRepository } from '@features/leads/server';
 import styles from './page.module.css';
@@ -23,7 +23,7 @@ export default async function LeadsPage({ searchParams }: Props) {
     return (
         <div className={styles.page}>
             <Suspense>
-                <LeadsTable initialLeads={leads} unreadCount={unread} />
+                <LeadInbox initialLeads={leads} unreadCount={unread} />
                 <LeadsPagination currentPage={page} totalPages={totalPages} />
             </Suspense>
         </div>

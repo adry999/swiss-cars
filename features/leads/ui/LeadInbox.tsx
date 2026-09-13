@@ -3,16 +3,16 @@
 import { useState, useTransition } from 'react';
 import { format } from 'date-fns';
 import { CheckCheck, Eye, EyeOff, Star, StarOff, Trash2, Phone, Mail, Car, Link as LinkIcon, CalendarCheck } from 'lucide-react';
-import { markLeadRead, markLeadImportant, deleteLead, markAllLeadsRead } from '@features/leads/actions';
-import type { Lead } from '@features/leads';
-import styles from './LeadsTable.module.css';
+import { markLeadRead, markLeadImportant, deleteLead, markAllLeadsRead } from '../actions';
+import type { Lead } from '../leads.types';
+import styles from './LeadInbox.module.css';
 
 type Props = {
     initialLeads: Lead[];
     unreadCount: number;
 };
 
-export default function LeadsTable({ initialLeads, unreadCount }: Props) {
+export default function LeadInbox({ initialLeads, unreadCount }: Props) {
     const [leads, setLeads] = useState<Lead[]>(initialLeads);
     const [isPending, startTransition] = useTransition();
     const [filter, setFilter] = useState<'all' | 'unread' | 'important'>('all');
