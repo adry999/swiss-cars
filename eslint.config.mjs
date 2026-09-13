@@ -12,6 +12,22 @@ const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   {
+    // The @/ alias is gone; tsc only reports static imports, so a dynamic import through it fails at runtime instead.
+    files: ["**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-syntax": ["error",
+        {
+          selector: "ImportExpression > TemplateLiteral > TemplateElement[value.raw=/^@\\//]",
+          message: "The @/ alias no longer exists; use a layer alias or a path relative to this file.",
+        },
+        {
+          selector: "ImportExpression > Literal[value=/^@\\//]",
+          message: "The @/ alias no longer exists; use a layer alias or a path relative to this file.",
+        },
+      ],
+    },
+  },
+  {
     files: ["features/**/*.{ts,tsx}"],
     rules: {
       "no-restricted-imports": ["error", {

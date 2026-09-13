@@ -70,13 +70,6 @@ export default async function LocaleLayout({ children, params }: Props) {
         notFound();
     }
 
-    let messages;
-    try {
-        messages = (await import(`@/messages/${locale}.json`)).default;
-    } catch {
-        notFound();
-    }
-
     // Public config only — this object is serialized into the RSC payload the
     // moment it reaches a client component such as <Footer>.
     const settings = await getPublicSiteConfig();
@@ -95,7 +88,8 @@ export default async function LocaleLayout({ children, params }: Props) {
             {/* reducedMotion="user" makes every framer-motion animation in the
                 tree respect prefers-reduced-motion automatically. */}
             <MotionConfig reducedMotion="user">
-                <NextIntlClientProvider locale={locale} messages={messages}>
+                {/* Messages are inherited from i18n/request.ts. */}
+                <NextIntlClientProvider locale={locale}>
                     <ToastProvider>
                         <Preloader />
                         <Header
