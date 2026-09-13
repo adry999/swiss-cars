@@ -1,4 +1,4 @@
-import HomepageForm from '@/components/admin/HomepageForm';
+import { HomepageContentForm } from '@features/site-settings/admin';
 import { getHomepageContent } from '@/lib/settings';
 import type { HomepageContent } from '@/lib/types';
 
@@ -7,7 +7,7 @@ export default async function AdminHomepage() {
     const homepageData = (await getHomepageContent()) as Partial<HomepageContent>;
     return (
         <div style={{ padding: '24px' }}>
-            <HomepageForm initialData={homepageData as HomepageContent} />
+            <HomepageContentForm initialData={homepageData as HomepageContent} />
         </div>
     );
 }

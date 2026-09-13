@@ -7,7 +7,7 @@ interface AboutFormProps {
     register: UseFormRegister<HomepageContent>;
 }
 
-export default function AboutForm({ register }: AboutFormProps) {
+export default function HomepageAboutForm({ register }: AboutFormProps) {
     return (
         <section style={{ background: 'white', padding: '24px', borderRadius: '8px', border: '1px solid #ddd', marginBottom: '32px' }}>
             <div style={{ marginBottom: '20px' }}>

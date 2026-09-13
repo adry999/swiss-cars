@@ -2,17 +2,17 @@
 
 import { useState } from 'react';
 import { Save, Loader2 } from 'lucide-react';
-import { saveSettings } from '@/lib/actions/settings';
+import { saveSettings } from '../actions';
 import { useForm } from 'react-hook-form';
 import { useToast } from '@/components/ui/Toast';
 import type { HomepageContent } from '@/lib/types';
-import HeroForm from './homepage/HeroForm';
-import AboutForm from './homepage/AboutForm';
-import StatsForm from './homepage/StatsForm';
-import ServicesForm from './homepage/ServicesForm';
-import LeasingForm from './homepage/LeasingForm';
-import ContactBannerForm from './homepage/ContactBannerForm';
-import WhyUsForm from './homepage/WhyUsForm';
+import HomepageHeroForm from './HomepageHeroForm';
+import HomepageAboutForm from './HomepageAboutForm';
+import HomepageStatsForm from './HomepageStatsForm';
+import HomepageServicesForm from './HomepageServicesForm';
+import HomepageLeasingForm from './HomepageLeasingForm';
+import HomepageContactBannerForm from './HomepageContactBannerForm';
+import HomepageWhyUsForm from './HomepageWhyUsForm';
 
 const DEFAULT_CONTENT: HomepageContent = {
     hero_slides: [
@@ -84,7 +84,7 @@ const DEFAULT_CONTENT: HomepageContent = {
     }
 };
 
-export default function HomepageForm({ initialData }: { initialData?: HomepageContent }) {
+export default function HomepageContentForm({ initialData }: { initialData?: HomepageContent }) {
     const [isSaving, setIsSaving] = useState(false);
     const toast = useToast();
 
@@ -118,13 +118,13 @@ export default function HomepageForm({ initialData }: { initialData?: HomepageCo
                 </button>
             </div>
             <form onSubmit={handleSubmit(onSubmit)}>
-                <HeroForm control={control} register={register} />
-                <AboutForm register={register} />
-                <StatsForm register={register} />
-                <ServicesForm control={control} register={register} />
-                <LeasingForm register={register} />
-                <ContactBannerForm register={register} />
-                <WhyUsForm register={register} />
+                <HomepageHeroForm control={control} register={register} />
+                <HomepageAboutForm register={register} />
+                <HomepageStatsForm register={register} />
+                <HomepageServicesForm control={control} register={register} />
+                <HomepageLeasingForm register={register} />
+                <HomepageContactBannerForm register={register} />
+                <HomepageWhyUsForm register={register} />
                 <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
                     <button type="submit" className="btn btn-primary" disabled={isSaving}>
                         {isSaving ? <Loader2 className="spinner" size={16} /> : <Save size={16} className="me-2" />}

@@ -1,15 +1,9 @@
 import { getLocale } from 'next-intl/server';
-import HeroSlider from '@/components/home/HeroSlider';
+import { HeroSlider, DualCTABanner } from '@features/site-settings';
 import { FeaturedCarsGrid } from '@features/inventory';
 import { listFeaturedCars } from '@features/inventory/server';
-import AboutSection from '@/components/home/AboutSection';
-import StatsSection from '@/components/home/StatsSection';
-import ServicesSection from '@/components/home/ServicesSection';
-import ContactBanner from '@/components/home/ContactBanner';
-import WhyUsAccordion from '@/components/home/WhyUsAccordion';
+import { AboutSection, StatsSection, ServicesSection, ContactBanner, WhyUsAccordion, LeasingSection } from '@features/site-settings/server';
 import dynamic from 'next/dynamic';
-import DualCTABanner from '@/components/home/DualCTABanner';
-import LeasingSection from '@/components/home/LeasingSection';
 import { Reveal } from '@/components/ui/Reveal';
 
 const ReviewsSlider = dynamic(() => import('@features/reviews').then((reviewsModule) => reviewsModule.ReviewsSlider), { ssr: true });

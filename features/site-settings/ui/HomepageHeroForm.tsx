@@ -10,7 +10,7 @@ interface HeroFormProps {
     register: UseFormRegister<HomepageContent>;
 }
 
-export default function HeroForm({ control, register }: HeroFormProps) {
+export default function HomepageHeroForm({ control, register }: HeroFormProps) {
     const { fields, append, remove, move } = useFieldArray({ control, name: 'hero_slides' });
 
     return (

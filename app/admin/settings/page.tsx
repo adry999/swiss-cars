@@ -1,5 +1,5 @@
 import { getSiteConfig } from '@/lib/settings';
-import SettingsForm from './SettingsForm';
+import { SiteConfigForm } from '@features/site-settings/admin';
 
 export default async function SettingsPage() {
     const defaultSettings = {
@@ -32,7 +32,7 @@ export default async function SettingsPage() {
 
     return (
         <div>
-            <SettingsForm initialSettings={settings} />
+            <SiteConfigForm initialSettings={settings} />
         </div>
     );
 }

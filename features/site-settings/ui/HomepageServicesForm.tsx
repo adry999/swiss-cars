@@ -9,7 +9,7 @@ interface ServicesFormProps {
     register: UseFormRegister<HomepageContent>;
 }
 
-export default function ServicesForm({ control, register }: ServicesFormProps) {
+export default function HomepageServicesForm({ control, register }: ServicesFormProps) {
     return (
         <section style={{ background: 'white', padding: '24px', borderRadius: '8px', border: '1px solid #ddd', marginBottom: '32px' }}>
             <div style={{ marginBottom: '20px' }}>
