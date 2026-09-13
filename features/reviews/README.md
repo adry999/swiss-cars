@@ -19,18 +19,19 @@ Recenziile clienților afișate pe homepage și administrarea lor (CRUD, vizibil
 - `countReviews(): Promise<number>` — folosit de dashboard-ul de admin (aruncă la eroare).
 
 Scrierile (`saveReviewRecord`, `deleteReviewRecord`) stau doar în `server/reviews-repository.ts`, fără
-export din `server.ts` — sunt accesibile doar prin `actions.ts`, care aplică `requireAuth()`.
+export din `server.ts` — sunt accesibile doar prin `actions.ts`, care aplică `requireAdmin()`.
 
-`@features/reviews/actions` (Server Actions, protejate de `requireAuth`):
+`@features/reviews/actions` (Server Actions, protejate de `requireAdmin`):
 - `saveReview(data): Promise<ReviewSaveResult>`, `deleteReview(reviewId): Promise<ReviewRemovalResult>`.
   Intrare invalidă (Zod) → `invalid-input` cu `invalidFields`; eroare din repository → logată și întoarsă ca `unavailable`.
 
 ## Dependențe
 
-Poate importa `@core/*` și, tranzitoriu, `@/lib/*` și `@/components/ui`:
+Poate importa `@core/*` și `@shared/*`:
 - `@core/supabase/server-client` în `server/reviews-repository.ts`.
-- `@/lib/utils/requireAuth`.
-- `@/components/admin/ImageUploader`, `@/components/admin/DataTable`, `@/components/ui/Pagination`.
+- `@shared/session/require-admin` (`requireAdmin`).
+- `@shared/contracts/action-result`.
+- `@shared/ui/admin/ImageUploader`, `@shared/ui/admin/DataTable`, `@shared/ui/Pagination`.
 
 Nu importă alt feature.
 

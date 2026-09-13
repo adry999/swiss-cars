@@ -95,7 +95,7 @@ type(scope): subject
 | `perf` | performanță |
 | `chore` | întreținere care nu intră în categoriile de mai sus |
 
-`scope` = feature-ul sau stratul atins: `leads`, `notifications`, `inventory`, `core`, `config`, `tooling`, `i18n`.
+`scope` = feature-ul sau stratul atins: `auth`, `inventory`, `leads`, `leasing`, `notifications`, `partners`, `reviews`, `site-settings`, `subscribers`, `translations`, `shared`, `core`, `config`, `admin`, `content`, `tooling`, `i18n`.
 
 ```bash
 git commit -m "feat(leads): translate lead form errors on the client"

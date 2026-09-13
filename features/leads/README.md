@@ -9,7 +9,7 @@ pentru admin (citire, marcare citit/important, ștergere).
 
 `@features/leads` (client-safe):
 - `CarInquiryForm` — formularul de cerere de pe pagina unei mașini; primește Server Action-ul ca prop `submitLeadInquiry`.
-- `useLeadInquirySubmission(submitLeadInquiry)` — starea trimiterii (idle/submitting/succeeded/failed) plus `reset()`; folosit și de `components/contact/ContactPageClient.tsx`.
+- `useLeadInquirySubmission(submitLeadInquiry)` — starea trimiterii (idle/submitting/succeeded/failed) plus `reset()`; folosit și de `app/[locale]/contact/ContactPageClient.tsx`.
 - `leadInquiryFailureMessageKey(failure)` — mapează eșecul la o cheie din namespace-ul de mesaje `errors`.
 - Tipuri: `Lead`, `LeadInboxPage`, `LeadInboxChangeResult`, `LeadInquiryDraft`, `LeadSubmissionRejection`, `LeadSubmissionResult`.
 
@@ -23,7 +23,7 @@ pentru admin (citire, marcare citit/important, ștergere).
   (total + necitite) și `listRecentLeads(limit)`, folosite de dashboard-ul de admin (aruncă la eroare).
 - Tipuri: `LeadInquiryRequester`, `SubmitLeadInquiry`.
 
-`@features/leads/actions` (Server Actions pentru inbox-ul din admin, toate protejate de `requireAuth`; formează `LeadInboxActions`):
+`@features/leads/actions` (Server Actions pentru inbox-ul din admin, toate protejate de `requireAdmin`; formează `LeadInboxActions`):
 - `markLeadRead(leadId, isRead)`
 - `markLeadImportant(leadId, isImportant)`
 - `deleteLead(leadId)`
@@ -37,11 +37,13 @@ pe un lead nu afectează o schimbare reușită pe alt lead făcută în același
 
 ## Dependențe
 
-Poate importa `@core/*`, `@shared/contracts/*` și, tranzitoriu, `@/lib/*`:
+Poate importa `@core/*` și `@shared/*`:
 - `@core/supabase/server-client` (`createServerSupabaseClient`) în `server/supabase-leads-repository.ts`.
-- `@/lib/utils/requireAuth` în `actions.ts`.
-- `@/lib/utils/format` (`formatPrice`) în `ui/CarInquiryForm.tsx`.
-- `@/components/ui/Toast` (`useOptionalToast`) în `ui/LeadInbox.tsx`, pentru mesajul de eroare la o schimbare respinsă.
+- `@core/events/event-bus`, `@core/rate-limit/rate-limiter` — tipurile de porturi (`EventPublisher`, `RateLimiter`) folosite de `server/submit-lead-inquiry.ts`.
+- `@shared/session/require-admin` (`requireAdmin`) în `actions.ts`.
+- `@shared/contracts/action-result`, `@shared/contracts/domain-events`.
+- `@shared/formatting/format` (`formatPrice`) în `ui/CarInquiryForm.tsx`.
+- `@shared/ui/Toast/ToastContext` (`useOptionalToast`) în `ui/LeadInbox.tsx`, pentru mesajul de eroare la o schimbare respinsă.
 
 Server Action-ul public de trimitere nu stă în feature: îl compune `app/_composition/lead-inquiry-actions.ts`, pentru că leagă și rate limiter-ul, și notificările.
 

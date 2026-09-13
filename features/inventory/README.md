@@ -22,7 +22,7 @@ Catalogul public de mașini (listare, pagină de detaliu, favorite) și administ
 - `countCars(): Promise<{ total, available }>` — folosit de dashboard-ul de admin (aruncă la eroare).
 - `SimilarCars` — Server Component, randează mașini similare; nu e exportat din `index.ts`.
 
-`@features/inventory/actions` (Server Actions, protejate de `requireAuth`):
+`@features/inventory/actions` (Server Actions, protejate de `requireAdmin`):
 - `saveCar(carData): Promise<CarSaveResult>` — motive: `invalid-input` (validare `CarSchema`, cu `invalidFields`), `unavailable`.
 - `deleteCar(carId): Promise<CarRemovalResult>` — motive: `invalid-input` (`carId` nu e un UUID valid), `unavailable`.
 - `duplicateCar(carId): Promise<CarDuplicationResult>` — motive: `invalid-input`, `not-found` (mașina sursă nu mai există), `unavailable`.
@@ -31,11 +31,13 @@ Excepțiile neașteptate din repository sunt logate și devin `unavailable`; nu 
 
 ## Dependențe
 
-Poate importa `@core/*`, `@shared/contracts/*` și, tranzitoriu, `@/lib/*` și `@/components/ui`:
+Poate importa `@core/*`, `@shared/*` și `@i18n/*`:
 - `@core/supabase/server-client` în `server/car-catalog-repository.ts`, `server/car-image-storage.ts` și `server/car-admin-repository.ts`.
 - `@shared/contracts/action-result` pentru `CarSaveResult`, `CarRemovalResult`, `CarDuplicationResult`.
-- `@/lib/utils/requireAuth`, `@/lib/utils/format`, `@/lib/utils/sanitize` (folosit de paginile publice, nu de feature).
-- `@/components/admin/ImageUploader`, `@/components/admin/DataTable`, `@/components/ui/Pagination`, `@/components/ui/Toast`.
+- `@shared/session/require-admin` (`requireAdmin`) în `actions.ts`.
+- `@shared/formatting/format` (`formatPrice`) în UI-ul public.
+- `@shared/ui/admin/ImageUploader`, `@shared/ui/admin/DataTable`, `@shared/ui/Pagination`, `@shared/ui/Toast/ToastContext`.
+- `@i18n/navigation` în UI-ul public.
 
 Nu importă alt feature.
 

@@ -17,16 +17,16 @@ notifier-ului.
 
 ## Dependențe
 
-Poate importa `@core/*`, `@shared/contracts/*` și, tranzitoriu, `@/lib/*`. În prezent nu
-importă din `@/lib/*` — doar `@shared/contracts/domain-events` pentru tipul `LeadInquirySubmitted`.
-Nu importă alt feature.
+Poate importa `@core/*` și `@shared/*`. În prezent importă doar `@shared/contracts/domain-events`
+pentru tipul `LeadInquirySubmitted`. Nu importă alt feature.
 
 ## Evenimente
 
 Modulul nu se abonează singur la `leads.inquiry-submitted`. Abonarea și livrarea sunt compuse în
 `app/_composition/lead-inquiry-submission.ts`: la publicarea evenimentului de către
-`features/leads`, acesta construiește canalele (după configurația din `lib/settings`) și rulează
-`notifyLeadSubmitted` în interiorul unui `after()` din Next, ca să nu întârzie răspunsul HTTP.
+`features/leads`, acesta construiește canalele (după configurația din `@features/site-settings/server`,
+`getNotificationConfig`) și rulează `notifyLeadSubmitted` în interiorul unui `after()` din Next, ca
+să nu întârzie răspunsul HTTP.
 
 ## Structură
 

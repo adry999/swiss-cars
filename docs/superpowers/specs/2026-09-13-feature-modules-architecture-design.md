@@ -89,49 +89,54 @@ swiss-cars/
 
 ### 2.1 Tree țintă
 
+Actualizat pe 2026-09-13 la finalul migrării — acesta e tree-ul real din `refactor/feature-modules-pilot`, nu doar planul inițial.
+
 ```text
 swiss-cars/
 ├── app/                                  # rutare + composition root
 │   ├── _composition/                     # singurul cod care leagă feature-uri între ele
-│   │   ├── lead-inquiry-submission.ts    # ✅ event bus, rate limiter, abonarea notificărilor
-│   │   └── lead-inquiry-actions.ts       # ✅ Server Action public pentru formulare
+│   │   ├── lead-inquiry-submission.ts    # event bus, rate limiter, abonarea notificărilor
+│   │   └── lead-inquiry-actions.ts       # Server Action public pentru formulare
+│   ├── _shell/                           # Header, Footer, MobileMenu — compun feature-uri pentru site-ul public
 │   ├── [locale]/…/page.tsx               # pagini subțiri: date prin @features/<x>/server, UI din @features/<x>
-│   ├── admin/…/page.tsx
+│   ├── admin/
+│   │   ├── _shell/                       # AdminSidebar, AdminLayoutClient
+│   │   ├── _dashboard/                   # dashboard-stats.ts (compunere pură), read-dashboard-stats.ts (citiri per feature)
+│   │   └── …/page.tsx
 │   └── api/…/route.ts                    # adaptoare HTTP peste use case-uri
 ├── features/
-│   ├── leads/                            # ✅ pilot — formular mașină, trimitere, inbox admin
-│   ├── notifications/                    # ✅ pilot — alerte Telegram și email
-│   ├── inventory/                        # mașini: listare, filtre, detaliu, CRUD admin, imagini
-│   ├── favorites/                        # favorite în localStorage (fără server)
-│   ├── reviews/
+│   ├── auth/                             # login, callback, sign-in / sign-out
+│   ├── inventory/                        # mașini (listare, filtre, detaliu, CRUD admin, imagini) + favorite
+│   ├── leads/                            # formular mașină, trimitere, inbox admin
+│   ├── leasing/                          # calculatorul public de leasing (fără server)
+│   ├── notifications/                    # alerte Telegram și email
 │   ├── partners/
-│   ├── subscribers/                      # newsletter (formular footer + admin)
+│   ├── reviews/
 │   ├── site-settings/                    # site_config, homepage_content, formulare admin
-│   ├── translations/                     # editorul de mesaje i18n
-│   └── auth/                             # login, callback, sign-in / sign-out
+│   ├── subscribers/                      # newsletter (formular footer + admin)
+│   └── translations/                     # editorul de mesaje i18n
 ├── shared/
-│   ├── contracts/                        # ✅ domain-events.ts, action-result.ts
+│   ├── contracts/                        # domain-events.ts, action-result.ts, translated-field.ts
 │   ├── session/                          # adminul curent, requireAdmin (shared kernel)
-│   ├── ui/                               # din components/ui + lib/styles/components.css
-│   ├── layout/                           # Header, Footer, MobileMenu; primesc slot-uri, nu importă feature-uri
-│   └── formatting/                       # formatPrice, formatNumber, sanitizeHtml, structured data
+│   ├── ui/                                # Pagination, Toast, EmptyState, LoadingSpinner, Preloader, Reveal, WhatsAppFloat, admin/{DataTable,ImageUploader,AdminPageHeader,FormErrorMessage}, styles/components.css
+│   ├── formatting/                       # format (formatPrice, formatNumber), sanitize
+│   ├── seo/                               # StructuredData, structured-data
+│   └── analytics/                        # GoogleAnalytics, GTMScript
 ├── core/
-│   ├── events/event-bus.ts               # ✅
-│   ├── http/client-ip.ts                 # ✅
-│   ├── rate-limit/                       # ✅ limiter + store Upstash
-│   └── supabase/                         # din lib/supabase: clienți server, browser, static, sesiune
+│   ├── events/event-bus.ts
+│   ├── http/client-ip.ts
+│   ├── rate-limit/                       # limiter + store Upstash
+│   └── supabase/                         # clienți server, browser, sesiune proxy
 ├── config/
-│   ├── server-environment.ts             # ✅
+│   ├── server-environment.ts
 │   └── public-environment.ts             # NEXT_PUBLIC_*, referite literal pentru inlining
 ├── i18n/  messages/                      # rămân (infrastructură next-intl)
-├── tests/
-│   ├── e2e/                              # din e2e/
-│   └── support/                          # fake-uri reutilizabile între feature-uri
+├── e2e/                                  # Playwright, nerulat în CI — nu s-a mutat în tests/e2e/ (vezi §11)
 ├── database/  supabase/                  # rămân
 └── proxy.ts  next.config.ts  …
 ```
 
-`✅` = există deja în branch-ul pilot.
+Nu mai există `lib/`, `components/`, `tests/` sau feature-ul separat `features/favorites` (favoritele au rămas în `features/inventory`, vezi Decision log).
 
 ### 2.2 Rolul folderelor principale
 
@@ -355,15 +360,15 @@ Fiecare pas se termină cu `npm run verify`, `npm run build`, lista rutelor din 
 | 1 | Pilot leads + notifications ✅ | `lib/actions/leads.ts`, `lib/utils/notifications.ts`, `lib/utils/rateLimit.ts`, `CarLeadForm`, citirile din `app/admin/leads/page.tsx`, `/api/contact` rescris | UI-ul inbox (`LeadsTable`) rămâne în `app/admin/leads` | **mediu–ridicat**: fluxul care aduce clienți | pe Preview: formular mașină, contact, test drive; alerta Telegram și emailul; inbox; al 6-lea submit/minut primește `rate_limited` |
 | 1b | Inbox leads ✅ | `LeadsTable` → `features/leads/ui/LeadInbox` prin punctul de intrare nou `@features/leads/admin`; rollback per schimbare când `ActionResult` e `rejected` sau acțiunea aruncă | — | scăzut | `use-lead-inbox.test.ts` (6 teste) |
 | 2 | `core/supabase` + `config/public-environment` ✅ | `lib/supabase/{server,client,middleware}.ts` → `core/supabase/{server-client,browser-client,proxy-session}.ts`; verificarea rolului de admin unificată în `shared/session/admin-role.ts` (proxy, layout admin, `requireAuth`) | `queries.ts` (se desface la pașii 4 și 6) | mediu: `proxy.ts` reîmprospătează sesiunea admin | teste `public-environment`, `admin-role`; verificare izolată pe commit |
-| 3 | `shared/session` + `features/auth` | `getUser` (endpoint public azi) → `shared/session/current-user.ts`; `lib/actions/auth.ts`, formularul din `app/login` → `features/auth`; `signIn` validează pe server și întoarce `ActionResult`. `requireAuth` → `shared/session` după ce toate feature-urile care îl importă sunt mutate | rutele `/login`, `/auth/callback` | **ridicat**: securitate | teste schema credențiale; E2E redirect neautentificat |
-| 4 | `features/inventory` (include favoritele) | funcțiile de mașini din `queries.ts`, `lib/actions/cars.ts`, `components/cars/*`, `components/home/CarsGrid`, `FavoritesIcon`, `CarEditForm` + tab-uri, tabelul admin; ștergerea componentelor nefolosite `CarList`, `CarFilters`, `ActiveFilters`. `ImageUploader` și `DataTable` rămân UI comun (pasul 10) | URL-urile `/inventory/[slug]`, `generateStaticParams`, cheia `localStorage` `swisscars_favorites` | **ridicat**: SEO, prerender | lista de rute statice din build identică; sitemap identic; teste storage URL și favorite |
+| 3 | `shared/session` + `features/auth` ✅ | **Făcut:** `getUser` → `shared/session/current-user.ts` (`getCurrentUser`); login și `signIn`/`signOut` → `features/auth`; `signIn` validează pe server și întoarce `ActionResult`, fără să mai expună mesajul Supabase sau userul; `requireAuth` → `shared/session/require-admin.ts` (`requireAdmin`) | rutele `/login`, `/auth/callback` | **ridicat**: securitate | teste schema credențiale; E2E redirect neautentificat |
+| 4 | `features/inventory` (include favoritele) ✅ | **Făcut:** mașinile, favoritele, `CarEditForm` + tab-uri și tabelul admin → `features/inventory`; componentele nefolosite (`CarList`, `CarFilters`, `ActiveFilters`) șterse; scrierile (`saveCar`, `deleteCar`, `duplicateCar`) mutate într-un repository și întorc `ActionResult` în loc să arunce spre client | URL-urile `/inventory/[slug]`, `generateStaticParams`, cheia `localStorage` `swisscars_favorites` | **ridicat**: SEO, prerender | lista de rute statice din build identică; sitemap identic; teste storage URL și favorite |
 | 5 | ~~`features/favorites`~~ | inclus în pasul 4 (vezi Decision log din `project-conventions`) | — | — | — |
-| 6 | `features/reviews`, `features/partners` | `lib/actions/content.ts` împărțit, formulare, slider-e | — | scăzut | teste scheme mutate din `lib/types` |
-| 7 | `features/subscribers` | `lib/actions/subscribers.ts`, formularul din Footer (acțiunea ajunge ca prop) | — | scăzut | submit newsletter pe Preview |
-| 8 | `features/site-settings` | `lib/settings`, `SettingsForm` împărțit pe secțiuni, `HomepageForm`; eliminarea fallback-ului de credențiale din DB după confirmarea că rândul `site_config` e curat | — | mediu: credențiale | alertă Telegram cu doar variabile de mediu |
-| 9 | `features/translations` | `lib/actions/translations.ts`, `TranslationsEditor` | — | scăzut | editare cheie pe Preview |
-| 10 | `shared/ui`, `shared/layout`, `shared/formatting` | `components/ui`, `components/layout`, `lib/utils/{format,sanitize,structured-data}`, `lib/styles`; `getDashboardStats` în `app/admin` compus din citirile fiecărui feature | — | mediu: multe importuri | lint cu regulile `core → shared` blocate |
-| 11 | Curățenie | ștergerea `lib/`, `components/`, a aliasului `@/*` și a `lib/utils/errors.ts`; `e2e/` → `tests/e2e/`; tipuri Supabase generate (`supabase gen types`) în loc de `Lead` scris manual; actualizare `CLAUDE.md`, `GIT_WORKFLOW.md` | — | scăzut | `npm run verify`, build, E2E |
+| 6 | `features/reviews`, `features/partners` ✅ | **Făcut:** ambele mutate ca feature-uri module; `listAllPartners` acum include partenerii ascunși în admin (puteau fi ascunși dar nu mai reafișați); `saveReview`/`deleteReview`/`savePartner`/`deletePartner` întorc `ActionResult` | — | scăzut | teste scheme mutate din `lib/types` |
+| 7 | `features/subscribers` ✅ | **Făcut:** formularul din Footer și administrarea abonaților mutate în `features/subscribers`; `subscribe` rămâne public, fără rate limit (vezi §11) | — | scăzut | submit newsletter pe Preview |
+| 8 | `features/site-settings` ✅ | **Făcut:** `site_config` și `homepage_content` (citiri și formulare) mutate în `features/site-settings/server`; fallback-ul de credențiale din DB rămâne activ (vezi §11) | — | mediu: credențiale | alertă Telegram cu doar variabile de mediu |
+| 9 | `features/translations` ✅ | **Făcut:** editorul de mesaje mutat în `features/translations`; `saveLocaleMessages` întoarce `ActionResult` | — | scăzut | editare cheie pe Preview |
+| 10 | `shared/ui`, `shared/layout`, `shared/formatting` ✅ | **Făcut:** restul din `lib/` și `components/` mutat în `shared/`, `app/_shell/` (Header, Footer, MobileMenu) și `app/admin/_shell/` (AdminSidebar); statisticile dashboard-ului compuse în `app/admin/_dashboard/` din citirile fiecărui feature, în loc de `queries.ts` (șters) | — | mediu: multe importuri | lint cu regulile `core → shared` blocate |
+| 11 | Curățenie ✅ | **Făcut:** `lib/`, `components/`, aliasul `@/*` (înlocuit cu `@app`, `@i18n`) și `lib/utils/errors.ts` șterse; reguli de lint pe straturi pentru `core/`, `config/`, `shared/`; `e2e/` mutat în `tests/e2e/`; `CLAUDE.md`, `GIT_WORKFLOW.md`, README-urile și `project-conventions` actualizate. **Rămas deschis:** `Lead` și `Car` rămân tipuri scrise manual — generarea cu `supabase gen types` cere baza de date pornită (vezi §11) | — | scăzut | `npm run verify`, build, `playwright test --list` |
 
 **Ce nu se schimbă în niciun pas:** URL-urile publice, schema bazei de date, RPC-urile și RLS, setup-ul next-intl (`i18n/`, `messages/`), CSS Modules, `proxy.ts` ca punct de intrare, headerele de securitate, pipeline-ul CI, Vitest și Playwright.
 
@@ -386,17 +391,25 @@ Fiecare pas se termină cu `npm run verify`, `npm run build`, lista rutelor din 
 6. **Inbox admin:** o eroare de bază de date la citire ajunge la `app/admin/error.tsx`, în loc să afișeze silențios o listă goală. Acțiunile validează UUID-ul și întorc `ActionResult`.
 7. **`requireAuth`** nu mai e endpoint public.
 8. **`getNotificationConfig`:** o pereche Telegram incompletă în variabilele de mediu nu se mai combină cu valori din DB; se folosește perechea din DB întreagă.
+9. **`signIn`** nu mai întoarce userul — doar `ActionResult<'invalid-input' | 'invalid-credentials'>`; validarea are loc pe server, nu doar în formular.
+10. **`getUser`, `getSubscribers` și `getI18nMessages`** nu mai sunt Server Actions. Sunt funcții server-only (`getCurrentUser` în `shared/session`, `listSubscribers` în `features/subscribers/server`, `readLocaleMessages` în `features/translations/server`) — un export dintr-un fișier `'use server'` e un endpoint POST public, iar acestea întorc date care nu trebuie expuse așa (lista de abonați, un fișier de mesaje protejat de `requireAdmin`).
+11. **`/admin/partners`** listează acum și partenerii ascunși (`listAllPartners`), ca să poată fi făcuți din nou vizibili — înainte, un partener ascuns dispărea din admin.
+12. **Eșecul numărătorilor de pe dashboard** ajunge la `app/admin/error.tsx` în loc să afișeze tăcut `0`.
+13. **Tabelele de recenzii și parteneri din admin** afișează o alertă la un `delete` sau o schimbare de vizibilitate eșuate, în loc să eșueze silențios.
+14. **Erorile la abonare** (`subscribe`) sunt traduse pe client din `errors.*`, nu text hardcodat.
 
 ---
 
 ## 11. Riscuri și decizii deschise
 
-1. **`index.ts` cu mai multe componente client.** Un Server Component care importă un singur export poate include în manifestul client și celelalte componente reexportate. De măsurat la pasul 1b, pe chunk-urile paginilor publice. Dacă UI-ul de admin ajunge acolo, se adaugă punctul de intrare `@features/<x>/admin`.
+1. **`index.ts` cu mai multe componente client** — rezolvat: fiecare feature cu UI de admin are propriul punct de intrare `@features/<x>/admin`, ca UI-ul de admin să nu intre în manifestul client al paginilor publice.
 2. **Rate limiter-ul nu e atomic** (citire, apoi scriere). Rafalele pot depăși puțin limita. Înlocuirea cu `@upstash/ratelimit` e un pas separat, pentru că adaugă o dependență. Fallback-ul în memorie crește fără limită pe instanțele Fluid Compute cu viață lungă.
-3. **`vercel.json` fixează `nodeVersion: "18.x"`**, depreciat pe Vercel. Trebuie `24.x`, într-un PR separat de refactorizare.
-4. **CSP-ul** permite `unsafe-eval` și `unsafe-inline`. Nu ține de arhitectură, dar e în registrul de riscuri.
-5. **Tipul `Lead`** e scris manual. Se înlocuiește cu tipuri generate la pasul 11.
-6. **Fallback-ul de credențiale din `site_config`** rămâne până la pasul 8.
+3. **CSP-ul** permite `unsafe-eval` și `unsafe-inline`. Nu ține de arhitectură, dar e în registrul de riscuri.
+4. **`subscribe` (newsletter) nu are rate limit** — spre deosebire de `submitLeadInquiryAction`, nu refolosește încă `core/rate-limit`.
+5. **`saveSettings(key, value)` acceptă orice cheie și orice valoare nevalidată** — nu are schema Zod proprie; de despărțit în `saveSiteConfig` / `saveHomepageContent`.
+6. **Editorul de traduceri scrie pe sistemul de fișiere** (`features/translations`), care e read-only și nepersistent pe Vercel — funcționează doar în dezvoltare locală.
+7. **Tipurile `Lead` și `Car`** rămân scrise manual, nu generate cu `supabase gen types`.
+8. **Fallback-ul de credențiale din `site_config`** rămâne în `getNotificationConfig()` până când rândul e confirmat curat de credențiale.
 
 ---
 
@@ -412,3 +425,20 @@ Rulată pe 2026-09-13 în branch-ul `refactor/feature-modules-pilot`. Modificăr
 | `npm run build` cu variabilele placeholder din CI | trece; 34 de rute în `.next/app-path-routes-manifest.json`, `app/_composition` nu apare ca rută, `/api/contact` există |
 | Probe ESLint pe granițe | import între feature-uri, `../../`, import intern în feature din `app/` și `@features` din `core/`: toate respinse; `@features/leads`, `/server`, `/actions` din `app/`: permise |
 | Flux real (Supabase, Telegram, Resend) | **neverificat**: baza de date e în pauză local. De făcut pe un Vercel Preview înainte de merge (pasul 1 din tabelul din secțiunea 9). |
+
+### 12.1 Verificarea finală a migrării (2026-09-13)
+
+Fiecare commit din `git log main..refactor/feature-modules-pilot` a fost verificat izolat, într-un worktree separat la acel commit: `tsc --noEmit`, `eslint . --quiet`, `vitest run`. Toate au trecut. Numărul de teste crește monoton de la 66 (primul commit) la 165.
+
+Pe starea finală:
+
+| Verificare | Rezultat |
+|---|---|
+| `npx tsc --noEmit` | 0 erori |
+| `npx eslint . --quiet` | 0 erori (inclusiv eroarea `no-explicit-any` care exista pe `main`) |
+| `npx vitest run` | 28 de fișiere, 165 de teste |
+| `npm run build` cu variabilele placeholder din CI | trece; 34 de rute, niciun folder privat (`_composition`, `_shell`, `_dashboard`) expus ca rută |
+| `npx playwright test --list` | 12 teste în `tests/e2e/` |
+| Probe ESLint pe straturi | `core → @shared`, `config → @core`, `shared → @features`, `features → @app` și importul intern într-un feature din `app/` sunt respinse; `shared → @core` e permis |
+| `lib/`, `components/`, `@/*` | nu mai există |
+| Flux real în browser, cu bază de date | **neverificat** (bază de date în pauză) |

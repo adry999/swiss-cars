@@ -1,6 +1,6 @@
 ---
 name: project-conventions
-description: Convențiile înregistrate ale SwissCars.md (Next.js 16 App Router + Supabase + next-intl) - straturile features/ core/ shared/ config/ app/_composition, cele trei puncte de intrare ale unui feature, Server Actions, erori, configurare pe mediu, evenimente, teste, i18n și commit-uri. Folosește la orice cod nou sau mutat în acest repo, la Server Actions, Route Handlers, repository-uri Supabase, formulare și teste, și când decizi unde stă un fișier în timpul migrării din lib/ și components/.
+description: Convențiile înregistrate ale SwissCars.md (Next.js 16 App Router + Supabase + next-intl) - straturile features/ core/ shared/ config/ app/_composition, cele trei puncte de intrare ale unui feature, Server Actions, erori, configurare pe mediu, evenimente, teste, i18n și commit-uri. Folosește la orice cod nou din acest repo, la Server Actions, Route Handlers, repository-uri Supabase, formulare și teste, și când decizi unde stă un fișier nou (feature, shared/ui sau app/_composition).
 ---
 
 # SwissCars.md — Project Conventions
@@ -14,7 +14,7 @@ description: Convențiile înregistrate ale SwissCars.md (Next.js 16 App Router 
 - Cod nou sau mutat în `features/`, `core/`, `shared/`, `config/` sau `app/_composition/`.
 - Un Server Action, un Route Handler, un repository Supabase sau un formular public.
 - Un test nou sau o fixture.
-- Un pas din planul de migrare (`lib/`, `components/` → feature-uri).
+- Un fișier nou care nu știi imediat unde intră (feature, `shared/`, `app/_composition/` sau `app/_shell/`).
 - Redactarea unui mesaj de commit.
 
 ## Reguli concrete
@@ -25,9 +25,12 @@ description: Convențiile înregistrate ale SwissCars.md (Next.js 16 App Router 
 |---|---|---|
 | `app/` | rute, pagini subțiri, Route Handlers | orice; un feature doar prin `@features/<x>`, `@features/<x>/admin`, `@features/<x>/server`, `@features/<x>/actions` |
 | `app/_composition/` | leagă feature-urile: porturi, abonări la evenimente, `after()` | tot ce poate `app/` |
-| `features/<x>/` | o capabilitate de business | propriul feature (relativ, cel mult un `../`), `@core/*`, `@shared/*`, `@config/*`; tranzitoriu `@/lib/*`, `@/components/ui` |
-| `shared/contracts/` | tipuri cross-feature: evenimente de domeniu, `ActionResult` | nimic din `features/`, `app/`, `components/` |
-| `core/` | infrastructură fără domeniu: event bus, rate limit, IP client | `@config/*` |
+| `app/_shell/` | Header, Footer, MobileMenu — compun feature-urile pentru site-ul public | tot ce poate `app/` |
+| `app/admin/_shell/` | AdminSidebar, AdminLayoutClient — compun feature-urile pentru shell-ul de admin | tot ce poate `app/` |
+| `app/admin/_dashboard/` | statisticile dashboard-ului, compuse din numărătorile fiecărui feature | tot ce poate `app/` |
+| `features/<x>/` | o capabilitate de business | propriul feature (relativ, cel mult un `../`), `@core/*`, `@shared/*`, `@config/*`, `@i18n/*` |
+| `shared/` | UI, sesiune, formatare și tipuri fără domeniu, folosite de mai multe feature-uri | `@core/*`, `@config/*`; niciodată `@features/*` sau `@app/*` |
+| `core/` | infrastructură fără domeniu: event bus, rate limit, IP client, clienți Supabase | `@config/*` |
 | `config/` | citirea și validarea variabilelor de mediu | — |
 
 Granițele sunt aplicate de `eslint.config.mjs` (`no-restricted-imports`). Nu dezactiva regula; mută codul sau exportă prin punctul de intrare.
@@ -50,7 +53,7 @@ features/<feature>/
 ```
 
 - `index.ts` nu importă nimic server-only. `server.ts` începe cu `import 'server-only'`.
-- Fiecare export din `actions.ts` e un endpoint POST public: `requireAuth()` când e acțiune de admin, validare Zod pe fiecare argument, rezultat `ActionResult`.
+- Fiecare export din `actions.ts` e un endpoint POST public: `requireAdmin()` (`@shared/session/require-admin`) când e acțiune de admin, validare Zod pe fiecare argument, rezultat `ActionResult`.
 - Un Server Action care are nevoie de alt feature (evenimente, porturi) stă în `app/_composition/<flux>-actions.ts` și ajunge la componenta client **ca prop** din pagină.
 - Fără barrel-uri în subfoldere și fără `export *`.
 
@@ -93,11 +96,13 @@ features/<feature>/
 - Cod și identificatori în engleză, cu nume de domeniu (`submitLeadInquiry`, `readInboxPage`). Fără `handleSubmit`, `data`, `item`, `utils`.
 - Comentariu doar pentru un DE CE neevident. Istoria stă în mesajul de commit.
 
-### Migrare (stare tranzitorie)
+### Structură finală
 
-- Codul nou intră direct în `features/`. Nu se adaugă fișiere noi în `lib/actions/`, `lib/types/` sau `components/<domeniu>/`.
-- Un domeniu mutat își aduce testele și README-ul în același pas. Importurile vechi se rescriu; nu rămân re-exporturi de compatibilitate.
-- `@/*` rămâne alias tranzitoriu până la ultimul pas din plan.
+Migrarea s-a încheiat pe 2026-09-13: nu mai există `lib/` sau `components/`, iar aliasul `@/*` a
+fost eliminat din `tsconfig.json`. Codul nou intră direct într-un feature (`features/<x>/`); UI fără
+domeniu intră în `shared/ui/`; legarea mai multor feature-uri intră în `app/_composition/` (Server
+Actions cross-feature, evenimente) sau în `app/_shell/` / `app/admin/_shell/` (Header, Footer,
+AdminSidebar — compun UI din mai multe feature-uri, dar nu ating baza de date).
 
 ### Git
 
@@ -148,3 +153,9 @@ refactor(leads): move lead submission and inbox into a feature module
 | 2026-09-13 | Favoritele fac parte din `features/inventory`, nu din feature separat | `CarCard` include butonul de favorite și e randat de componente client care nu pot primi funcții (render props) din Server Components; favoritele nu au altă logică decât lista din `localStorage` |
 | 2026-09-13 | Citirile publice din catalog (`inventory/server`) logează eroarea și întorc listă goală; citirile de admin aruncă | build-ul CI și prerender-ul rulează fără bază de date; paginile publice trebuie să se genereze și atunci, iar adminul trebuie să vadă eșecul |
 | 2026-09-13 | Node 24 (`engines.node` în `package.json`, CI pe 24) | `nodeVersion` din `vercel.json` fixa Node 18, depreciat; `engines` e mecanismul documentat de Vercel |
+| 2026-09-13 | Aliasurile `@app/*`, `@i18n/*` înlocuiesc `@/*` | `@/*` amesteca rute, feature-uri și straturi sub un singur prefix; câte un alias per strat face granița vizibilă la import |
+| 2026-09-13 | `requireAdmin` stă în `shared/session/`, nu în `features/auth/` | e chemat din `actions.ts` al fiecărui feature de admin; dacă ar sta în `auth`, fiecare feature ar importa un alt feature |
+| 2026-09-13 | Header, Footer, MobileMenu, AdminSidebar stau în `app/_shell/` / `app/admin/_shell/`, nu în `shared/` | compun UI din mai multe feature-uri (ex. `NewsletterSignupForm`, `PartnersSlider`); `shared/` nu are voie să importe `features/` |
+| 2026-09-13 | Calculatorul de leasing e propriul feature (`features/leasing`) | randează pe pagina publică `/leasing` fără citiri din backend; nu depinde de `site-settings` sau `partners` |
+| 2026-09-13 | Statisticile dashboard-ului se compun în `app/admin/_dashboard/` din numărătorile fiecărui feature (`countCars`, `countReviews`, `countPartners`, `supabaseLeadsRepository.countLeads()`) | dashboard-ul nu are propriul feature; el doar agregă citiri expuse deja de `inventory`, `reviews`, `partners` și `leads` |
+| 2026-09-13 | Reguli de import pe `core/`, `config/` și `shared/` în `eslint.config.mjs` | `core/` doar `@config/*`; `config/` nimic din proiect; `shared/` nici `@features/*`, nici `@app/*` — încheie granițele descrise în tabelul de mai sus |

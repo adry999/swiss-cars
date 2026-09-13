@@ -21,18 +21,19 @@ Partenerii afișați pe homepage și pe pagina de leasing, plus administrarea lo
 - `countPartners(): Promise<number>` — folosit de dashboard-ul de admin (aruncă la eroare).
 
 Scrierile (`savePartnerRecord`, `deletePartnerRecord`) stau doar în `server/partners-repository.ts`, fără
-export din `server.ts` — sunt accesibile doar prin `actions.ts`, care aplică `requireAuth()`.
+export din `server.ts` — sunt accesibile doar prin `actions.ts`, care aplică `requireAdmin()`.
 
-`@features/partners/actions` (Server Actions, protejate de `requireAuth`):
+`@features/partners/actions` (Server Actions, protejate de `requireAdmin`):
 - `savePartner(data): Promise<PartnerSaveResult>`, `deletePartner(partnerId): Promise<PartnerRemovalResult>`.
   Intrare invalidă (Zod) → `invalid-input` cu `invalidFields`; eroare din repository → logată și întoarsă ca `unavailable`.
 
 ## Dependențe
 
-Poate importa `@core/*` și, tranzitoriu, `@/lib/*` și `@/components/ui`:
+Poate importa `@core/*` și `@shared/*`:
 - `@core/supabase/server-client` în `server/partners-repository.ts`.
-- `@/lib/utils/requireAuth`.
-- `@/components/admin/ImageUploader`, `@/components/admin/DataTable`.
+- `@shared/session/require-admin` (`requireAdmin`).
+- `@shared/contracts/action-result`.
+- `@shared/ui/admin/ImageUploader`, `@shared/ui/admin/DataTable`.
 
 Nu importă alt feature.
 

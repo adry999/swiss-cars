@@ -12,7 +12,7 @@ preț, avans, durată și dobândă anuală, fără să citească date din backe
 
 ## Dependențe
 
-Doar `next-intl` (traduceri) și `@/i18n/navigation` (link către `/contact`).
+Doar `next-intl` (traduceri) și `@i18n/navigation` (link către `/contact`).
 
 ## Structură
 

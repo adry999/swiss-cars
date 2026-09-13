@@ -16,22 +16,23 @@ Gestionează abonații la newsletter: formularul public de abonare din footer ș
 - Tip: `Subscriber`.
 
 `@features/subscribers/server` (server-only):
-- `listSubscribers()` — citește toți abonații; cere `requireAuth()`. Nu e un Server Action: un
+- `listSubscribers()` — citește toți abonații; cere `requireAdmin()`. Nu e un Server Action: un
   export dintr-un fișier `'use server'` e un endpoint POST public, ceea ce ar fi expus lista
-  completă de email-uri oricui o cerea, protejată doar de `requireAuth()` la momentul apelului.
+  completă de email-uri oricui o cerea, protejată doar de `requireAdmin()` la momentul apelului.
 
 `@features/subscribers/actions` (Server Actions):
-- `subscribe(email)` — public, fără `requireAuth()`; validează email-ul cu Zod pe server.
+- `subscribe(email)` — public, fără `requireAdmin()`; validează email-ul cu Zod pe server.
 - `deleteSubscriber(subscriberId)` — admin.
 - `toggleSubscriberStatus(subscriberId, isActive)` — admin.
 
 ## Dependențe
 
-Poate importa `@core/*`, `@shared/contracts/*` și, tranzitoriu, `@/lib/*`:
+Poate importa `@core/*` și `@shared/*`:
 - `@core/supabase/server-client` (`createServerSupabaseClient`) în `server/supabase-subscribers-repository.ts`.
-- `@/lib/utils/requireAuth` în `server.ts` și `actions.ts`.
-- `@/components/ui/Toast` (`useOptionalToast`, `useToast`) în `ui/NewsletterSignupForm.tsx` și `ui/SubscribersTable.tsx`.
-- `@/components/admin/DataTable` în `ui/SubscribersTable.tsx`.
+- `@shared/session/require-admin` (`requireAdmin`) în `server.ts` și `actions.ts`.
+- `@shared/contracts/action-result`.
+- `@shared/ui/Toast/ToastContext` (`useOptionalToast`, `useToast`) în `ui/NewsletterSignupForm.tsx` și `ui/SubscribersTable.tsx`.
+- `@shared/ui/admin/DataTable` în `ui/SubscribersTable.tsx`.
 
 Inserturile anonime trec doar prin RPC-ul `subscribe_email()`
 (`database/2026-08-26_lead_subscriber_rpc.sql`), care face și verificarea de duplicat — anon nu are
