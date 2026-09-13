@@ -1,19 +1,15 @@
-import { getI18nMessages } from '@/lib/actions/translations';
-import TranslationsEditor, { type MessagesTree } from './TranslationsEditor';
+import { TranslationsEditor, type MessagesTree } from '@features/translations/admin';
+import { readLocaleMessages } from '@features/translations/server';
+import { routing } from '@/i18n/routing';
 
 export default async function TranslationsPage() {
-    const locales = ['ro', 'ru', 'en'];
-
-    // Fetch all messages serverside
-    const messages: Record<string, MessagesTree> = {};
-    for (const loc of locales) {
-        messages[loc] = await getI18nMessages(loc);
+    const messagesByLocale: Record<string, MessagesTree> = {};
+    for (const locale of routing.locales) {
+        const localeMessages = await readLocaleMessages(locale);
+        if (localeMessages) {
+            messagesByLocale[locale] = localeMessages;
+        }
     }
 
-    return (
-        <TranslationsEditor
-            locales={locales}
-            initialMessages={messages}
-        />
-    );
+    return <TranslationsEditor locales={[...routing.locales]} initialMessages={messagesByLocale} />;
 }

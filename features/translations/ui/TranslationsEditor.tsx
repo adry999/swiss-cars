@@ -1,13 +1,9 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { Save, Loader2, Search, Globe, ChevronRight, ChevronDown, AlertCircle } from 'lucide-react';
-import { updateI18nMessages } from '@/lib/actions/translations';
-
-// The messages/*.json files nest to arbitrary depth with string leaves —
-// this is the standard recursive shape for "arbitrary JSON object", sound
-// without needing `any`.
-export type MessagesTree = { [key: string]: string | MessagesTree };
+import { Save, Loader2, Search, ChevronRight, ChevronDown, AlertCircle } from 'lucide-react';
+import { saveLocaleMessages } from '../actions';
+import type { MessagesTree } from '../translations.types';
 
 type Props = {
     locales: string[];
@@ -44,8 +40,8 @@ export default function TranslationsEditor({ locales, initialMessages }: Props) 
 
     const handleSave = () => {
         startTransition(async () => {
-            const res = await updateI18nMessages(activeLocale, messages[activeLocale]);
-            if (res.success) {
+            const result = await saveLocaleMessages(activeLocale, messages[activeLocale]);
+            if (result.status === 'succeeded') {
                 alert('Traduceri salvate cu succes!');
             } else {
                 alert('Eroare la salvare.');
