@@ -21,8 +21,7 @@ Run these three files, in order, in the Supabase SQL Editor:
    public lead form and newsletter signup will fail if this SQL runs
    without that code, or vice versa.
 
-Run `seed_defaults.mjs` (or hit the authenticated `/api/seed-defaults`
-route once) afterward if you want the default homepage copy.
+Run `seed_defaults.mjs` afterward if you want the default homepage copy.
 
 ## Existing database
 

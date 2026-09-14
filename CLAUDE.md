@@ -213,7 +213,7 @@ Admin sections:
 
 ## One-Time Setup
 
-The `/api/seed-defaults` endpoint seeds default `site_config` and `homepage_content` into Supabase. It requires authentication and must be called via **POST** (not GET). Delete or disable this endpoint after first use.
+A fresh database gets its default `site_config` and `homepage_content` rows from `database/seed_defaults.mjs` (see `database/README.md`). The admin homepage editor also fills any missing section from `features/site-settings/model/default-homepage-content.ts`.
 
 <!-- BEGIN:nextjs-agent-rules -->
 
