@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations, useLocale } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { CarFront } from 'lucide-react';
 import { Link } from '@i18n/navigation';
@@ -13,7 +13,6 @@ type Props = { car: Car };
 
 export default function CarCard({ car }: Props) {
     const t = useTranslations('offers');
-    const locale = useLocale();
 
     const primaryImage = car.car_images?.find((img) => img.is_primary) || car.car_images?.[0];
     const imageUrl = primaryImage?.url;
@@ -44,7 +43,7 @@ export default function CarCard({ car }: Props) {
                     {car.is_available ? `${formatPrice(car.price)} €` : t('sold')}
                 </div>
                 <div className={styles.favBtn}>
-                    <FavoriteButton carId={car.id ?? ''} carSlug={car.slug} carName={`${car.brand} ${car.model}`} />
+                    <FavoriteButton carId={car.id ?? ''} carName={`${car.brand} ${car.model}`} />
                 </div>
             </div>
 

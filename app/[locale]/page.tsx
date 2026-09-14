@@ -1,4 +1,3 @@
-import { getLocale } from 'next-intl/server';
 import { HeroSlider, DualCTABanner } from '@features/site-settings';
 import { FeaturedCarsGrid } from '@features/inventory';
 import { listFeaturedCars } from '@features/inventory/server';
@@ -18,9 +17,7 @@ type Props = {
     params: Promise<{ locale: string }>;
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const { locale } = await params;
-
+export async function generateMetadata(): Promise<Metadata> {
     // Fetch settings for SEO
     const siteConfig = await getPublicSiteConfig();
 

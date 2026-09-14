@@ -1,4 +1,4 @@
-import { getLocale, getTranslations } from 'next-intl/server';
+import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { findCarBySlug, listCarSlugs, SimilarCars } from '@features/inventory/server';
 import { getPublicSiteConfig } from '@features/site-settings/server';
@@ -184,7 +184,7 @@ export default async function CarDetailPage({ params }: Props) {
                                             <h1 className={styles.title}>{car.brand} {car.model}</h1>
                                             <div className={styles.year}>{car.year}</div>
                                         </div>
-                                        <FavoriteButton carId={car.id ?? ''} carSlug={car.slug} carName={`${car.brand} ${car.model}`} />
+                                        <FavoriteButton carId={car.id ?? ''} carName={`${car.brand} ${car.model}`} />
                                     </div>
 
                                     <div className={styles.priceWrapper}>
@@ -294,7 +294,7 @@ export default async function CarDetailPage({ params }: Props) {
                                             <h1 className={styles.title}>{car.brand} {car.model}</h1>
                                             <div className={styles.year}>{car.year}</div>
                                         </div>
-                                        <FavoriteButton carId={car.id ?? ''} carSlug={car.slug} carName={`${car.brand} ${car.model}`} />
+                                        <FavoriteButton carId={car.id ?? ''} carName={`${car.brand} ${car.model}`} />
                                     </div>
 
                                     <div className={styles.priceWrapper}>

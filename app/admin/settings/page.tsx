@@ -20,11 +20,9 @@ export default async function SettingsPage() {
     // Notification credentials are environment variables now, not settings.
     // Strip them so the form cannot write them back into the anon-readable row.
     const {
-        /* eslint-disable @typescript-eslint/no-unused-vars */
         telegram_bot_token: _token,
         telegram_chat_id: _chatId,
         notification_email: _email,
-        /* eslint-enable @typescript-eslint/no-unused-vars */
         ...savedSettings
     } = await getSiteConfig();
 
