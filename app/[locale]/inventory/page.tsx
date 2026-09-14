@@ -16,9 +16,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         locale,
         path: '/inventory',
         copyByLocale: {
-            ro: { title: 'Mașini în Stoc | SwissCars', description: 'Vezi toate mașinile disponibile la SwissCars.' },
-            ru: { title: 'Автомобили в Наличии | SwissCars', description: 'Все автомобили, доступные в наличии у SwissCars.' },
-            en: { title: 'Cars in Stock | SwissCars', description: 'Browse every car currently available at SwissCars.' },
+            ro: { title: 'Mașini în Stoc', description: 'Vezi toate mașinile disponibile la SwissCars.' },
+            ru: { title: 'Автомобили в Наличии', description: 'Все автомобили, доступные в наличии у SwissCars.' },
+            en: { title: 'Cars in Stock', description: 'Browse every car currently available at SwissCars.' },
         },
     });
 }

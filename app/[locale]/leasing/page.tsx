@@ -15,9 +15,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         locale,
         path: '/leasing',
         copyByLocale: {
-            ro: { title: 'Leasing Auto | SwissCars.md', description: 'Află opțiunile de finanțare și leasing pentru mașinile importate din Elveția.' },
-            ru: { title: 'Автолизинг | SwissCars.md', description: 'Узнайте варианты финансирования и лизинга автомобилей, импортированных из Швейцарии.' },
-            en: { title: 'Car Leasing | SwissCars.md', description: 'Explore financing and leasing options for cars imported from Switzerland.' },
+            ro: { title: 'Leasing Auto', description: 'Află opțiunile de finanțare și leasing pentru mașinile importate din Elveția.' },
+            ru: { title: 'Автолизинг', description: 'Узнайте варианты финансирования и лизинга автомобилей, импортированных из Швейцарии.' },
+            en: { title: 'Car Leasing', description: 'Explore financing and leasing options for cars imported from Switzerland.' },
         },
     });
 }

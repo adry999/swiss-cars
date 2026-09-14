@@ -14,6 +14,13 @@ export const routing = defineRouting({
 
 export const BASE_URL = 'https://swisscars.md';
 
+export const SITE_NAME = 'SwissCars.md';
+
+/** Open Graph and Twitter titles are not run through the layout's title.template, so they carry the site name themselves. */
+export function withSiteName(title: string): string {
+    return `${title} | ${SITE_NAME}`;
+}
+
 /** Absolute URL for a path in a given locale. Romanian carries no prefix. */
 export function localeUrl(locale: string, path = ''): string {
     const prefix = locale === routing.defaultLocale ? '' : `/${locale}`;
@@ -51,7 +58,7 @@ export function localeOpenGraph(params: {
 }) {
     return {
         type: 'website' as const,
-        siteName: 'SwissCars.md',
+        siteName: SITE_NAME,
         locale: OG_LOCALE_MAP[params.locale] || OG_LOCALE_MAP[routing.defaultLocale],
         url: localeUrl(params.locale, params.path ?? ''),
         title: params.title,
@@ -89,7 +96,7 @@ export function localizedPageMetadata({
         title,
         description,
         alternates: localeAlternates(locale, path),
-        openGraph: localeOpenGraph({ locale, path, title, description }),
-        twitter: localeTwitter({ title, description }),
+        openGraph: localeOpenGraph({ locale, path, title: withSiteName(title), description }),
+        twitter: localeTwitter({ title: withSiteName(title), description }),
     };
 }

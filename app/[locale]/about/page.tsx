@@ -16,9 +16,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         locale,
         path: '/about',
         copyByLocale: {
-            ro: { title: 'Despre Noi | SwissCars.md', description: 'Află mai multe despre misiunea noastră și experiența în importul auto din Elveția.' },
-            ru: { title: 'О нас | SwissCars.md', description: 'Узнайте больше о нашей миссии и опыте импорта автомобилей из Швейцарии.' },
-            en: { title: 'About Us | SwissCars.md', description: 'Learn more about our mission and experience in importing cars from Switzerland.' },
+            ro: { title: 'Despre Noi', description: 'Află mai multe despre misiunea noastră și experiența în importul auto din Elveția.' },
+            ru: { title: 'О нас', description: 'Узнайте больше о нашей миссии и опыте импорта автомобилей из Швейцарии.' },
+            en: { title: 'About Us', description: 'Learn more about our mission and experience in importing cars from Switzerland.' },
         },
     });
 }

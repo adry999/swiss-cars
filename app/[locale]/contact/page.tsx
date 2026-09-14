@@ -14,9 +14,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         locale,
         path: '/contact',
         copyByLocale: {
-            ro: { title: 'Contact | SwissCars.md', description: 'Contactează SwissCars pentru orice informație legată de importul sau vânzarea auto din Elveția.' },
-            ru: { title: 'Контакты | SwissCars.md', description: 'Свяжитесь со SwissCars по любым вопросам об импорте или продаже автомобилей из Швейцарии.' },
-            en: { title: 'Contact | SwissCars.md', description: 'Contact SwissCars about importing or buying a car from Switzerland.' },
+            ro: { title: 'Contact', description: 'Contactează SwissCars pentru orice informație legată de importul sau vânzarea auto din Elveția.' },
+            ru: { title: 'Контакты', description: 'Свяжитесь со SwissCars по любым вопросам об импорте или продаже автомобилей из Швейцарии.' },
+            en: { title: 'Contact', description: 'Contact SwissCars about importing or buying a car from Switzerland.' },
         },
     });
 }

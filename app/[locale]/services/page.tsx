@@ -14,9 +14,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         locale,
         path: '/services',
         copyByLocale: {
-            ro: { title: 'Servicii | SwissCars.md', description: 'Servicii complete de import auto din Elveția, devamare, transport și mentenanță.' },
-            ru: { title: 'Услуги | SwissCars.md', description: 'Полный спектр услуг по импорту автомобилей из Швейцарии, растаможке, транспортировке и обслуживанию.' },
-            en: { title: 'Services | SwissCars.md', description: 'Complete car import services from Switzerland, customs clearance, transport and maintenance.' },
+            ro: { title: 'Servicii', description: 'Servicii complete de import auto din Elveția, devamare, transport și mentenanță.' },
+            ru: { title: 'Услуги', description: 'Полный спектр услуг по импорту автомобилей из Швейцарии, растаможке, транспортировке и обслуживанию.' },
+            en: { title: 'Services', description: 'Complete car import services from Switzerland, customs clearance, transport and maintenance.' },
         },
     });
 }

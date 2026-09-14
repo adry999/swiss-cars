@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { routing, localeUrl, localeAlternates, localeOpenGraph, localeTwitter, localizedPageMetadata, BASE_URL } from './routing';
+import { routing, localeUrl, localeAlternates, localeOpenGraph, localeTwitter, localizedPageMetadata, withSiteName, BASE_URL, SITE_NAME } from './routing';
 
 describe('routing config', () => {
     it('uses as-needed prefixing with Romanian as the default', () => {
@@ -78,19 +78,26 @@ describe('localeTwitter', () => {
     });
 });
 
+describe('withSiteName', () => {
+    it('appends the site name after a separator', () => {
+        expect(withSiteName('Despre Noi')).toBe(`Despre Noi | ${SITE_NAME}`);
+    });
+});
+
 describe('localizedPageMetadata', () => {
     const copyByLocale = {
-        ro: { title: 'Despre Noi | SwissCars.md', description: 'Despre noi.' },
-        ru: { title: 'О нас | SwissCars.md', description: 'О нас.' },
-        en: { title: 'About Us | SwissCars.md', description: 'About us.' },
+        ro: { title: 'Despre Noi', description: 'Despre noi.' },
+        ru: { title: 'О нас', description: 'О нас.' },
+        en: { title: 'About Us', description: 'About us.' },
     };
 
     it('uses the copy of the requested locale everywhere', () => {
         const metadata = localizedPageMetadata({ locale: 'ru', path: '/about', copyByLocale });
 
-        expect(metadata.title).toBe('О нас | SwissCars.md');
+        expect(metadata.title).toBe('О нас');
         expect(metadata.description).toBe('О нас.');
         expect(metadata.openGraph.title).toBe('О нас | SwissCars.md');
+        expect(metadata.twitter.title).toBe('О нас | SwissCars.md');
         expect(metadata.twitter.description).toBe('О нас.');
         expect(metadata.alternates.canonical).toBe(`${BASE_URL}/ru/about`);
     });
@@ -98,6 +105,6 @@ describe('localizedPageMetadata', () => {
     it('falls back to the Romanian copy for an unknown locale', () => {
         const metadata = localizedPageMetadata({ locale: 'de', path: '/about', copyByLocale });
 
-        expect(metadata.title).toBe('Despre Noi | SwissCars.md');
+        expect(metadata.title).toBe('Despre Noi');
     });
 });
