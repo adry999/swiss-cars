@@ -168,3 +168,21 @@ Nu există blocuri mari de cod comentat.
 - „`shared/ui/admin/DataTable.tsx` nu e folosit”: **fals**, e importat de cele 4 tabele de admin.
 - „`seed-defaults` e protejat de rolul de admin”: **fals**, verifică doar `getUser()`.
 - „`LeadInbox.tsx:184` e un bug critic”: e doar un ternar mort, fără efect vizibil (trecut la minor).
+
+## Stare remediere
+
+Faza 1 (`docs/superpowers/plans/2026-09-14-audit-remediation-phase-1.md`), finalizată pe branch-ul `refactor/audit-remediation-phase-1`:
+
+| Audit | Remediere |
+|---|---|
+| 2.5 | seed-defaults șters, database/archive șters |
+| 2.3 | tsx adăugat, @types/uuid scos |
+| 1.3 | getText înlocuit de pickTranslation, metadata unificată prin localizedPageMetadata (+ RU/EN pentru leasing și contact) |
+| 3.1 | DEFAULT_CONTENT mutat în model |
+| 2.1 | componente orfane, shared/seo și favicon.png șterse |
+| 2.2 | exporturile nefolosite eliminate |
+| 2.4 | warning-urile no-unused-vars eliminate |
+| 1.2 | LeadInbox: wrapper-ele pass-through, ternarul mort și timer-ul fără cleanup rezolvate |
+| 1.4 | comentariile care povesteau bug-uri trecute rescrise ca reguli |
+
+Rămân pentru planurile următoare: A–F de mai jos.
