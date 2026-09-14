@@ -81,3 +81,27 @@ export function localeTwitter(params: { title: string; description: string; imag
         images: [params.image ?? '/media/general/swiss-logo-2-red.png'],
     };
 }
+
+export type PageCopy = { title: string; description: string };
+
+/** Title, description, canonical/hreflang, Open Graph and Twitter for a static page, from one copy table. */
+export function localizedPageMetadata({
+    locale,
+    path,
+    copyByLocale,
+}: {
+    locale: string;
+    path: string;
+    copyByLocale: Record<(typeof routing.locales)[number], PageCopy>;
+}) {
+    const { title, description } =
+        copyByLocale[locale as (typeof routing.locales)[number]] ?? copyByLocale[routing.defaultLocale];
+
+    return {
+        title,
+        description,
+        alternates: localeAlternates(locale, path),
+        openGraph: localeOpenGraph({ locale, path, title, description }),
+        twitter: localeTwitter({ title, description }),
+    };
+}

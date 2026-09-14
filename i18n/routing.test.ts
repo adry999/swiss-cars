@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { routing, localeUrl, localeAlternates, localeOpenGraph, localeTwitter, BASE_URL } from './routing';
+import { routing, localeUrl, localeAlternates, localeOpenGraph, localeTwitter, localizedPageMetadata, BASE_URL } from './routing';
 
 describe('routing config', () => {
     it('uses as-needed prefixing with Romanian as the default', () => {
@@ -85,5 +85,29 @@ describe('localeTwitter', () => {
         expect(result.title).toBe('RU title');
         expect(result.description).toBe('RU description');
         expect(result.card).toBe('summary_large_image');
+    });
+});
+
+describe('localizedPageMetadata', () => {
+    const copyByLocale = {
+        ro: { title: 'Despre Noi | SwissCars.md', description: 'Despre noi.' },
+        ru: { title: 'О нас | SwissCars.md', description: 'О нас.' },
+        en: { title: 'About Us | SwissCars.md', description: 'About us.' },
+    };
+
+    it('uses the copy of the requested locale everywhere', () => {
+        const metadata = localizedPageMetadata({ locale: 'ru', path: '/about', copyByLocale });
+
+        expect(metadata.title).toBe('О нас | SwissCars.md');
+        expect(metadata.description).toBe('О нас.');
+        expect(metadata.openGraph.title).toBe('О нас | SwissCars.md');
+        expect(metadata.twitter.description).toBe('О нас.');
+        expect(metadata.alternates.canonical).toBe(`${BASE_URL}/ru/about`);
+    });
+
+    it('falls back to the Romanian copy for an unknown locale', () => {
+        const metadata = localizedPageMetadata({ locale: 'de', path: '/about', copyByLocale });
+
+        expect(metadata.title).toBe('Despre Noi | SwissCars.md');
     });
 });
