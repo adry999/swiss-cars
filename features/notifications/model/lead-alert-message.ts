@@ -12,7 +12,7 @@ export interface EmailLeadAlert {
     html: string;
 }
 
-export function escapeHtml(text: string): string {
+function escapeHtml(text: string): string {
     return text
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
@@ -21,7 +21,7 @@ export function escapeHtml(text: string): string {
         .replace(/'/g, '&#039;');
 }
 
-export function escapeTelegramMarkdown(text: string): string {
+function escapeTelegramMarkdown(text: string): string {
     return text.replace(/[_*[\]()~`>#+\-=|{}.!\\]/g, '\\$&');
 }
 

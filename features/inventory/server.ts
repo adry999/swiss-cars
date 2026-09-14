@@ -4,7 +4,6 @@ export {
     listAvailableCars,
     readCatalogPage,
     findCarBySlug,
-    findSimilarCars,
     listFeaturedCars,
     listCarSlugs,
     findCarForEditing,
