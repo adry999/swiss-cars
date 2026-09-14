@@ -7,7 +7,7 @@ Catalogul public de mașini (listare, pagină de detaliu, favorite) și administ
 ## Public API
 
 `@features/inventory` (client-safe):
-- `CarCard`, `InventoryGrid`, `FeaturedCarsGrid` — listarea publică a mașinilor.
+- `InventoryGrid`, `FeaturedCarsGrid` — listarea publică a mașinilor.
 - `CarGallery`, `CarSpecsGrid` — pagina de detaliu a unei mașini.
 - `FavoriteButton`, `FavoritesIcon`, `FavoriteCarsPage` — favorite ținute în `localStorage`.
 - Tipuri: `Car`, `PaginatedCars`, `CarCatalogFilters`.
@@ -17,7 +17,7 @@ Catalogul public de mașini (listare, pagină de detaliu, favorite) și administ
 - `InventoryTable` — tabelul de mașini din admin.
 
 `@features/inventory/server` (server-only):
-- `listAvailableCars`, `readCatalogPage`, `findCarBySlug`, `findSimilarCars`, `listFeaturedCars`,
+- `listAvailableCars`, `readCatalogPage`, `findCarBySlug`, `listFeaturedCars`,
   `listCarSlugs`, `findCarForEditing` — citiri din catalog.
 - `countCars(): Promise<{ total, available }>` — folosit de dashboard-ul de admin (aruncă la eroare).
 - `SimilarCars` — Server Component, randează mașini similare; nu e exportat din `index.ts`.

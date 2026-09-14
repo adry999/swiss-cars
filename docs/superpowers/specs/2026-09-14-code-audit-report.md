@@ -185,4 +185,6 @@ Faza 1 (`docs/superpowers/plans/2026-09-14-audit-remediation-phase-1.md`), final
 | 1.2 | LeadInbox: wrapper-ele pass-through, ternarul mort și timer-ul fără cleanup rezolvate |
 | 1.4 | comentariile care povesteau bug-uri trecute rescrise ca reguli |
 
+Notă la 2.4: warning-ul `no-unused-vars` din `sentry.config.ts` (`SENTRY_AUTH_TOKEN`) rămâne — vezi follow-up A.
+
 Rămân pentru planurile următoare: A–F de mai jos.

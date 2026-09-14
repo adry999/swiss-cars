@@ -155,7 +155,7 @@ Each feature defines its own Zod schemas and types next to its code: `inventory.
 - **Setup**: `test-setup.ts` (mocks for next-intl, next/navigation, next/image, framer-motion — framework only)
 - **Tests**: Located alongside source files (`*.test.ts`, `*.test.tsx`); server-side tests start with `// @vitest-environment node`; feature fixtures live in `<feature>/test-support/`; ports are replaced by injected fakes instead of `vi.mock`
 - E2E (Playwright, not run in CI) lives in `tests/e2e/` (`playwright.config.ts` → `testDir: './tests/e2e'`)
-- Current coverage: sanitize, admin-role, Pagination, i18n routing, message parity, core (event bus, rate limiter, client IP), config, auth, inventory (favorites, similar cars, image storage), leads, notifications, partners, site-settings schemas, subscribers, admin dashboard-stats composition
+- Current coverage: sanitize, pick-translation, admin-role, Pagination, i18n routing, message parity, core (event bus, rate limiter, client IP), config, auth, inventory (favorites, similar cars, image storage), leads, notifications, partners, site-settings schemas, site-settings default homepage content, subscribers, admin dashboard-stats composition
 
 ### Environment Variables
 

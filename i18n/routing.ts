@@ -60,7 +60,7 @@ export function localeOpenGraph(params: {
     };
 }
 
-/** `twitter` for Next metadata; each page sets it, otherwise the root layout's Romanian card is inherited. */
+/** `twitter` for Next metadata; a page that omits it inherits the locale layout's homepage card. */
 export function localeTwitter(params: { title: string; description: string; image?: string }) {
     return {
         card: 'summary_large_image' as const,

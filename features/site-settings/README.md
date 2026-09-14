@@ -36,6 +36,7 @@ Poate importa `@core/*`, `@shared/*` și `@config/*`:
 - `@shared/session/require-admin` (`requireAdmin`) în `actions.ts`.
 - `@shared/contracts/translated-field` pentru conținutul multilingv al homepage-ului.
 - `@shared/ui/admin/ImageUploader`, `@shared/ui/Toast/ToastContext`.
+- `@shared/formatting/pick-translation` (`pickTranslation`) în secțiunile publice de homepage.
 
 Nu importă alt feature.
 

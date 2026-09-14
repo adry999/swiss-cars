@@ -56,7 +56,7 @@ app/
 ├── [locale]/         # Public routes (ro unprefixed, /ru and /en prefixed)
 ├── admin/            # Admin dashboard (auth-protected)
 ├── login/            # Login page
-└── api/              # API routes (contact form, seed)
+└── api/              # API routes (contact form)
 
 components/
 ├── admin/            # Admin forms and tables
