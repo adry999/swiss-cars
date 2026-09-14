@@ -1,6 +1,7 @@
 import { getTranslations, getLocale } from 'next-intl/server';
 import { getHomepageContent } from '../server/site-settings-repository';
 import type { TranslatedField } from '@shared/contracts/translated-field';
+import { pickTranslation, type TranslatedText } from '@shared/formatting/pick-translation';
 import ServicesSectionClient from './ServicesSectionClient';
 
 type ServiceEntry = {
@@ -26,20 +27,10 @@ export default async function ServicesSection() {
     const homepageData = await getHomepageContent();
     const servicesData = homepageData.services_section || null;
 
-    // Helper: get translated value from object or fall back to i18n key
-    const getText = (translations?: Record<string, string> | null, fallbackKey?: string): string => {
-        if (translations && typeof translations === 'object') {
-            if (translations[locale]) return translations[locale];
-            if (translations['ro']) return translations['ro'];
-        }
-        if (typeof translations === 'string' && (translations as string).length > 0) return translations as string;
-        if (fallbackKey) {
-            try { return t(fallbackKey); } catch { return ''; }
-        }
-        return '';
-    };
+    const textOrMessage = (field: TranslatedText, messageKey: string) =>
+        pickTranslation(field, locale) ?? (t.has(messageKey) ? t(messageKey) : '');
 
-    const title = getText(servicesData?.title, 'title');
+    const title = textOrMessage(servicesData?.title, 'title');
     const imageSrc = servicesData?.imageSrc || '/media/content/b-services/fig-1.png';
 
     // Use admin services if configured, otherwise fall back to i18n
@@ -50,9 +41,9 @@ export default async function ServicesSection() {
     const services: { icon: string; name: string; short: string; full: string }[] = rawServices.map((s: ServiceEntry, idx) => {
         const defaultKey = SERVICE_KEYS[idx]?.key || `service${idx + 1}`;
         const icon = s.icon || SERVICE_KEYS[idx]?.icon || '⭐';
-        const name = getText(s.name, `${defaultKey}_name`);
-        const short = getText(s.short, `${defaultKey}_short`);
-        const fullText = getText(s.full, `${defaultKey}_full`);
+        const name = textOrMessage(s.name, `${defaultKey}_name`);
+        const short = textOrMessage(s.short, `${defaultKey}_short`);
+        const fullText = textOrMessage(s.full, `${defaultKey}_full`);
         return { icon, name, short, full: fullText };
     });
 

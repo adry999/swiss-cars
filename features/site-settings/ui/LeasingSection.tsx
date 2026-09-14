@@ -1,5 +1,6 @@
 import { getTranslations, getLocale } from 'next-intl/server';
 import { getHomepageContent } from '../server/site-settings-repository';
+import { pickTranslation } from '@shared/formatting/pick-translation';
 import styles from './LeasingSection.module.css';
 
 export default async function LeasingSection() {
@@ -9,15 +10,9 @@ export default async function LeasingSection() {
     const homepageData = await getHomepageContent();
     const data = homepageData.leasing_section || null;
 
-    const getText = (translations?: Record<string, string>, fallbackKey?: string) => {
-        if (translations && translations[locale]) return translations[locale];
-        if (translations && translations['ro']) return translations['ro'];
-        return fallbackKey ? t(fallbackKey) : '';
-    };
-
-    const title = getText(data?.title, 'title');
-    const text1 = getText(data?.text1, 'text1');
-    const text2 = getText(data?.text2, 'text2');
+    const title = pickTranslation(data?.title, locale) ?? t('title');
+    const text1 = pickTranslation(data?.text1, locale) ?? t('text1');
+    const text2 = pickTranslation(data?.text2, locale) ?? t('text2');
 
     return (
         <section className={`section ${styles.section}`}>

@@ -5,6 +5,7 @@ import { useLocale } from 'next-intl';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Pause, Play } from 'lucide-react';
 import type { HeroSlide } from '../site-settings.types';
+import { pickTranslation } from '@shared/formatting/pick-translation';
 import styles from './HeroSlider.module.css';
 
 interface Props {
@@ -53,8 +54,6 @@ export default function HeroSlider({ slides: propSlides }: Props) {
     const slide = slides[current];
     if (!slide) return null;
 
-    const getText = (field: Record<string, string | undefined>) => field[locale] || field['ro'] || '';
-
     return (
         <section className={styles.hero} id="main-slider">
             {/* Background Images */}
@@ -90,7 +89,7 @@ export default function HeroSlider({ slides: propSlides }: Props) {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.6, delay: 0.15 }}
                         >
-                            {getText(slide.slogan)}
+                            {pickTranslation(slide.slogan, locale) ?? ''}
                         </motion.p>
                         <motion.h1
                             className={styles.title}
@@ -98,7 +97,7 @@ export default function HeroSlider({ slides: propSlides }: Props) {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.6, delay: 0.3 }}
                         >
-                            {getText(slide.title)}
+                            {pickTranslation(slide.title, locale) ?? ''}
                         </motion.h1>
                         <motion.a
                             href={slide.ctaHref}
@@ -108,7 +107,7 @@ export default function HeroSlider({ slides: propSlides }: Props) {
                             transition={{ duration: 0.6, delay: 0.5 }}
                             whileHover={{ scale: 1.04 }}
                         >
-                            {getText(slide.cta)}
+                            {pickTranslation(slide.cta, locale) ?? ''}
                         </motion.a>
                     </motion.div>
                 </AnimatePresence>

@@ -1,5 +1,6 @@
 import { getTranslations, getLocale } from 'next-intl/server';
 import { getHomepageContent } from '../server/site-settings-repository';
+import { pickTranslation } from '@shared/formatting/pick-translation';
 import WhyUsAccordionClient from './WhyUsAccordionClient';
 
 export default async function WhyUsAccordion() {
@@ -9,13 +10,7 @@ export default async function WhyUsAccordion() {
     const homepageData = await getHomepageContent();
     const data = homepageData.why_us_section || null;
 
-    const getText = (translations?: Record<string, string>, fallbackKey?: string) => {
-        if (translations && translations[locale]) return translations[locale];
-        if (translations && translations['ro']) return translations['ro'];
-        return fallbackKey ? t(fallbackKey) : '';
-    };
-
-    const title = getText(data?.title, 'title');
+    const title = pickTranslation(data?.title, locale) ?? t('title');
 
     const defaultItems = [
         { title: t('q1_title'), text: t('q1_text') },
@@ -26,8 +21,8 @@ export default async function WhyUsAccordion() {
 
     const items = data?.items && data.items.length > 0
         ? data.items.map((item) => ({
-            title: getText(item.title),
-            text: getText(item.text)
+            title: pickTranslation(item.title, locale) ?? '',
+            text: pickTranslation(item.text, locale) ?? ''
         }))
         : defaultItems;
 

@@ -1,5 +1,6 @@
 import { getTranslations, getLocale } from 'next-intl/server';
 import { getHomepageContent } from '../server/site-settings-repository';
+import { pickTranslation } from '@shared/formatting/pick-translation';
 import styles from './AboutSection.module.css';
 
 export default async function AboutSection() {
@@ -9,15 +10,9 @@ export default async function AboutSection() {
     const homepageData = await getHomepageContent();
     const aboutData = homepageData.about_section || null;
 
-    const getText = (translations?: Record<string, string>, fallbackKey?: string) => {
-        if (translations && translations[locale]) return translations[locale];
-        if (translations && translations['ro']) return translations['ro'];
-        return fallbackKey ? t(fallbackKey) : '';
-    };
-
-    const subtitle = getText(aboutData?.subtitle, 'subtitle');
-    const title = getText(aboutData?.title, 'title');
-    const text = getText(aboutData?.text, 'text');
+    const subtitle = pickTranslation(aboutData?.subtitle, locale) ?? t('subtitle');
+    const title = pickTranslation(aboutData?.title, locale) ?? t('title');
+    const text = pickTranslation(aboutData?.text, locale) ?? t('text');
 
     const advantages = [
         { icon: '🔒', key: 'advantage1' as const },
