@@ -27,20 +27,3 @@ Run `seed_defaults.mjs` afterward if you want the default homepage copy.
 
 Steps 2 and 3 above are additive migrations — run them against a database
 that already has step 1 applied, in that order.
-
-## `archive/`
-
-Superseded incremental migrations and, in two cases, actively insecure
-scripts kept only for history — **do not run these against a database
-`2026-08-26_security_hardening.sql` has already been applied to**, they
-will undo it:
-
-- `dev_public_policies.sql`, `storage_permissions_fix.sql` — grant public
-  write access to every table and the storage bucket. Written for
-  frictionless local development before Supabase Auth was wired up. If you
-  need that for local dev today, point at a disposable local/branch
-  Supabase project, never a shared one.
-- everything else in `archive/` — earlier incremental versions of what
-  `SETUP_NEW_DB.sql` now creates in one pass (schema, policies, the
-  `source_url` column, the `is_important` column, storage policies,
-  homepage content seed). Superseded, not required for a fresh install.
