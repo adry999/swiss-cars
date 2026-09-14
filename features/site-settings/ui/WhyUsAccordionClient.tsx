@@ -4,8 +4,6 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './WhyUsAccordion.module.css';
 
-const ITEMS = ['q1', 'q2', 'q3', 'q4'] as const;
-
 export default function WhyUsAccordionClient({
     title,
     items

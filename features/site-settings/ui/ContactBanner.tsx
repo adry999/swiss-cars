@@ -1,5 +1,6 @@
 import { getTranslations, getLocale } from 'next-intl/server';
 import { getHomepageContent, getPublicSiteConfig } from '../server/site-settings-repository';
+import { pickTranslation } from '@shared/formatting/pick-translation';
 import styles from './ContactBanner.module.css';
 
 export default async function ContactBanner() {
@@ -12,16 +13,10 @@ export default async function ContactBanner() {
 
     const phone = settings.phone;
 
-    const getText = (translations?: Record<string, string>, fallbackKey?: string) => {
-        if (translations && translations[locale]) return translations[locale];
-        if (translations && translations['ro']) return translations['ro'];
-        return fallbackKey ? t(fallbackKey) : '';
-    };
-
-    const title = getText(data?.title, 'title');
-    const text = getText(data?.text, 'text');
-    const cta = getText(data?.cta, 'cta');
-    const question = getText(data?.question, 'question');
+    const title = pickTranslation(data?.title, locale) ?? t('title');
+    const text = pickTranslation(data?.text, locale) ?? t('text');
+    const cta = pickTranslation(data?.cta, locale) ?? t('cta');
+    const question = pickTranslation(data?.question, locale) ?? t('question');
 
     return (
         <section className={styles.section} id="contact">

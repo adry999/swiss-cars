@@ -2,26 +2,24 @@ import { getTranslations } from 'next-intl/server';
 import { listVisiblePartners } from '@features/partners/server';
 import Image from 'next/image';
 import { LeasingCalculator } from '@features/leasing';
-import { localeAlternates, localeOpenGraph, localeTwitter } from '@i18n/routing';
+import { localizedPageMetadata } from '@i18n/routing';
 import type { Metadata } from 'next';
 
 type Props = {
     params: Promise<{ locale: string }>;
 };
 
-// TODO: title/description are Romanian-only regardless of locale — a
-// pre-existing gap, not introduced or fixed here.
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { locale } = await params;
-    const title = 'Leasing Auto | SwissCars.md';
-    const description = 'Află opțiunile de finanțare și leasing pentru mașinile importate din Elveția.';
-    return {
-        title,
-        description,
-        alternates: localeAlternates(locale, '/leasing'),
-        openGraph: localeOpenGraph({ locale, path: '/leasing', title, description }),
-        twitter: localeTwitter({ title, description }),
-    };
+    return localizedPageMetadata({
+        locale,
+        path: '/leasing',
+        copyByLocale: {
+            ro: { title: 'Leasing Auto', description: 'Află opțiunile de finanțare și leasing pentru mașinile importate din Elveția.' },
+            ru: { title: 'Автолизинг', description: 'Узнайте варианты финансирования и лизинга автомобилей, импортированных из Швейцарии.' },
+            en: { title: 'Car Leasing', description: 'Explore financing and leasing options for cars imported from Switzerland.' },
+        },
+    });
 }
 
 export default async function LeasingPage() {

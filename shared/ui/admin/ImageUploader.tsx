@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Image as ImageIcon, X, UploadCloud, Loader2, AlertCircle } from 'lucide-react';
+import { X, UploadCloud, Loader2, AlertCircle } from 'lucide-react';
 import Image from 'next/image';
 import { v4 as uuidv4 } from 'uuid';
 import { createBrowserSupabaseClient } from '@core/supabase/browser-client';
@@ -34,7 +34,7 @@ export default function ImageUploader({ value, onChange, maxFiles = 10 }: Props)
             const fileName = `${uuidv4()}.${fileExt}`;
             const filePath = `cars/${fileName}`;
 
-            const { data, error } = await supabase.storage
+            const { error } = await supabase.storage
                 .from('car-images')
                 .upload(filePath, file);
 

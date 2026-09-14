@@ -103,9 +103,8 @@ features/<name>/       # index.ts (client-safe), admin.ts (admin UI, optional), 
 shared/
 ├── contracts/        # cross-feature types: domain events, ActionResult, translated-field
 ├── session/          # current-user, admin-role, require-admin — read by every admin feature
-├── ui/                # Pagination, Toast, EmptyState, LoadingSpinner, Preloader, Reveal, WhatsAppFloat, admin/{DataTable,ImageUploader,AdminPageHeader,FormErrorMessage}, styles/components.css
-├── formatting/       # format (formatPrice, formatNumber), sanitize
-├── seo/               # StructuredData, structured-data
+├── ui/                # Pagination, Toast, Preloader, Reveal, WhatsAppFloat, admin/{DataTable,ImageUploader}, styles/components.css
+├── formatting/       # format (formatPrice), sanitize, pick-translation
 └── analytics/        # GoogleAnalytics, GTMScript
 core/
 ├── events/           # event-bus
@@ -156,7 +155,7 @@ Each feature defines its own Zod schemas and types next to its code: `inventory.
 - **Setup**: `test-setup.ts` (mocks for next-intl, next/navigation, next/image, framer-motion — framework only)
 - **Tests**: Located alongside source files (`*.test.ts`, `*.test.tsx`); server-side tests start with `// @vitest-environment node`; feature fixtures live in `<feature>/test-support/`; ports are replaced by injected fakes instead of `vi.mock`
 - E2E (Playwright, not run in CI) lives in `tests/e2e/` (`playwright.config.ts` → `testDir: './tests/e2e'`)
-- Current coverage: sanitize, admin-role, Pagination, i18n routing, message parity, core (event bus, rate limiter, client IP), config, auth, inventory (favorites, similar cars, image storage), leads, notifications, partners, site-settings schemas, subscribers, admin dashboard-stats composition
+- Current coverage: sanitize, pick-translation, admin-role, Pagination, i18n routing, message parity, core (event bus, rate limiter, client IP), config, auth, inventory (favorites, similar cars, image storage), leads, notifications, partners, site-settings schemas, site-settings default homepage content, subscribers, admin dashboard-stats composition
 
 ### Environment Variables
 
@@ -213,7 +212,7 @@ Admin sections:
 
 ## One-Time Setup
 
-The `/api/seed-defaults` endpoint seeds default `site_config` and `homepage_content` into Supabase. It requires authentication and must be called via **POST** (not GET). Delete or disable this endpoint after first use.
+A fresh database gets its default `site_config` and `homepage_content` rows from `database/seed_defaults.mjs` (see `database/README.md`). The admin homepage editor also fills any missing section from `features/site-settings/model/default-homepage-content.ts`.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

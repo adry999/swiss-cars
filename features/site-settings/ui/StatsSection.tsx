@@ -1,5 +1,6 @@
 import { getTranslations, getLocale } from 'next-intl/server';
 import { getHomepageContent, getPublicSiteConfig } from '../server/site-settings-repository';
+import { pickTranslation } from '@shared/formatting/pick-translation';
 import StatsSectionClient from './StatsSectionClient';
 
 export default async function StatsSection() {
@@ -10,12 +11,6 @@ export default async function StatsSection() {
     const siteConfig = await getPublicSiteConfig();
     const statsData = homepageData.stats_section || null;
     const phone = siteConfig.phone;
-
-    const getText = (translations?: Record<string, string>, fallbackKey?: string) => {
-        if (translations && translations[locale]) return translations[locale];
-        if (translations && translations['ro']) return translations['ro'];
-        return fallbackKey ? t(fallbackKey) : '';
-    };
 
     // Prepare default data if database is empty
     const stats = statsData?.stats || [
@@ -34,14 +29,14 @@ export default async function StatsSection() {
     const finalStats = stats.map((stat) => ({
         count: stat.count,
         suffix: stat.suffix,
-        label: getText(stat.label)
+        label: pickTranslation(stat.label, locale) ?? ''
     }));
 
     const finalPartnerships = {
-        title: getText(partnerships.title),
+        title: pickTranslation(partnerships.title, locale) ?? '',
         count: partnerships.count,
-        suffix: getText(partnerships.suffix),
-        text: getText(partnerships.text)
+        suffix: pickTranslation(partnerships.suffix, locale) ?? '',
+        text: pickTranslation(partnerships.text, locale) ?? ''
     };
 
     return (

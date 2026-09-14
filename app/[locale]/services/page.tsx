@@ -1,7 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { PackageSearch, ShieldCheck, Truck, CarFront, Wrench, HeadphonesIcon } from 'lucide-react';
-import { localeAlternates, localeOpenGraph, localeTwitter } from '@i18n/routing';
+import { localizedPageMetadata } from '@i18n/routing';
 import styles from './page.module.css';
 
 type Props = {
@@ -10,19 +10,15 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { locale } = await params;
-    const meta: Record<string, { title: string; description: string }> = {
-        ro: { title: 'Servicii', description: 'Servicii complete de import auto din Elveția, devamare, transport și mentenanță.' },
-        ru: { title: 'Услуги', description: 'Полный спектр услуг по импорту автомобилей из Швейцарии, растаможке, транспортировке и обслуживанию.' },
-        en: { title: 'Services', description: 'Complete car import services from Switzerland, customs clearance, transport and maintenance.' },
-    };
-    const current = meta[locale] || meta.ro;
-    return {
-        title: `${current.title} | SwissCars.md`,
-        description: current.description,
-        alternates: localeAlternates(locale, '/services'),
-        openGraph: localeOpenGraph({ locale, path: '/services', title: `${current.title} | SwissCars.md`, description: current.description }),
-        twitter: localeTwitter({ title: `${current.title} | SwissCars.md`, description: current.description }),
-    };
+    return localizedPageMetadata({
+        locale,
+        path: '/services',
+        copyByLocale: {
+            ro: { title: 'Servicii', description: 'Servicii complete de import auto din Elveția, devamare, transport și mentenanță.' },
+            ru: { title: 'Услуги', description: 'Полный спектр услуг по импорту автомобилей из Швейцарии, растаможке, транспортировке и обслуживанию.' },
+            en: { title: 'Services', description: 'Complete car import services from Switzerland, customs clearance, transport and maintenance.' },
+        },
+    });
 }
 
 export default async function ServicesPage() {

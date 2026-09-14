@@ -81,7 +81,7 @@ export async function duplicateCarWithImages(carId: string): Promise<string | nu
 
     if (carError || !car) return null;
 
-    const { id: _sourceId, created_at, updated_at, car_images, ...carData } = car;
+    const { id, created_at, updated_at, car_images, ...carData } = car;
 
     const clonedCar = {
         ...carData,

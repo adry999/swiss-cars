@@ -36,6 +36,7 @@ Poate importa `@core/*`, `@shared/*` și `@config/*`:
 - `@shared/session/require-admin` (`requireAdmin`) în `actions.ts`.
 - `@shared/contracts/translated-field` pentru conținutul multilingv al homepage-ului.
 - `@shared/ui/admin/ImageUploader`, `@shared/ui/Toast/ToastContext`.
+- `@shared/formatting/pick-translation` (`pickTranslation`) în secțiunile publice de homepage.
 
 Nu importă alt feature.
 
@@ -44,6 +45,8 @@ Nu importă alt feature.
 ```
 site-settings.schema.ts — SiteConfigSchema, HomepageContentSchema (+ .test.ts)
 site-settings.types.ts — SiteConfig, PublicSiteConfig, HomepageContent și HeroSlide (derivate din schemă), NotificationConfig, SiteSettingsSaveResult
+model/
+  default-homepage-content.ts — DEFAULT_HOMEPAGE_CONTENT, valorile editorului de homepage (+ .test.ts)
 index.ts / admin.ts / server.ts / actions.ts
 server/
   site-settings-repository.ts — getSiteConfig, getPublicSiteConfig, getHomepageContent, getNotificationConfig (cache pe request cu React.cache), writeSettingRow

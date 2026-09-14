@@ -1,18 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import styles from './ServicesSection.module.css';
-
-const SERVICES = [
-    { key: 'service1', icon: '🔍' },
-    { key: 'service2', icon: '🔧' },
-    { key: 'service3', icon: '🚚' },
-    { key: 'service4', icon: '🏷️' },
-    { key: 'service5', icon: '⚙️' },
-    { key: 'service6', icon: '🛡️' },
-];
 
 export default function ServicesSectionClient({
     title,

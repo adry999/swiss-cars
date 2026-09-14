@@ -56,7 +56,7 @@ app/
 ├── [locale]/         # Public routes (ro unprefixed, /ru and /en prefixed)
 ├── admin/            # Admin dashboard (auth-protected)
 ├── login/            # Login page
-└── api/              # API routes (contact form, seed)
+└── api/              # API routes (contact form)
 
 components/
 ├── admin/            # Admin forms and tables
@@ -112,9 +112,7 @@ Three files, run in order, in the Supabase SQL Editor:
 `SETUP_NEW_DB.sql` → `2026-08-26_security_hardening.sql` →
 `2026-08-26_lead_subscriber_rpc.sql`. The last two aren't optional — without
 them the database still allows any authenticated account admin write access
-and anonymous direct inserts into leads/subscribers. `database/archive/`
-holds superseded and (in two cases) actively insecure historical scripts;
-don't run those against a hardened database.
+and anonymous direct inserts into leads/subscribers.
 
 ---
 

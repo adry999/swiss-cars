@@ -3,7 +3,7 @@ import { FavoriteCarsPage } from '@features/inventory';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'Mașini Favorite | SwissCars.md',
+    title: 'Mașini Favorite',
     description: 'Mașinile salvate în lista ta de favorite.',
     // Content is per-visitor localStorage state, not something worth indexing
     // or ranking under a canonical URL.

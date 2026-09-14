@@ -55,6 +55,33 @@ describe('createInMemoryRateLimiter', () => {
         expect((await limiter.consume('lead:2.2.2.2', singleRequest)).allowed).toBe(true);
         expect((await limiter.consume('lead:1.1.1.1', singleRequest)).allowed).toBe(false);
     });
+
+    it('forgets expired windows once it tracks too many clients', async () => {
+        const clock = createClock();
+        const limiter = createInMemoryRateLimiter({ now: clock.now, maxTrackedKeys: 2 });
+        const singleRequest = { limit: 1, windowMs: 60_000 };
+        await limiter.consume('lead:1.1.1.1', singleRequest);
+        await limiter.consume('lead:2.2.2.2', singleRequest);
+
+        clock.advance(singleRequest.windowMs);
+        await limiter.consume('lead:3.3.3.3', singleRequest);
+        clock.advance(-singleRequest.windowMs);
+
+        // Had the expired window survived the sweep, a rewound clock would still see it as used.
+        expect((await limiter.consume('lead:1.1.1.1', singleRequest)).allowed).toBe(true);
+    });
+
+    it('keeps windows that are still running when it sweeps', async () => {
+        const clock = createClock();
+        const limiter = createInMemoryRateLimiter({ now: clock.now, maxTrackedKeys: 2 });
+        const singleRequest = { limit: 1, windowMs: 60_000 };
+        await limiter.consume('lead:1.1.1.1', singleRequest);
+        await limiter.consume('lead:2.2.2.2', singleRequest);
+
+        await limiter.consume('lead:3.3.3.3', singleRequest);
+
+        expect((await limiter.consume('lead:1.1.1.1', singleRequest)).allowed).toBe(false);
+    });
 });
 
 describe('createRateLimiter', () => {

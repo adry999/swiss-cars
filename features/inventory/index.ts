@@ -1,4 +1,3 @@
-export { default as CarCard } from './ui/CarCard';
 export { default as InventoryGrid } from './ui/InventoryGrid';
 export { default as FeaturedCarsGrid } from './ui/FeaturedCarsGrid';
 export { default as CarGallery } from './ui/CarGallery';

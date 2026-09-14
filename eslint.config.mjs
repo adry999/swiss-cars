@@ -12,6 +12,12 @@ const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   {
+    rules: {
+      // Destructuring a field away (`const { created_at, ...car } = row`) is how rows are stripped before a write.
+      "@typescript-eslint/no-unused-vars": ["warn", { ignoreRestSiblings: true }],
+    },
+  },
+  {
     // The @/ alias is gone; tsc only reports static imports, so a dynamic import through it fails at runtime instead.
     files: ["**/*.{ts,tsx}"],
     rules: {

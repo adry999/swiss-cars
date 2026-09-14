@@ -9,11 +9,10 @@ import styles from './FavoriteButton.module.css';
 
 type Props = {
     carId: string;
-    carSlug: string;
     carName: string;
 };
 
-export default function FavoriteButton({ carId, carSlug, carName }: Props) {
+export default function FavoriteButton({ carId, carName }: Props) {
     const [isFav, setIsFav] = useState(false);
     const t = useTranslations('favorites');
     const toast = useToast();

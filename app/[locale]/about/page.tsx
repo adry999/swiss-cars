@@ -2,8 +2,8 @@ import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 import { Link } from '@i18n/navigation';
 import type { Metadata } from 'next';
-import { ShieldCheck, Zap, Globe, Search, ClipboardCheck, Truck, ChevronRight } from 'lucide-react';
-import { localeAlternates, localeOpenGraph, localeTwitter } from '@i18n/routing';
+import { ShieldCheck, Zap, Globe, ChevronRight } from 'lucide-react';
+import { localizedPageMetadata } from '@i18n/routing';
 import styles from './about.module.css';
 
 type Props = {
@@ -12,19 +12,15 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { locale } = await params;
-    const meta: Record<string, { title: string; description: string }> = {
-        ro: { title: 'Despre Noi', description: 'Află mai multe despre misiunea noastră și experiența în importul auto din Elveția.' },
-        ru: { title: 'О нас', description: 'Узнайте больше о нашей миссии и опыте импорта автомобилей из Швейцарии.' },
-        en: { title: 'About Us', description: 'Learn more about our mission and experience in importing cars from Switzerland.' },
-    };
-    const current = meta[locale] || meta.ro;
-    return {
-        title: `${current.title} | SwissCars.md`,
-        description: current.description,
-        alternates: localeAlternates(locale, '/about'),
-        openGraph: localeOpenGraph({ locale, path: '/about', title: `${current.title} | SwissCars.md`, description: current.description }),
-        twitter: localeTwitter({ title: `${current.title} | SwissCars.md`, description: current.description }),
-    };
+    return localizedPageMetadata({
+        locale,
+        path: '/about',
+        copyByLocale: {
+            ro: { title: 'Despre Noi', description: 'Află mai multe despre misiunea noastră și experiența în importul auto din Elveția.' },
+            ru: { title: 'О нас', description: 'Узнайте больше о нашей миссии и опыте импорта автомобилей из Швейцарии.' },
+            en: { title: 'About Us', description: 'Learn more about our mission and experience in importing cars from Switzerland.' },
+        },
+    });
 }
 
 export default async function AboutPage() {

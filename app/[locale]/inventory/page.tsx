@@ -1,5 +1,5 @@
 import { readCatalogPage } from '@features/inventory/server';
-import { localeAlternates, localeOpenGraph, localeTwitter } from '@i18n/routing';
+import { localizedPageMetadata } from '@i18n/routing';
 import { InventoryGrid } from '@features/inventory';
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
@@ -12,29 +12,15 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { locale } = await params;
-
-    const titles: Record<string, string> = {
-        ro: 'Mașini în Stoc | SwissCars',
-        ru: 'Автомобили в Наличии | SwissCars',
-        en: 'Cars in Stock | SwissCars',
-    };
-
-    const descriptions: Record<string, string> = {
-        ro: 'Vezi toate mașinile disponibile la SwissCars.',
-        ru: 'Все автомобили, доступные в наличии у SwissCars.',
-        en: 'Browse every car currently available at SwissCars.',
-    };
-
-    const title = titles[locale] || titles.ro;
-    const description = descriptions[locale] || descriptions.ro;
-
-    return {
-        title,
-        description,
-        alternates: localeAlternates(locale, '/inventory'),
-        openGraph: localeOpenGraph({ locale, path: '/inventory', title, description }),
-        twitter: localeTwitter({ title, description }),
-    };
+    return localizedPageMetadata({
+        locale,
+        path: '/inventory',
+        copyByLocale: {
+            ro: { title: 'Mașini în Stoc', description: 'Vezi toate mașinile disponibile la SwissCars.' },
+            ru: { title: 'Автомобили в Наличии', description: 'Все автомобили, доступные в наличии у SwissCars.' },
+            en: { title: 'Cars in Stock', description: 'Browse every car currently available at SwissCars.' },
+        },
+    });
 }
 
 export default async function InventoryPage({ searchParams }: Props) {

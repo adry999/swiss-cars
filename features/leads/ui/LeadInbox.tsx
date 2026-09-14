@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { format } from 'date-fns';
 import { CheckCheck, Eye, EyeOff, Star, StarOff, Trash2, Phone, Mail, Car, CalendarCheck } from 'lucide-react';
 import { useOptionalToast } from '@shared/ui/Toast/ToastContext';
@@ -31,21 +31,20 @@ export default function LeadInbox({ initialLeads, inboxActions }: Props) {
         return true;
     });
 
-    const toggleReadState = (id: string, is_read: boolean) => setReadState(id, is_read);
+    const confirmResetTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+    useEffect(() => () => clearTimeout(confirmResetTimer.current), []);
 
-    const toggleImportance = (id: string, is_important: boolean) => setImportance(id, is_important);
-
+    // Delete needs a second click within 3 seconds.
     const confirmAndRemoveLead = (id: string) => {
+        clearTimeout(confirmResetTimer.current);
         if (confirmDelete !== id) {
             setConfirmDelete(id);
-            setTimeout(() => setConfirmDelete(null), 3000);
+            confirmResetTimer.current = setTimeout(() => setConfirmDelete(null), 3000);
             return;
         }
         setConfirmDelete(null);
         removeLead(id);
     };
-
-    const markEveryLeadRead = () => markAllRead();
 
     return (
         <div className={styles.wrapper}>
@@ -60,7 +59,7 @@ export default function LeadInbox({ initialLeads, inboxActions }: Props) {
                     {currentUnread > 0 && (
                         <button
                             className={styles.markAllBtn}
-                            onClick={markEveryLeadRead}
+                            onClick={markAllRead}
                             disabled={isPending}
                         >
                             <CheckCheck size={15} />
@@ -168,20 +167,20 @@ export default function LeadInbox({ initialLeads, inboxActions }: Props) {
                             <div className={styles.actions}>
                                 <button
                                     className="action-btn"
-                                    onClick={() => toggleReadState(lead.id, !lead.is_read)}
+                                    onClick={() => setReadState(lead.id, !lead.is_read)}
                                     title={lead.is_read ? 'Mark unread' : 'Mark read'}
                                 >
                                     {lead.is_read ? <EyeOff size={14} /> : <Eye size={14} />}
                                 </button>
                                 <button
                                     className={lead.is_important ? 'action-btn action-btn-warning' : 'action-btn'}
-                                    onClick={() => toggleImportance(lead.id, !lead.is_important)}
+                                    onClick={() => setImportance(lead.id, !lead.is_important)}
                                     title={lead.is_important ? 'Unflag' : 'Flag'}
                                 >
                                     {lead.is_important ? <StarOff size={14} /> : <Star size={14} />}
                                 </button>
                                 <button
-                                    className={confirmDelete === lead.id ? 'action-btn action-btn-delete' : 'action-btn action-btn-delete'}
+                                    className="action-btn action-btn-delete"
                                     onClick={() => confirmAndRemoveLead(lead.id)}
                                     title={confirmDelete === lead.id ? 'Click again to confirm' : 'Delete'}
                                 >

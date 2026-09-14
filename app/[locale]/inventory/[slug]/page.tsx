@@ -1,8 +1,8 @@
-import { getLocale, getTranslations } from 'next-intl/server';
+import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { findCarBySlug, listCarSlugs, SimilarCars } from '@features/inventory/server';
 import { getPublicSiteConfig } from '@features/site-settings/server';
-import { routing, localeAlternates, localeUrl, localeOpenGraph, localeTwitter } from '@i18n/routing';
+import { routing, localeAlternates, localeUrl, localeOpenGraph, localeTwitter, withSiteName } from '@i18n/routing';
 import { sanitizeHtml } from '@shared/formatting/sanitize';
 import { formatPrice } from '@shared/formatting/format';
 import { Link } from '@i18n/navigation';
@@ -39,26 +39,22 @@ export async function generateMetadata({ params }: Props) {
     const car = await findCarBySlug(slug);
     if (!car) return {};
     const primaryImage = car.car_images?.find((img) => img.is_primary) || car.car_images?.[0];
-    const title = `${car.brand} ${car.model} ${car.year} ${!car.is_available ? '(Vândut)' : ''} | SwissCars.md`;
+    const title = `${car.brand} ${car.model} ${car.year}${car.is_available ? '' : ' (Vândut)'}`;
     const description = `${car.brand} ${car.model} ${car.year} — ${car.is_available ? `${formatPrice(car.price)} €` : 'Vândut'}. Import auto din Elveția.`;
 
     return {
         title,
         description,
         alternates: localeAlternates(locale, `/inventory/${slug}`),
-        // The previous openGraph object here only set url/images — since a
-        // page's openGraph fully replaces the layout's rather than merging,
-        // og:title and og:description were silently absent on every car
-        // page, and there was no twitter block at all (inherited the root
-        // layout's hardcoded Romanian one, same bug as every other page).
+        // A page's openGraph replaces the layout's instead of merging, so title and description are set here too.
         openGraph: localeOpenGraph({
             locale,
             path: `/inventory/${slug}`,
-            title,
+            title: withSiteName(title),
             description,
             image: primaryImage?.url,
         }),
-        twitter: localeTwitter({ title, description, image: primaryImage?.url }),
+        twitter: localeTwitter({ title: withSiteName(title), description, image: primaryImage?.url }),
     };
 }
 
@@ -184,7 +180,7 @@ export default async function CarDetailPage({ params }: Props) {
                                             <h1 className={styles.title}>{car.brand} {car.model}</h1>
                                             <div className={styles.year}>{car.year}</div>
                                         </div>
-                                        <FavoriteButton carId={car.id ?? ''} carSlug={car.slug} carName={`${car.brand} ${car.model}`} />
+                                        <FavoriteButton carId={car.id ?? ''} carName={`${car.brand} ${car.model}`} />
                                     </div>
 
                                     <div className={styles.priceWrapper}>
@@ -294,7 +290,7 @@ export default async function CarDetailPage({ params }: Props) {
                                             <h1 className={styles.title}>{car.brand} {car.model}</h1>
                                             <div className={styles.year}>{car.year}</div>
                                         </div>
-                                        <FavoriteButton carId={car.id ?? ''} carSlug={car.slug} carName={`${car.brand} ${car.model}`} />
+                                        <FavoriteButton carId={car.id ?? ''} carName={`${car.brand} ${car.model}`} />
                                     </div>
 
                                     <div className={styles.priceWrapper}>
