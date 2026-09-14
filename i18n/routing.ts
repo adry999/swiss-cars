@@ -40,13 +40,7 @@ const OG_LOCALE_MAP: Record<string, string> = { ro: 'ro_RO', ru: 'ru_RU', en: 'e
 
 /**
  * `openGraph` for Next metadata, locale- and path-aware.
- *
- * Next replaces a segment's whole `openGraph` object rather than
- * deep-merging it with an ancestor's — a page that defines its own
- * `openGraph` loses whatever the layout set (siteName, url, type, …)
- * unless it's repeated here. Confirmed live: pages that didn't override this
- * inherited the locale layout's openGraph object, which never set `url` at
- * all, so `og:url` was simply absent on every page under [locale].
+ * Next replaces a segment's whole `openGraph` object instead of merging it, so every field is set here.
  */
 export function localeOpenGraph(params: {
     locale: string;
@@ -66,13 +60,7 @@ export function localeOpenGraph(params: {
     };
 }
 
-/**
- * `twitter` for Next metadata, locale-aware.
- *
- * Confirmed live: pages under [locale] never defined their own `twitter`
- * block, so every locale — Russian and English included — inherited the
- * root layout's hardcoded Romanian title/description.
- */
+/** `twitter` for Next metadata; each page sets it, otherwise the root layout's Romanian card is inherited. */
 export function localeTwitter(params: { title: string; description: string; image?: string }) {
     return {
         card: 'summary_large_image' as const,

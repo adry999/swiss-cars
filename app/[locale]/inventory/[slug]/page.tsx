@@ -46,11 +46,7 @@ export async function generateMetadata({ params }: Props) {
         title,
         description,
         alternates: localeAlternates(locale, `/inventory/${slug}`),
-        // The previous openGraph object here only set url/images — since a
-        // page's openGraph fully replaces the layout's rather than merging,
-        // og:title and og:description were silently absent on every car
-        // page, and there was no twitter block at all (inherited the root
-        // layout's hardcoded Romanian one, same bug as every other page).
+        // A page's openGraph replaces the layout's instead of merging, so title and description are set here too.
         openGraph: localeOpenGraph({
             locale,
             path: `/inventory/${slug}`,
