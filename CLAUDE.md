@@ -103,9 +103,8 @@ features/<name>/       # index.ts (client-safe), admin.ts (admin UI, optional), 
 shared/
 ├── contracts/        # cross-feature types: domain events, ActionResult, translated-field
 ├── session/          # current-user, admin-role, require-admin — read by every admin feature
-├── ui/                # Pagination, Toast, EmptyState, LoadingSpinner, Preloader, Reveal, WhatsAppFloat, admin/{DataTable,ImageUploader,AdminPageHeader,FormErrorMessage}, styles/components.css
-├── formatting/       # format (formatPrice, formatNumber), sanitize
-├── seo/               # StructuredData, structured-data
+├── ui/                # Pagination, Toast, Preloader, Reveal, WhatsAppFloat, admin/{DataTable,ImageUploader}, styles/components.css
+├── formatting/       # format (formatPrice), sanitize, pick-translation
 └── analytics/        # GoogleAnalytics, GTMScript
 core/
 ├── events/           # event-bus
